@@ -1,7 +1,6 @@
 <script setup>
-import { reactive, ref, PropType } from 'vue'
+import { reactive, ref } from 'vue'
 import { Head, Link, router } from '@inertiajs/vue3';
-import Types from './types.ts';
 
 import SinglePost from '@/Pages/Post/SinglePost.vue';
 
@@ -49,11 +48,7 @@ defineProps({
         required: true,
     },
     posts:{
-        type: Array as PropType<Post>,
-        // required: true,
-    },
-    karen:{
-        type: String,
+        type: Array,
         // required: true,
     },
 
@@ -196,7 +191,9 @@ function handleImageError() {
 
                     <div class="card col-12" v-for="post in posts" :key="post.id">
                         {{ post }}<br>
-                        {{ post.images }}
+                        <div v-for="image in post.images">
+                            <img :src="'public' + image.file" alt="Imagen" class="img-fluid">
+                        </div>
                         <!-- <img :src="post.image" alt="Imagen" class="img-fluid"> -->
                     </div>
 
