@@ -48,6 +48,7 @@ class PostController extends Controller
             }
 
             $imageName = 'post/' . $post->id . '/' . Str::uuid() . '.' . $request->image->extension();
+            $request->image->storeAs('public', $imageName);
 
             $postImage = PostImage::create([
                 'post_id' => $post->id,

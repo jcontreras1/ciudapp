@@ -192,7 +192,7 @@ function handleImageError() {
                     <div class="card col-12" v-for="post in posts" :key="post.id">
                         {{ post }}<br>
                         <div v-for="image in post.images">
-                            <img :src="'public' + image.file" alt="Imagen" class="img-fluid">
+                            <img :src="image.file" alt="Imagen" class="img-fluid">
                         </div>
                         <!-- <img :src="post.image" alt="Imagen" class="img-fluid"> -->
                     </div>
