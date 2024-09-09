@@ -10,7 +10,7 @@ class Post extends Model
     use HasFactory;
     protected $fillable = ['user_id', 'lat', 'lng', 'comment', 'private'];
     protected $table = "post";
-    
+
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -18,7 +18,7 @@ class Post extends Model
 
     public function images()
     {
-        return $this->hasMany(PostImage::class);
+        return $this->hasMany(PostImage::class, 'post_id', 'id');
     }
 
     public function subcategory()

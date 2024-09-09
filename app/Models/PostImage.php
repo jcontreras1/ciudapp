@@ -8,6 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class PostImage extends Model
 {
     use HasFactory;
-
+    protected $table = 'post_image';
     protected $fillable = ['post_id', 'file'];
 }

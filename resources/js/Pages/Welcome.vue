@@ -1,17 +1,36 @@
 <script setup>
-import { reactive } from 'vue'
+import { reactive, ref, PropType } from 'vue'
 import { Head, Link, router } from '@inertiajs/vue3';
+import Types from './types.ts';
 
 import SinglePost from '@/Pages/Post/SinglePost.vue';
 
 const form = reactive({
     contenido: null,
-    latitud: null
+    latitud: null,
+    image: null,
 })
 
+
+let imageSrc = ref(null);
+let file = ref(null);
+
+const onFileChange = (event) => {
+    const selectedFile = event.target.files[0];
+    if (selectedFile) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            imageSrc.value = e.target.result;
+        };
+        reader.readAsDataURL(selectedFile);
+        file.value = selectedFile;
+    }
+};
+
 function funcionDeSubmit() {
+    form.image = file.value;
     router.post('/posts', form);
-    form.comment = null;
+    // form.comment = null;
 }
 
 defineProps({
@@ -30,7 +49,7 @@ defineProps({
         required: true,
     },
     posts:{
-        type: Array,
+        type: Array as PropType<Post>,
         // required: true,
     },
     karen:{
@@ -39,6 +58,9 @@ defineProps({
     },
 
 });
+function subirImagen(){
+    console.log('Subir imagen');
+}
 
 function handleImageError() {
     document.getElementById('screenshot-container')?.classList.add('!hidden');
@@ -51,11 +73,14 @@ function handleImageError() {
 <template>
 
     <Head title="Inicio" />
-    <div class="bg-gray-50 text-black/50 dark:bg-black dark:text-white/50">
+
+    <div class="bg-gray-50 text-black/50">
         <!-- Barra -->
         <nav class="navbar navbar-expand-lg bg-dark border-bottom border-bottom-dark ticky-top bg-body-tertiary"
             data-bs-theme="dark">
+
             <div class="container">
+
                 <a class="navbar-brand fw-light" href="/">
                     <span class="fas fa-brain me-1"></span>
                     Ciudapp
@@ -80,6 +105,7 @@ function handleImageError() {
             </div>
         </nav>
         <div class="container py-4">
+
             <div class="row">
 
                 <!-- Lateral izquierda -->
@@ -144,21 +170,17 @@ function handleImageError() {
 
                     <!-- Cuadro de texto para el post -->
                     <div class="mt-3">
+
                         <div class="d-flex align-items-start">
                             <!-- Área de texto -->
                             <div class="w-100">
-                                <textarea class="form-control" rows="3" placeholder="¿Subir nuevo post?"></textarea>
-                                <!-- Íconos debajo del textarea -->
-                                <div class="d-flex justify-content-between align-items-center mt-2">
-                                    <div>
-                                        <!-- Icono de imagen -->
-                                        <i class="fas fa-image fa-2x mx-2" @click="triggerFileUpload"></i>
-
-                                        <i class="fas fa-map-marker-alt fa-2x mx-2"></i> <!-- Icono de ubicación -->
-                                    </div>
-                                    <!-- Botón de postear -->
-                                    <button class="btn btn-primary">Postear</button>
-                                </div>
+                                <form @submit.prevent="funcionDeSubmit">
+                                    <input type="file" class="form-control border-2 p-2 rounded-5 mb-4" id="image"
+                                        name="image" capture="environment" accept="image/png, image/jpeg"
+                                        @change="onFileChange">
+                                    <!-- Íconos debajo del textarea -->
+                                    <button class="btn btn-primary rounded-4">Postear</button>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -172,7 +194,11 @@ function handleImageError() {
                     <hr>
 
 
-
+                    <div class="card col-12" v-for="post in posts" :key="post.id">
+                        {{ post }}<br>
+                        {{ post.images }}
+                        <!-- <img :src="post.image" alt="Imagen" class="img-fluid"> -->
+                    </div>
 
 
 
@@ -220,13 +246,13 @@ function handleImageError() {
                 <!-- Lateral derecha -->
                 <div class="col-12 col-md-3">
                     <!-- <div class="card"> -->
-                        <!-- <div class="card-header pb-0 border-0"> -->
-                            <h5 class="py-2"><i class="fas fa-search"></i> Buscar</h5>
-                        <!-- </div> -->
-                        <!-- <div class="card-body"> -->
-                            <input placeholder="Buscar" class="form-control rounded-pill w-100" type="text" id="search">
-                            <!-- <button class="btn btn-dark mt-2"> Buscar</button> -->
-                        <!-- </div> -->
+                    <!-- <div class="card-header pb-0 border-0"> -->
+                    <h5 class="py-2"><i class="fas fa-search"></i> Buscar</h5>
+                    <!-- </div> -->
+                    <!-- <div class="card-body"> -->
+                    <input placeholder="Buscar" class="form-control rounded-pill w-100" type="text" id="search">
+                    <!-- <button class="btn btn-dark mt-2"> Buscar</button> -->
+                    <!-- </div> -->
                     <!-- </div> -->
                     <!-- <div class="card mt-3">
                         <div class="card-header pb-0 border-0">

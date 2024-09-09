@@ -19,7 +19,10 @@ Route::get('/', function () {
 Route::resource('posts', App\Http\Controllers\PostController::class);
 
 
+Route::get('/test', function(){
+    return Post::with('images')->get();
 
+});
 
 
 Route::middleware([
