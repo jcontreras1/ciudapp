@@ -1,20 +1,14 @@
 <?php
 
+use App\Http\Controllers\HomeController;
 use App\Models\Post;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-        'posts' => Post::with('images')->get(),
-    ]);
-})->name('home');
 
+Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::resource('posts', App\Http\Controllers\PostController::class);
 
 
