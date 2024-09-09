@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
 use Inertia\Inertia;
 
+use RealRashid\SweetAlert\Facades\Alert;
+
+
 class HomeController extends Controller
 {
     /**
