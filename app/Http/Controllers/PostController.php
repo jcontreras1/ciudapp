@@ -10,18 +10,8 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 
 
-
-
 class PostController extends Controller
 {
-
-
-    public function index(){
-        return Inertia::render('Posts/Index', [
-
-            'posts' => Post::with('images')->get(),
-        ]);
-    }
 
     public function store(Request $request){
         DB::beginTransaction();

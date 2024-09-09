@@ -1,28 +1,14 @@
 <?php
 
-use App\Models\Post;
-use Illuminate\Foundation\Application;
+use App\Http\Controllers\HomeController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-        'posts' => Post::with('images')->get(),
-    ]);
-})->name('home');
 
+Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::resource('posts', App\Http\Controllers\PostController::class);
-
-
-Route::get('/test', function(){
-    return Post::with('images')->get();
-
-});
-
+Route::resource('category', App\Http\Controllers\CategoryController::class);
 
 Route::middleware([
     'auth:sanctum',
