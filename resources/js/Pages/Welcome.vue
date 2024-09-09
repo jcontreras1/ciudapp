@@ -7,6 +7,7 @@ import SinglePost from '@/Pages/Post/SinglePost.vue';
 const form = reactive({
     contenido: null,
     latitud: null,
+    longitud: null,
     image: null,
 })
 
@@ -27,8 +28,50 @@ const onFileChange = (event) => {
 };
 
 function funcionDeSubmit() {
-    form.image = file.value;
-    router.post('/posts', form);
+    let ubicacion = null;
+    return new Promise((resolve, reject) => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function (position) {
+                console.log(ubicacion = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                });
+                form.image = file.value;
+                form.latitud = position.coords.latitude;
+                form.longitud = position.coords.longitude;
+                router.post('/posts', form);
+
+                //document.getElementById('latitud').value = position.coords.latitude;
+                // document.getElementById('longitud').value = position.coords.longitude;
+                // // document.getElementById('btn_obtener_ubicacion').innerHTML = `Obtener ubicación <i class="bi bi-geo-alt"></i>`;
+                // myMap.panTo(new L.LatLng(position.coords.latitude, position.coords.longitude));
+                // marker = L.marker([position.coords.latitude, position.coords.longitude]).addTo(myMap);
+                // // document.getElementById("myMap").scrollIntoView();
+                // resolve(true);
+            },
+                (error) => {
+                    switch (error.code) {
+                        case error.PERMISSION_DENIED:
+                            this.error = "Permiso denegado";
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            this.error = "Posición no disponible";
+                            break;
+                        case error.TIMEOUT:
+                            this.error = "Tiempo de espera agotado";
+                            break;
+                        default:
+                            this.error = "Error desconocido";
+                            break;
+                    }
+
+        });
+
+        } else {
+            x.innerHTML = "no es compatible tu navegador";
+            reject('No es compatible');
+        }
+    });
     // form.comment = null;
 }
 
@@ -150,7 +193,7 @@ function handleImageError() {
                     <!-- </div> -->
                 </div>
 
-                <!-- Lateral centro -->
+                <!-- LATERAL CENTRO -->
                 <div class="col-12 col-md-6" style="height: 100vh; overflow-y: auto;">
 
                     <!-- Barra de navegación -->
@@ -188,11 +231,18 @@ function handleImageError() {
 
                     <hr>
 
-
+                    <input type="text" class="form-control">
                     <div class="card col-12" v-for="post in posts" :key="post.id">
                         {{ post }}<br>
                         <div v-for="image in post.images">
                             <img :src="image.file" alt="Imagen" class="img-fluid">
+                        </div>
+                        <div class="col-12 col-md-4 d-none d-md-block mb-1">
+                            LATITUD: <p>{{post.lat }}</p>
+                        </div>
+                        <div class="col-12 col-md-4 d-none d-md-block mb-1">
+                            <input type="text" readonly id="longitud" name="longitud"
+                                class="form-control form-control-lg">
                         </div>
                         <!-- <img :src="post.image" alt="Imagen" class="img-fluid"> -->
                     </div>
@@ -240,56 +290,10 @@ function handleImageError() {
                     <!-- <SinglePost v-for="post in posts" :key="post.id" :post="post" /> -->
                 </div>
 
-                <!-- Lateral derecha -->
+                <!-- LATERAL DEREC -->
                 <div class="col-12 col-md-3">
-                    <!-- <div class="card"> -->
-                    <!-- <div class="card-header pb-0 border-0"> -->
                     <h5 class="py-2"><i class="fas fa-search"></i> Buscar</h5>
-                    <!-- </div> -->
-                    <!-- <div class="card-body"> -->
                     <input placeholder="Buscar" class="form-control rounded-pill w-100" type="text" id="search">
-                    <!-- <button class="btn btn-dark mt-2"> Buscar</button> -->
-                    <!-- </div> -->
-                    <!-- </div> -->
-                    <!-- <div class="card mt-3">
-                        <div class="card-header pb-0 border-0">
-                            <h5 class="">Seguir a</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="hstack gap-2 mb-3">
-                                <div class="avatar">
-                                    <a href="#!"><img class="avatar-img rounded-circle"
-                                            src="https://api.dicebear.com/6.x/fun-emoji/svg?seed=Mario" alt="">
-                                    </a>
-                                </div>
-                                <div class="overflow-hidden">
-                                    <a class="h6 mb-0" href="#!">Mario Brother</a>
-                                    <p class="mb-0 small text-truncate">@Mario</p>
-                                </div>
-                                <a class="btn btn-primary-soft rounded-circle icon-md ms-auto" href="#">
-                                    <i class="fa-solid fa-plus"></i>
-                                </a>
-                            </div>
-                            <div class="hstack gap-2 mb-3">
-                                <div class="avatar">
-                                    <a href="#!">
-                                        <img class="avatar-img rounded-circle"
-                                            src="https://api.dicebear.com/6.x/fun-emoji/svg?seed=Mario" alt="">
-                                    </a>
-                                </div>
-                                <div class="overflow-hidden">
-                                    <a class="h6 mb-0" href="#!">Mario Brother</a>
-                                    <p class="mb-0 small text-truncate">@Mario</p>
-                                </div>
-                                <a class="btn btn-primary-soft rounded-circle icon-md ms-auto" href="#">
-                                    <i class="fa-solid fa-plus"></i>
-                                </a>
-                            </div>
-                            <div class="d-grid mt-3">
-                                <a class="btn btn-sm btn-primary-soft" href="#!">Show More</a>
-                            </div>
-                        </div>
-                    </div> -->
                 </div>
             </div>
         </div>

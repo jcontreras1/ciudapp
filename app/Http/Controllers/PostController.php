@@ -35,8 +35,8 @@ class PostController extends Controller
             //$request->image->move(public_path('images'), $imageName);
             $post = Post::create([
                 'user_id' => auth()->id(),
-                'lat' => 1,
-                'lng' => 1,
+                'lat' => $request->latitud,
+                'lng' => $request->longitud,
                 'comment' => "asd",
                 'private' => false,
                 'subcategory_id' => 1,
