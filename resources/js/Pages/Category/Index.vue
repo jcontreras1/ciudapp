@@ -1,7 +1,8 @@
 <script setup>
 import { reactive, ref } from 'vue'
 import { Head, Link, router } from '@inertiajs/vue3';
-
+import AppLayout from '@/Layouts/AppLayout.vue';
+import SectionTitle from '@/Components/SectionTitle.vue';
 
 defineProps({
     
@@ -14,15 +15,18 @@ defineProps({
 </script>
 
 <template>
-    <Head title="Categorías" />
-    
-    <div class="container my-4">
-        <h1 class="fs-3">Categorías
-            <span class="float-end">
-                <a class="btn btn-primary" :href="route('category.create')">Crear</a>
-            </span>
-        </h1>
-        
+    <AppLayout>        
+        <Head title="Categorías" />
+
+        <SectionTitle>
+                <template #title>
+                    Crear categoría
+                </template>
+                <template #aside>
+                    <Link :href="route('category.create')" class="btn btn-primary">Crear categoría</Link>
+                    </template>
+            </SectionTitle>
+      
         <div v-if="$page.props.flash.message" class="alert alert-success alert-dismissible fade show mt-3 mb-3" role="alert">
             <i class="fas fa-check-circle"></i>
             {{ $page.props.flash.message }}
@@ -52,5 +56,5 @@ defineProps({
             </table>
             
         </div>
-    </div>
+    </AppLayout>
 </template>

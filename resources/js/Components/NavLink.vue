@@ -4,7 +4,9 @@ import { Link } from '@inertiajs/vue3';
 
 const props = defineProps({
     href: String,
+    icon: String,
     active: Boolean,
+    title: String,
 });
 
 const classes = computed(() => {
@@ -15,7 +17,10 @@ const classes = computed(() => {
 </script>
 
 <template>
-    <Link :href="href" :class="classes">
-        <slot />
-    </Link>
+    <li class="nav-item">
+            <a class="nav-link d-block" :href="href">
+                <i class="mx-2" v-html="icon"></i> 
+                <span class="h4 d-none d-sm-inline"> {{title}} </span>
+            </a>
+        </li>
 </template>
