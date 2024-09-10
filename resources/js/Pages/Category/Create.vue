@@ -5,7 +5,7 @@ import { Head, Link, router } from '@inertiajs/vue3';
 const form = reactive({
     contenido: null,
     latitud: null,
-    image: null,
+    icono: null,
 })
 
 defineProps({
@@ -36,6 +36,11 @@ defineProps({
             <div class="mb-3">
                 <label for="description" class="form-label">Descripción</label>
                 <textarea class="form-control" id="description" v-model="form.description"></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="description" class="form-label">Ícono <a href="https://fontawesome.com/v5/search?o=r&m=free" target="_blank"><i class="fas fa-external-link-alt"></i></a></label>
+                <input class="form-control" id="description" v-model="form.icono">
+                <span class="fs-1" v-html="form.icono"></span>
             </div>
             <button type="submit" class="btn btn-primary">Guardar</button>
         </form>
