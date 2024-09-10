@@ -27,12 +27,6 @@ defineProps({
                     </template>
             </SectionTitle>
       
-        <div v-if="$page.props.flash.message" class="alert alert-success alert-dismissible fade show mt-3 mb-3" role="alert">
-            <i class="fas fa-check-circle"></i>
-            {{ $page.props.flash.message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-        
         <hr class="mb-3">
         <div class="table-responsive">
             <table class="table">
@@ -48,7 +42,7 @@ defineProps({
                         <td>{{ categoria.name }}</td>
                         <td><span class="fs-3" v-html="categoria.icon"></span></td>
                         <td>
-                            <button class="btn btn-primary btn-sm" @click="router.push({name: 'category.edit', params: {id: categoria.id}})">Editar</button>
+                            <Link class="btn btn-primary btn-sm" :href="route('category.edit', categoria.id)">Editar</Link>
                             <button class="btn btn-danger btn-sm" @click="router.push({name: 'category.delete', params: {id: categoria.id}})">Eliminar</button>
                         </td>
                     </tr>

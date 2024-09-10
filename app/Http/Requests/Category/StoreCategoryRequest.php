@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Category;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreCategoryRequest extends FormRequest
 {
@@ -21,8 +22,13 @@ class StoreCategoryRequest extends FormRequest
      */
     public function rules(): array
     {
+        $id = $this->route('category') ? $this->route('category')->id : null;
         return [
-            'name' => 'required|string|unique:category,name',
+            'name' => [
+                'required',
+                'string',
+                Rule::unique('category', 'name')->ignore($id),
+            ],
             'icon' => 'required|string',
         ];
     }
