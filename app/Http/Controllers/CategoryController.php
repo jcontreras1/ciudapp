@@ -33,6 +33,11 @@ class CategoryController extends Controller
         $category->update($request->validated());
         return redirect()->route('category.index')->with('message', 'Categoria actualizada correctamente');
     }
+
+    public function destroy(Category $category){
+        $category->delete();
+        return redirect()->route('category.index')->with('message', 'Categoria eliminada correctamente');
+    }
     
     
 }

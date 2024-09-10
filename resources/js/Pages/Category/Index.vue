@@ -1,8 +1,9 @@
 <script setup>
 import { reactive, ref } from 'vue'
-import { Head, Link, router } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import SectionTitle from '@/Components/SectionTitle.vue';
+import ConfirmDeleteRegisterModal from '@/Components/ConfirmDeleteRegisterModal.vue';
 
 defineProps({
     
@@ -10,8 +11,14 @@ defineProps({
         type: Array,
         // required: true,
     },
-    
 });
+
+const destroy = (id) => {
+    showModal.value = true;
+    console.log(id);
+}
+const showModal = ref(false);
+
 </script>
 
 <template>
@@ -42,13 +49,13 @@ defineProps({
                         <td>{{ categoria.name }}</td>
                         <td><span class="fs-3" v-html="categoria.icon"></span></td>
                         <td>
-                            <Link class="btn btn-primary btn-sm" :href="route('category.edit', categoria.id)">Editar</Link>
-                            <button class="btn btn-danger btn-sm" @click="router.push({name: 'category.delete', params: {id: categoria.id}})">Eliminar</button>
+                            <Link class="btn btn-primary btn-sm" title="Editar" :href="route('category.edit', categoria.id)">Editar</Link>
+                            <button class="btn btn-danger btn-sm" title="Eliminar" data-bs-toggle="modal" data-bs-target="exampleModal" @click="destroy(categoria.id)">Eliminar</button>
                         </td>
                     </tr>
                 </tbody>
-            </table>
-            
+            </table>            
         </div>
     </AppLayout>
+    <ConfirmDeleteRegisterModal :show="showModal" />
 </template>
