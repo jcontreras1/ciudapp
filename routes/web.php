@@ -23,4 +23,4 @@ Route::middleware([
 
 });
 
-Auth::routes();
+//Auth::routes();
