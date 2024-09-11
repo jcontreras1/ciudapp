@@ -34,7 +34,7 @@ const selectedCategory = ref(null);
 
         <SectionTitle>
                 <template #title>
-                    Crear categoría
+                    Categorías
                 </template>
                 <template #aside>
                     <Link :href="route('category.create')" class="btn btn-primary">Crear categoría</Link>
@@ -54,7 +54,15 @@ const selectedCategory = ref(null);
                 </thead>
                 <tbody>
                     <tr v-for="categoria in categorias" :key="categoria.id">
-                        <td><Link :href="route('subcategory.index', categoria.id)">{{ categoria.name }}</Link></td>
+                        <td><Link :href="route('subcategory.index', categoria.id)">
+                            <strong>{{ categoria.name }}</strong>
+                            <small>
+                                <em>
+                                    <span v-if="categoria.subcategories?.length > 1">&nbsp;&nbsp;{{ `[${categoria.subcategories?.length} subcategorías]` }}</span>
+                                    <span v-else-if="categoria.subcategories?.length == 1">&nbsp;&nbsp;[1 subcategoría]</span>
+                                </em>
+                            </small>
+                        </Link></td>
                         <td><span class="fs-3" v-html="categoria.icon"></span></td>
                         <td>
                             <Link class="btn btn-primary btn-sm" title="Editar" :href="route('category.edit', categoria.id)">Editar</Link>

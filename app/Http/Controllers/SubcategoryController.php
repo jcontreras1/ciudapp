@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Subcategory\StoreSubcategoryRequest;
 use App\Models\Category;
+use App\Models\Subcategory;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -22,33 +24,29 @@ class SubcategoryController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Category $category)
     {
-        //
+        return Inertia::render('Subcategory/Create', ['categoria' => $category]);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Category $category, StoreSubcategoryRequest $request)
     {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
+        Subcategory::create(array_merge($request->validated(), ['category_id' => $category->id]));
+        return redirect()->route('subcategory.index', $category->id)->with('message', 'Subcategoría creada correctamente');
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Category $category, Subcategory $subcategory)
     {
-        //
+        return Inertia::render('Subcategory/Edit', [
+            'category' => $category,
+            'subcategory' => $subcategory
+        ]);
     }
 
     /**

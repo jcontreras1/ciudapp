@@ -5,6 +5,12 @@ import SuccesAutocloseAlert from '@/Components/SuccessAutocloseAlert.vue';
 const back = () => {
     window.history.back()
 }
+
+defineProps({
+    errors: {
+        type: Object,
+    },
+});
 </script>
 <template>
     <div class="md:col-span-1 flex justify-between">
@@ -27,6 +33,15 @@ const back = () => {
     <div v-if="$page.props.flash.message" class="alert alert-success alert-dismissible fade show mt-3 mb-3" role="alert">
         <i class="fas fa-check-circle"></i>
         {{ $page.props.flash.message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+     
+    <div v-if="errors?.length" class="alert alert-danger alert-dismissible fade show mt-3 mb-3" role="alert">
+        <i class="fas fa-times-circle"></i>
+        No se pudo guardar la información. Por favor, corrige los siguientes errores:
+        <ul>
+            <li v-for="error in errors" :key="error">{{ error }}</li>
+        </ul>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     
