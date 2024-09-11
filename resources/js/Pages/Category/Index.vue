@@ -54,7 +54,7 @@ const selectedCategory = ref(null);
                 </thead>
                 <tbody>
                     <tr v-for="categoria in categorias" :key="categoria.id">
-                        <td>{{ categoria.name }}</td>
+                        <td><Link :href="route('subcategory.index', categoria.id)">{{ categoria.name }}</Link></td>
                         <td><span class="fs-3" v-html="categoria.icon"></span></td>
                         <td>
                             <Link class="btn btn-primary btn-sm" title="Editar" :href="route('category.edit', categoria.id)">Editar</Link>
