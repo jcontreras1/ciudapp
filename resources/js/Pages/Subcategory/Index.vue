@@ -5,7 +5,7 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 import SectionTitle from '@/Components/SectionTitle.vue';
 import DialogModal from '@/Components/DialogModal.vue';
 
-defineProps({
+const props = defineProps({
     
     subcategorias:{
         type: Array,
@@ -22,7 +22,7 @@ const destroy = (subcategoria) => {
     selectedSubcategory.value = subcategoria;
 }
 const deleteSubcategory = () => {
-    router.delete(route('subcategory.destroy', {'category' : category, 'subcategory' : selectedSubcategory.value.id}), {preserveScroll: true});
+    router.delete(route('subcategory.destroy', {'category' : props.categoria.id, 'subcategory' : selectedSubcategory.value.id}), {preserveScroll: true});
     ocultarModal();
 }
 

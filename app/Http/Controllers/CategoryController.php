@@ -20,7 +20,13 @@ class CategoryController extends Controller
     }
     
     public function store(StoreCategoryRequest $request){
-        Category::create($request->validated());
+        Category::withTrashed()->updateOrCreate([
+            'name' => $request->name
+        ],[
+            'icon' => $request->icon,
+            'deleted_at' => null
+            ]
+        );
         $categories = Category::with('subcategories')->get();
         return redirect()->route('category.index')->with('message', 'Categoria creada correctamente');
     }
@@ -33,7 +39,7 @@ class CategoryController extends Controller
         $category->update($request->validated());
         return redirect()->route('category.index')->with('message', 'Categoria actualizada correctamente');
     }
-
+    
     public function destroy(Category $category){
         $category->delete();
         return redirect()->route('category.index')->with('message', 'Categoria eliminada correctamente');

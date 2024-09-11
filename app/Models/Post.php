@@ -4,11 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Post extends Model
 {
-    use HasFactory;
-    protected $fillable = ['user_id', 'lat', 'lng', 'comment', 'private'];
+    use HasFactory, SoftDeletes;
+
+    protected $fillable = ['user_id', 'lat', 'lng', 'comment', 'private', 'deleted_at'];
     protected $table = "post";
 
     public function user()

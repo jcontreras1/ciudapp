@@ -33,7 +33,10 @@ class StoreSubcategoryRequest extends FormRequest
                 'string',
                 'min:3',
                 'max:190',
-                Rule::unique('subcategory', 'name')->where(fn(Builder $query) => $query->where('category_id', $categoria))->ignore($subcategoria),
+                Rule::unique('subcategory', 'name')
+                ->where(fn(Builder $query) => $query->where('category_id', $categoria))
+                ->whereNull('deleted_at')
+                ->ignore($subcategoria),
             ],
             'icon' => 'required|string|min:3|max:190',
         ];
