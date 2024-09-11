@@ -38,7 +38,7 @@ const selectedSubcategory = ref(null);
 
         <SectionTitle>
                 <template #title>
-                    Crear subcategoría en <strong>{{ categoria.name }}</strong>
+                    Subcategorías de <strong>{{ categoria.name }}</strong>
                 </template>
                 <template #aside>
                     <Link :href="route('subcategory.create', categoria)" class="btn btn-primary">Crear subcategoría</Link>

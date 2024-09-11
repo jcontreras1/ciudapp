@@ -8,8 +8,8 @@ use Inertia\Inertia;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::resource('posts', App\Http\Controllers\PostController::class);
-Route::resource('category', App\Http\Controllers\CategoryController::class);
-Route::resource('category/{category}/subcategory', App\Http\Controllers\SubcategoryController::class);
+Route::resource('category', App\Http\Controllers\CategoryController::class)->except('show');
+Route::resource('category/{category}/subcategory', App\Http\Controllers\SubcategoryController::class)->except('show');
 
 Route::middleware([
     'auth:sanctum',

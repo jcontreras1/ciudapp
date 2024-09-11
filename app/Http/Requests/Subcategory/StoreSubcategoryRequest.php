@@ -31,9 +31,11 @@ class StoreSubcategoryRequest extends FormRequest
             'name' => [
                 'required',
                 'string',
+                'min:3',
+                'max:190',
                 Rule::unique('subcategory', 'name')->where(fn(Builder $query) => $query->where('category_id', $categoria))->ignore($subcategoria),
             ],
-            'icon' => 'required|string',
+            'icon' => 'required|string|min:3|max:190',
         ];
     }
 }

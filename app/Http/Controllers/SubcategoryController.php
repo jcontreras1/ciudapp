@@ -52,9 +52,10 @@ class SubcategoryController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(StoreSubcategoryRequest $request, Category $category, Subcategory $subcategory)
     {
-        //
+        $subcategory->update($request->validated());
+        return redirect()->route('subcategory.index', $category->id)->with('message', 'Subcategoría actualizada correctamente');
     }
 
     /**

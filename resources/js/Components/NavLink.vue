@@ -19,8 +19,8 @@ const classes = computed(() => {
 <template>
     <li class="nav-item">
             <a class="nav-link d-block" :href="href">
-                <i class="mx-2" v-html="icon"></i> 
-                <span class="h4 d-none d-sm-inline"> {{title}} </span>
+                <i class="mx-3 fs-5" v-html="icon"></i> 
+                <span class="fs-5 fw-lighter d-none d-sm-inline"> {{title}} </span>
             </a>
         </li>
 </template>

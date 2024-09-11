@@ -27,9 +27,11 @@ class StoreCategoryRequest extends FormRequest
             'name' => [
                 'required',
                 'string',
+                'min:3',
+                'max:190',
                 Rule::unique('category', 'name')->ignore($id),
             ],
-            'icon' => 'required|string',
+            'icon' => 'required|string|min:3|max:190',
         ];
     }
 }
