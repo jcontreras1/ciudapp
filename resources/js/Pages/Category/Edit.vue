@@ -32,7 +32,6 @@ const form = useForm({
                 </template>
             </SectionTitle>
             <hr class="mb-3">
-            {{ props }}
             <form @submit.prevent="form.put(route('category.update', form.id))">
                 <div class="mb-3">
                     <label for="name" class="form-label">Nombre</label>
