@@ -8,7 +8,8 @@ import 'bootstrap';
 
 import axios from 'axios';
 window.axios = axios;
-
+import mapboxgl from 'mapbox-gl';
+window.mapboxgl = mapboxgl;
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
 /**

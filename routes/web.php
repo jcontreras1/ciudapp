@@ -10,6 +10,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::resource('posts', App\Http\Controllers\PostController::class);
 Route::resource('category', App\Http\Controllers\CategoryController::class)->except('show');
 Route::resource('category/{category}/subcategory', App\Http\Controllers\SubcategoryController::class)->except('show');
+Route::resource('post/{post}/comment', App\Http\Controllers\CommentController::class)->only(['index', 'store', 'update']);
 
 Route::middleware([
     'auth:sanctum',
