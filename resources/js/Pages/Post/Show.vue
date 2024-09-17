@@ -1,7 +1,11 @@
 <script setup>
 import { ref } from 'vue';
-import { Head, Link, router } from '@inertiajs/vue3';
+import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import CardPost from '@/Components/CardPost.vue';
+
+const commentForm = useForm({
+    comment : "",
+});
 
 
 defineProps({
@@ -19,10 +23,23 @@ const logout = () => {
 
 <template>
     <!-- <CardPost :posts="posts" /> -->
-    <div class="card col-12 py-2" v-for="post in posts" :key="post.id">
+    <div v-for="post in posts" :key="post.id">
+        <pre>
+            {{ post.comments }}
+        </pre>
 
+        <form @submit.prevent="commentForm.post(route('comment.store', post), {preserveScroll: true}); commentForm.comment='';">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-comment"></i></span>
+                        <textarea v-model="commentForm.comment" class="form-control" aria-label="With textarea"></textarea>
+                        <button :disabled="commentForm.comment == '' || commentForm.processing" class="btn btn-outline-success" type="submit">{{ commentForm.processing ? 'Guardando...' : 'Guardar' }}</button>
+                    </div>
+                </div>
+            </div>
+        </form>
 
-        {{ post }}<br>
         <div v-for="image in post.images">
             <img :src="image.file" alt="Imagen" class="img-fluid w-50">
         </div>
