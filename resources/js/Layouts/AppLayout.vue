@@ -32,10 +32,10 @@ const logout = () => {
     <div>
         <!-- Sección de titulo -->
         <Head :title="title" />
-        
+
         <!-- Nav de arriba -->
         <nav class="navbar navbar-expand-lg bg-dark border-bottom border-bottom-dark ticky-top bg-body-tertiary mb-4" data-bs-theme="dark">
-            <div class="container">                
+            <div class="container">
                 <a class="navbar-brand fw-light" href="/">
                     <span class="fas fa-brain me-1"></span>
                     Ciudapp
@@ -44,20 +44,18 @@ const logout = () => {
                     <span class="navbar-toggler-icon"></span>
                 </button>
             </div>
-        </nav>  
-        
-        <div class="container">            
-            
+        </nav>
+
+        <div class="container">
+
             <!-- Layout principal 3 columnas izquierda 6 derecha -->
-            
+
             <div class="row">
                 <!-- Menu principal izquierdo -->
                 <div class="col-12 col-md-3">
-                    
-                    
                     <MenuPrincipalLateral />
                 </div>
-                
+
                 <!-- Contenido principal -->
                 <div class="col-12 col-md-9">
                     <!-- Page Content -->
@@ -65,7 +63,7 @@ const logout = () => {
                         <slot />
                     </main>
                 </div>
-                
+
                 <!-- Barra derecha de utilidades -->
                 <!-- <div class="col-12 col-md-3">
                     <h5 class="py-2"><i class="fas fa-search"></i> Buscar</h5>
