@@ -34,7 +34,7 @@ class HomeController extends Controller
             'canLogin' => Route::has('login'),
             'canRegister' => Route::has('register'),
             'laravelVersion' => Application::VERSION,
-            'posts' => Post::with('images')->orderBy('id', 'desc')->get(),
+            'posts' => Post::with('images')->with('comments')->orderBy('id', 'desc')->get(),
         ]);
     }
 }
