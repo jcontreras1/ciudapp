@@ -32,4 +32,7 @@ class Post extends Model
     {
         return $this->hasMany(PostComment::class);
     }
+    public function category(){
+        return $this->hasOneThrough(Category::class, Subcategory::class, 'id', 'id', 'category_id', 'id');
+    }
 }
