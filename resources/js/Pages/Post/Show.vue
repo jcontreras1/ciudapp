@@ -39,6 +39,8 @@ const logout = () => {
                 </div>
             </div>
         </form>
+        <span class="nav-link text-primary">#{{ post.subcategory.name }}</span>
+        <span class="nav-link text-primary">#{{ post.category?.name }}</span>
 
         <div v-for="image in post.images">
             <img :src="image.file" alt="Imagen" class="img-fluid w-50">

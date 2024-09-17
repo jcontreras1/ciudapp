@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('post', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id')->nullable(); // luego se le asigna la relación
-            $table->unsignedBigInteger('category_id')->nullable(); // luego se le asigna la relación
+            $table->unsignedBigInteger('subcategory_id')->nullable(); // luego se le asigna la relación
             $table->double('lat');
             $table->double('lng');
             $table->text('comment')->nullable();

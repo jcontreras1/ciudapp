@@ -10,7 +10,7 @@ class Post extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['user_id', 'lat', 'lng', 'comment', 'private', 'deleted_at'];
+    protected $fillable = ['user_id', 'lat', 'lng', 'comment', 'private', 'deleted_at', 'subcategory_id'];
     protected $table = "post";
 
     public function user()
@@ -32,7 +32,9 @@ class Post extends Model
     {
         return $this->hasMany(PostComment::class);
     }
+
+    
     public function category(){
-        return $this->hasOneThrough(Category::class, Subcategory::class, 'id', 'id', 'category_id', 'id');
+        return $this->hasOneThrough(Category::class, Subcategory::class, 'id', 'id', 'subcategory_id', 'category_id');
     }
 }
