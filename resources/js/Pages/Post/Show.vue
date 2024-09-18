@@ -25,26 +25,24 @@ const logout = () => {
 </script>
 
 <template>
-    <DialogModal :post="selectedPost" :show="showModal" @close="showModal = false">
-    <template #title>
-    <div class="py-3">
-        <div class="float-end"><i role="button" class="fas fa-times fa-2x" @click="showModal = false"></i></div>
-    </div>
-    </template>
-    <template #content>
-        <SinglePost :post="selectedPost"></SinglePost>
-    </template>
-
-    <!-- <template #footer> -->
-        <!-- <button @click="deleteCategory" class="btn btn-danger mx-1">Eliminar</button> -->
-        <!-- <button @click.prevent="ocultarModal" class="btn btn-secondary">Cerrar</button> -->
     
-</DialogModal>
+
+    <div class="modal fade" id="modalShowPost" tabindex="-1" aria-labelledby="modalShowPostLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <SinglePost :post="selectedPost"></SinglePost>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    
     <!-- <CardPost :posts="posts" /> -->
     <div v-for="post in posts" :key="post.id">
-        <pre>
-            {{ post.comments }}
-        </pre>
 
         <form @submit.prevent="commentForm.post(route('comment.store', post), {preserveScroll: true}); commentForm.comment='';">
             <div class="row mb-4">
@@ -59,10 +57,10 @@ const logout = () => {
         </form>
         <span class="nav-link text-primary">#{{ post.subcategory.name }}</span>
         <span class="nav-link text-primary">#{{ post.category?.name }}</span>
-
+        
         <div v-for="image in post.images">
-            <a href="#" @click.prevent="selectedPost = post; showModal = true">
-            <img :src="image.file" alt="Imagen" class="img-fluid w-50">
+            <a href="#" @click.prevent="selectedPost = post;" data-bs-toggle="modal" data-bs-target="#modalShowPost">
+                <img :src="image.file" alt="Imagen" class="img-fluid w-50" />
             </a>
         </div>
         <div class="col-12 col-md-4 d-none d-md-block mb-1">

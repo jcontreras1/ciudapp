@@ -1,30 +1,56 @@
 <script setup>
-import { ref } from 'vue';
 import { Head, Link, router, useForm } from '@inertiajs/vue3';
-import CardPost from '@/Components/CardPost.vue';
-import DialogModal from '@/Components/DialogModal.vue';
-import SinglePost from './SinglePost.vue';
+import mapboxgl from 'mapbox-gl'; 
+import { onMounted, ref, watch } from 'vue';
 
 const commentForm = useForm({
     comment : "",
 });
 
+const apiKey = import.meta.env.VITE_MAPBOX_TOKEN;
+const mapContainer = ref(null);
 
-defineProps({
-    title: String,
+const props = defineProps({
     post: Object,
 });
 
+watch(() => props.post, () => {
+    if (props.post) {
+        const map = new mapboxgl.Map({
+        container: mapContainer.value, // container ID
+        style: 'mapbox://styles/mapbox/streets-v12', // style URL
+        center: [props.post?.lng, props.post?.lat], // starting position [lng, lat]
+        zoom: 9, // starting zoom
+    });
+    }
+});
+
+onMounted (() => {
+    mapboxgl.accessToken = apiKey;
+    
+});
 
 </script>
 
 <template>
-    <!-- <CardPost :posts="posts" /> -->
-   
-        <pre>
-            {{ post.comments }}
-        </pre>
 
+        <span class="nav-link text-primary">#{{ post?.subcategory?.name }}</span>
+        <span class="nav-link text-primary">#{{ post?.category?.name }}</span>
+
+        <div v-for="image in post?.images" class="mb-3">
+            <img :src="image.file" alt="Imagen" class="img-fluid">
+        </div>
+
+        <div class="row">
+            <div class="col-12 mb-1"  style="width: 100%; height: 300px;">
+                <div ref="mapContainer" style="width: 100%; height: 300px;"></div>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+
+        <pre>
+            {{ post?.comments }}
+        </pre>
         <form @submit.prevent="commentForm.post(route('comment.store', post), {preserveScroll: true}); commentForm.comment='';">
             <div class="row mb-4">
                 <div class="col-12">
@@ -36,21 +62,6 @@ defineProps({
                 </div>
             </div>
         </form>
-        <span class="nav-link text-primary">#{{ post.subcategory.name }}</span>
-        <span class="nav-link text-primary">#{{ post.category?.name }}</span>
-
-        <div v-for="image in post.images">
-            <a href="#" @click.prevent="selectedPost = post; showModal = true">
-            <img :src="image.file" alt="Imagen" class="img-fluid w-50">
-            </a>
-        </div>
-        <div class="col-12 col-md-4 d-none d-md-block mb-1">
-            LATITUD: <p>{{post.lat }}</p>
-        </div>
-        <div class="col-12 col-md-4 d-none d-md-block mb-1">
-            <input type="text" readonly id="longitud" name="longitud"
-            class="form-control form-control-lg">
-        </div>
-        <!-- <img :src="post.image" alt="Imagen" class="img-fluid"> -->
+ 
 
 </template>
