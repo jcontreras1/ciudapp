@@ -32,7 +32,7 @@ class HomeController extends Controller
      */
     public function index(Request $request)
     {
-        $posts = Post::with('category', 'subcategory', 'images', 'comments')->cursorPaginate(10);
+        $posts = Post::with('category', 'subcategory', 'images', 'comments')->orderBy('id', 'desc')->cursorPaginate(10);
 
         //Esto es solo api
         if($request->wantsJson()){
