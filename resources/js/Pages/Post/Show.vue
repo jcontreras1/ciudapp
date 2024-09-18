@@ -1,13 +1,14 @@
 <script setup>
 import { ref } from 'vue';
-import { Head, Link, router, useForm } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import CardPost from '@/Components/CardPost.vue';
 import DialogModal from '@/Components/DialogModal.vue';
 import SinglePost from './SinglePost.vue';
+import Create from '@/Pages/Comment/Create.vue';
 
-const commentForm = useForm({
-    comment : "",
-});
+// const commentForm = useForm({
+//     comment : "",
+// });
 
 
 defineProps({
@@ -25,7 +26,8 @@ const logout = () => {
 </script>
 
 <template>
-    
+
+    <!-- Abre el modal al presionar un post -->
     <div class="modal fade" id="modalShowPost" tabindex="-1" aria-labelledby="modalShowPostLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -38,6 +40,7 @@ const logout = () => {
             </div>
         </div>
     </div>
+
     <!-- <CardPost :posts="posts" /> -->
         <span class="fs-1">{{ post.id }}</span>
         <span class="nav-link text-primary">#{{ post.subcategory.name }}</span>
@@ -48,7 +51,9 @@ const logout = () => {
                 <img :src="image.file" alt="Imagen" class="img-fluid w-50" />
             </a>
         </div>
-        <form @submit.prevent="commentForm.post(route('comment.store', post), {preserveScroll: true}); commentForm.comment='';">
+
+        <!--Crear Comentario -->
+        <!-- <form @submit.prevent="commentForm.post(route('comment.store', post), {preserveScroll: true}); commentForm.comment='';">
             <div class="row mb-4">
                 <div class="col-12">
                     <div class="input-group">
@@ -58,8 +63,8 @@ const logout = () => {
                     </div>
                 </div>
             </div>
-        </form>
-
+        </form> -->
+        <Create :post="post" />
         <hr>
         <!-- <img :src="post.image" alt="Imagen" class="img-fluid"> -->
 </template>

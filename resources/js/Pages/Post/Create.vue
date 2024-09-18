@@ -90,11 +90,6 @@ function handleImageError() {
 
 </script>
 
-
-
-
-
-
 <template>
     <!-- Crear un Post -->
     <div class=" card w-100">

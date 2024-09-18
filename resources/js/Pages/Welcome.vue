@@ -44,7 +44,7 @@ const { stop } = useIntersectionObserver(veryBottomTarget, ([{ isIntersecting }]
         .catch(error => {
             console.log(error);
         });
-    
+
 });
 
 
@@ -52,7 +52,7 @@ const { stop } = useIntersectionObserver(veryBottomTarget, ([{ isIntersecting }]
 </script>
 
 <template>
-    <AppLayout>
+    <AppLayout >
         <Head title="Inicio"></Head>
         <!--LATERAL IZQUIERDO - Barra de navegación -->
         <ul class="nav nav-tabs">
@@ -77,7 +77,7 @@ const { stop } = useIntersectionObserver(veryBottomTarget, ([{ isIntersecting }]
         <PostShow :post="post"></PostShow>
     </div>
     <div ref="veryBottomTarget" class="-translate-y-72 bg-black"></div>
-    
-    
+
+
 </AppLayout>
 </template>
