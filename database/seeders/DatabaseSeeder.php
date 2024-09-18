@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\Category;
+use App\Models\Post;
+use App\Models\PostImage;
 use App\Models\Subcategory;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -17,10 +19,10 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        // User::factory()->create([
+        //     'name' => 'Test User',
+        //     'email' => 'test@example.com',
+        // ]);
 
         Category::firstOrCreate([
             'name' => 'Municipio',
@@ -83,6 +85,11 @@ class DatabaseSeeder extends Seeder
             'category_id' => 3,
             'icon' => '<i class="fas fa-exclamation-triangle"></i>',
         ]);
+
+
+        Post::factory(100)
+        ->has(PostImage::factory()->count(1), 'images')
+        ->create();
 
 
     }
