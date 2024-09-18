@@ -25,6 +25,7 @@ const close = () => {
 
 <template>
     <Modal
+        @keyup.esc="close"
         :show="show"
         :max-width="maxWidth"
         :closeable="closeable"

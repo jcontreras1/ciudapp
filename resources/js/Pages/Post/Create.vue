@@ -107,7 +107,7 @@ function handleImageError() {
                         <div v-for="category in categorias" :key="category.id" class="col-12 col-md-4 mb-3">
                             <div class="mb-2">
                                 <!-- Boton para elegir las categorias -->
-                                <button class="btn shadow border-2 rounded-1 w-100" @click="toggleCategory(category.id)">
+                                <button type="button" class="btn shadow border-2 rounded-4 w-100" @click="toggleCategory(category.id)">
                                     <!-- Category icon and name -->
                                     <span v-html="category.icon" class="fs-1"></span>
                                     <p class="fs-3">{{ category.name }}</p>

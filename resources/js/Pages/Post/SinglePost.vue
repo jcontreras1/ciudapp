@@ -1,68 +1,56 @@
-<template>
-                <div class="mt-3">
-                    <div class="card">
-                        <div class="px-3 pt-4 pb-2">
-                            <div class="d-flex align-items-center justify-content-between">
-                                <div class="d-flex align-items-center">
-                                    <img style="width:50px" class="me-2 avatar-sm rounded-circle"
-                                        src="https://api.dicebear.com/6.x/fun-emoji/svg?seed=Mario" alt="Mario Avatar">
-                                    <div>
-                                        <h5 class="card-title mb-0"><a href="#"> Mario
-                                            </a></h5>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <p class="fs-6 fw-light text-muted">
-                                {{ post.comment }}
-                            </p>
-                            <div class="d-flex justify-content-between">
-                                <div>
-                                    <a href="#" class="fw-light nav-link fs-6"> <span class="fas fa-heart me-1">
-                                        </span> 100 </a>
-                                </div>
-                                <div>
-                                    <span class="fs-6 fw-light text-muted"> <span class="fas fa-clock"> </span>
-                                        3-5-2023 </span>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="mb-3">
-                                    <textarea class="fs-6 form-control" rows="1"></textarea>
-                                </div>
-                                <div>
-                                    <button class="btn btn-primary btn-sm"> Post Comment </button>
-                                </div>
-
-                                <hr>
-                                <div class="d-flex align-items-start">
-                                    <img style="width:35px" class="me-2 avatar-sm rounded-circle"
-                                        src="https://api.dicebear.com/6.x/fun-emoji/svg?seed=Luigi"
-                                        alt="Luigi Avatar">
-                                    <div class="w-100">
-                                        <div class="d-flex justify-content-between">
-                                            <h6 class="">Luigi
-                                            </h6>
-                                            <small class="fs-6 fw-light text-muted"> 3 hour
-                                                ago</small>
-                                        </div>
-                                        <p class="fs-6 mt-3 fw-light">
-                                            and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and
-                                            Evil)
-                                            by
-                                            Cicero, written in 45 BC. This book is a treatise on the theory of ethics,
-                                            very
-                                            popular during the Renaissan
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-</template>
 <script setup>
-    const props = defineProps(['post'])
+import { ref } from 'vue';
+import { Head, Link, router, useForm } from '@inertiajs/vue3';
+import CardPost from '@/Components/CardPost.vue';
+import DialogModal from '@/Components/DialogModal.vue';
+import SinglePost from './SinglePost.vue';
+
+const commentForm = useForm({
+    comment : "",
+});
+
+
+defineProps({
+    title: String,
+    post: Object,
+});
+
 
 </script>
+
+<template>
+    <!-- <CardPost :posts="posts" /> -->
+   
+        <pre>
+            {{ post.comments }}
+        </pre>
+
+        <form @submit.prevent="commentForm.post(route('comment.store', post), {preserveScroll: true}); commentForm.comment='';">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-comment"></i></span>
+                        <textarea v-model="commentForm.comment" class="form-control" aria-label="With textarea"></textarea>
+                        <button :disabled="commentForm.comment == '' || commentForm.processing" class="btn btn-outline-success" type="submit">{{ commentForm.processing ? 'Guardando...' : 'Guardar' }}</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <span class="nav-link text-primary">#{{ post.subcategory.name }}</span>
+        <span class="nav-link text-primary">#{{ post.category?.name }}</span>
+
+        <div v-for="image in post.images">
+            <a href="#" @click.prevent="selectedPost = post; showModal = true">
+            <img :src="image.file" alt="Imagen" class="img-fluid w-50">
+            </a>
+        </div>
+        <div class="col-12 col-md-4 d-none d-md-block mb-1">
+            LATITUD: <p>{{post.lat }}</p>
+        </div>
+        <div class="col-12 col-md-4 d-none d-md-block mb-1">
+            <input type="text" readonly id="longitud" name="longitud"
+            class="form-control form-control-lg">
+        </div>
+        <!-- <img :src="post.image" alt="Imagen" class="img-fluid"> -->
+
+</template>
