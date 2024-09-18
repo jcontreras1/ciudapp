@@ -1,12 +1,15 @@
 <script setup>
-import { reactive, ref } from 'vue'
-import { Head, Link, router } from '@inertiajs/vue3';
+import { Head, router } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import SinglePost from '@/Pages/Post/SinglePost.vue';
 import PostShow from '@/Pages/Post/Show.vue';
 import CreatePost from '@/Pages/Post/Create.vue';
+import { ref } from 'vue';
+import axios from 'axios';
+import { useIntersectionObserver } from '@vueuse/core'
 
-defineProps({
+
+
+const props = defineProps({
     canLogin: {
         type: Boolean,
     },
@@ -14,7 +17,7 @@ defineProps({
         type: Boolean,
     },
     posts:{
-        type: Array,
+        type: Object,
         // required: true,
     },
     categorias:{
@@ -23,12 +26,34 @@ defineProps({
     },
 });
 
+const veryBottomTarget = ref(null) // Elemento para detectar el final de la página
+
+
+const { stop } = useIntersectionObserver(veryBottomTarget, ([{ isIntersecting }]) => {
+    if (!isIntersecting) {
+        return;
+    }
+    axios.get(`${props.posts.meta.path}?cursor=${props.posts.meta.next_cursor}`)
+        .then((response) => {
+            props.posts.data = [...props.posts.data, ...response.data.data];
+            props.posts.meta = response.data.meta;
+            if(!response.data.meta.next_cursor){
+                stop();
+            }
+        })
+        .catch(error => {
+            console.log(error);
+        });
+    
+});
+
+
+
 </script>
 
 <template>
     <AppLayout>
         <Head title="Inicio"></Head>
-
         <!--LATERAL IZQUIERDO - Barra de navegación -->
         <ul class="nav nav-tabs">
             <li class="nav-item">
@@ -38,7 +63,6 @@ defineProps({
                 <a class="nav-link" href="#">Reportes</a>
             </li>
         </ul>
-
         <!-- CENTRO -Cuadro para crear un post -->
         <div class="mt-3">
             <div class="d-flex align-items-start">
@@ -46,12 +70,14 @@ defineProps({
                 <CreatePost :categorias="categorias" />
             </div>
         </div>
-        <div class="mt-3">
-            <a href="#">Mostrar {{posts.length}} posts</a>
-        </div>
     <!-- </div> -->
     <hr>
-    <PostShow :posts="posts"></PostShow>
-
+    <!-- Post -->
+    <div v-for="post in props.posts.data" :key="post.id">
+        <PostShow :post="post"></PostShow>
+    </div>
+    <div ref="veryBottomTarget" class="-translate-y-72 bg-black"></div>
+    
+    
 </AppLayout>
 </template>

@@ -17,12 +17,11 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
 
-        // User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+        User::factory()->create([
+            'name' => 'Test User',
+            'email' => 'test@example.com',
+        ]);
 
         Category::firstOrCreate([
             'name' => 'Municipio',
@@ -87,7 +86,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
 
-        Post::factory(100)
+        Post::factory(1000)
         ->has(PostImage::factory()->count(1), 'images')
         ->create();
 

@@ -12,7 +12,7 @@ const commentForm = useForm({
 
 defineProps({
     title: String,
-    posts: Array,
+    post: Object,
 });
 
 // const showingNavigationDropdown = ref(false);
@@ -26,7 +26,6 @@ const logout = () => {
 
 <template>
     
-
     <div class="modal fade" id="modalShowPost" tabindex="-1" aria-labelledby="modalShowPostLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -39,37 +38,28 @@ const logout = () => {
             </div>
         </div>
     </div>
-    
-    
     <!-- <CardPost :posts="posts" /> -->
-    <div v-for="post in posts" :key="post.id">
-
+        <span class="fs-1">{{ post.id }}</span>
+        <span class="nav-link text-primary">#{{ post.subcategory.name }}</span>
+        <span class="nav-link text-primary">#{{ post.category?.name }}</span>
+        {{ post.comment }}
+        <div v-for="image in post.images" class="mb-2">
+            <a href="#" @click.prevent="selectedPost = post;" data-bs-toggle="modal" data-bs-target="#modalShowPost">
+                <img :src="image.file" alt="Imagen" class="img-fluid w-50" />
+            </a>
+        </div>
         <form @submit.prevent="commentForm.post(route('comment.store', post), {preserveScroll: true}); commentForm.comment='';">
             <div class="row mb-4">
                 <div class="col-12">
                     <div class="input-group">
                         <span class="input-group-text"><i class="fas fa-comment"></i></span>
-                        <textarea v-model="commentForm.comment" class="form-control" aria-label="With textarea"></textarea>
+                        <input v-model="commentForm.comment" class="form-control" aria-label="With textarea">
                         <button :disabled="commentForm.comment == '' || commentForm.processing" class="btn btn-outline-success" type="submit">{{ commentForm.processing ? 'Guardando...' : 'Guardar' }}</button>
                     </div>
                 </div>
             </div>
         </form>
-        <span class="nav-link text-primary">#{{ post.subcategory.name }}</span>
-        <span class="nav-link text-primary">#{{ post.category?.name }}</span>
-        
-        <div v-for="image in post.images">
-            <a href="#" @click.prevent="selectedPost = post;" data-bs-toggle="modal" data-bs-target="#modalShowPost">
-                <img :src="image.file" alt="Imagen" class="img-fluid w-50" />
-            </a>
-        </div>
-        <div class="col-12 col-md-4 d-none d-md-block mb-1">
-            LATITUD: <p>{{post.lat }}</p>
-        </div>
-        <div class="col-12 col-md-4 d-none d-md-block mb-1">
-            <input type="text" readonly id="longitud" name="longitud"
-            class="form-control form-control-lg">
-        </div>
+
+        <hr>
         <!-- <img :src="post.image" alt="Imagen" class="img-fluid"> -->
-    </div>
 </template>

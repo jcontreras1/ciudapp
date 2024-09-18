@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\PostResource;
 use App\Models\Category;
 use App\Models\Post;
 use Illuminate\Http\Request;
@@ -29,13 +30,21 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function index()
+    public function index(Request $request)
     {
+        $posts = Post::with('category', 'subcategory', 'images', 'comments')->cursorPaginate(10);
+
+        //Esto es solo api
+        if($request->wantsJson()){
+            return PostResource::collection($posts);
+        }
+
+        //esto es inertia
         return Inertia::render('Welcome', [
             'canLogin' => Route::has('login'),
             'canRegister' => Route::has('register'),
             'laravelVersion' => Application::VERSION,
-            'posts' => Post::with('images')->with('comments')->with('category')->with('subcategory')->orderBy('id', 'desc')->get(),
+            'posts' => PostResource::collection($posts),
             'categorias' => Category::with('subcategories')->get(),
         ]);
     }
