@@ -29,8 +29,8 @@ class StoreCategoryRequest extends FormRequest
                 'string',
                 'min:3',
                 'max:190',
-                'unique:category,name,NULL,id,deleted_at,NULL',
-                //Rule::unique('category', 'name')->ignore($id),
+                //'unique:category,name,NULL,id,deleted_at,NULL',
+                Rule::unique('category')->ignore($id)->whereNull('deleted_at'),
             ],
             'icon' => 'required|string|min:3|max:190',
         ];
