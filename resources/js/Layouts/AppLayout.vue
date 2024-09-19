@@ -47,17 +47,15 @@ const logout = () => {
         </nav>
 
         <div class="container">
-
             <!-- Layout principal 3 columnas izquierda 6 derecha -->
-
             <div class="row">
                 <!-- Menu principal izquierdo -->
-                <div class="col-12 col-md-3">
+                <div class="col-12 col-md-3 d-none d-sm-block" >
                     <MenuPrincipalLateral />
                 </div>
 
                 <!-- Contenido principal -->
-                <div class="col-12 col-md-9">
+                <div class="col-12 col-md-6">
                     <!-- Page Content -->
                     <main>
                         <slot />
@@ -65,10 +63,10 @@ const logout = () => {
                 </div>
 
                 <!-- Barra derecha de utilidades -->
-                <!-- <div class="col-12 col-md-3">
-                    <h5 class="py-2"><i class="fas fa-search"></i> Buscar</h5>
-                    <input placeholder="Buscar" class="form-control rounded-pill w-100" type="text" id="search">
-                </div> -->
+                <div class="col-12 col-md-3 d-none d-sm-block">
+                    <!-- <h5 class="py-2"><i class="fas fa-search"></i> Buscar</h5>
+                    <input placeholder="Buscar" class="form-control rounded-pill w-100" type="text" id="search"> -->
+                </div>
 
             </div>
         </div>

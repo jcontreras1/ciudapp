@@ -31,6 +31,7 @@ onMounted(() => {
 <style>
     .mapContainer {
         height: 300px;
+        width: 100%;
     }
 </style>
 <template>
