@@ -6,6 +6,7 @@ import CreatePost from '@/Pages/Post/Create.vue';
 import { ref } from 'vue';
 import axios from 'axios';
 import { useIntersectionObserver } from '@vueuse/core'
+import BootstrapModal from '@/Components/BootstrapModal.vue';
 
 
 
@@ -27,32 +28,30 @@ const props = defineProps({
 });
 
 const veryBottomTarget = ref(null) // Elemento para detectar el final de la página
-
+const selectedPostToModal = ref(null) // Elemento para detectar el final de la página
 
 const { stop } = useIntersectionObserver(veryBottomTarget, ([{ isIntersecting }]) => {
     if (!isIntersecting) {
         return;
     }
     axios.get(`${props.posts.meta.path}?cursor=${props.posts.meta.next_cursor}`)
-        .then((response) => {
-            props.posts.data = [...props.posts.data, ...response.data.data];
-            props.posts.meta = response.data.meta;
-            if(!response.data.meta.next_cursor){
-                stop();
-            }
-        })
-        .catch(error => {
-            console.log(error);
-        });
+    .then((response) => {
+        props.posts.data = [...props.posts.data, ...response.data.data];
+        props.posts.meta = response.data.meta;
+        if(!response.data.meta.next_cursor){
+            stop();
+        }
+    })
+    .catch(error => {
+        console.log(error);
+    });
 
 });
-
-
-
 </script>
 
 <template>
     <AppLayout >
+        <BootstrapModal :post="selectedPostToModal"></BootstrapModal>
         <Head title="Inicio"></Head>
         <!--LATERAL IZQUIERDO - Barra de navegación -->
         <ul class="nav nav-tabs">
@@ -70,14 +69,11 @@ const { stop } = useIntersectionObserver(veryBottomTarget, ([{ isIntersecting }]
                 <CreatePost :categorias="categorias" />
             </div>
         </div>
-    <!-- </div> -->
-    <hr>
-    <!-- Post -->
-    <div v-for="post in props.posts.data" :key="post.id">
-        <PostShow :post="post"></PostShow>
-    </div>
-    <div ref="veryBottomTarget" class="-translate-y-72 bg-black"></div>
-
-
-</AppLayout>
+        <hr>
+        <!-- Post -->
+        <div class="mb-2" v-for="post in props.posts.data" :key="post.id">
+            <PostShow :post="post" v-on:showPostOnModal="selectedPostToModal = post"></PostShow>
+        </div>
+        <!-- <div ref="veryBottomTarget" class="-translate-y-72 bg-black"></div> -->
+    </AppLayout>
 </template>
