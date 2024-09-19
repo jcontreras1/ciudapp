@@ -14,23 +14,20 @@ const commentForm = useForm({
 
 </script>
 <template>
-
-    <!-- Diseño para mostrar comentarios -->
-    <div>
-        <u><i class="fas fa-comments"> Comentarios</i></u>
-        <div v-for="comentario in post.comments">
-            <div class="d-flex justify-content-between">
-                <h4>Karen</h4>
-                <h4>- {{ comentario.comment }}</h4>
-
-            </div>
-        </div>
-
+    <!-- Muestra los comentarios -->
+    <div class="fs-5 mb-1 ">
+        <i class="fas fa-comments"></i> Comentarios
+        <span class="badge rounded-pill text-bg-primary">{{post.comments.length}}</span>
     </div>
-
-    {{post.comments}}
+    <!-- <p v-if="post.comments.length == 0">Sin comentarios</p> -->
+    <div class="mb-2" v-for="comentario in post.comments">
+       <i class="fas fa-user"></i> - <b>{{ new Date(comentario.created_at).toLocaleDateString() }}</b>
+        <h5 class="card-text">{{comentario.comment}}</h5>
+    </div>
+    <div class="py-1"></div>
+    <!-- Crea un comentario -->
     <form @submit.prevent="commentForm.post(route('comment.store', post), {preserveScroll: true}); commentForm.comment='';">
-        <div class="row mb-4">
+        <div class="row ">
             <div class="col-12">
                 <div class="input-group">
                     <span class="input-group-text"><i class="fas fa-comment"></i></span>
@@ -40,5 +37,4 @@ const commentForm = useForm({
             </div>
         </div>
     </form>
-
 </template>
