@@ -9,7 +9,6 @@ import { useIntersectionObserver } from '@vueuse/core'
 import BootstrapModal from '@/Components/BootstrapModal.vue';
 
 
-
 const props = defineProps({
     canLogin: {
         type: Boolean,
@@ -43,7 +42,12 @@ const { stop } = useIntersectionObserver(veryBottomTarget, ([{ isIntersecting }]
         }
     })
     .catch(error => {
-        console.log(error);
+        Swal.fire({
+            title: 'Error!',
+            text: 'Ocurrió un error al cargar más publicaciones:' + error.message,
+            icon: 'error',
+            confirmButtonText: 'Ok'
+        });
     });
 
 });
@@ -74,6 +78,8 @@ const { stop } = useIntersectionObserver(veryBottomTarget, ([{ isIntersecting }]
         <div class="mb-2" v-for="post in props.posts.data" :key="post.id">
             <PostShow :post="post" v-on:showPostOnModal="selectedPostToModal = post"></PostShow>
         </div>
-        <!-- <div ref="veryBottomTarget" class="-translate-y-72 bg-black"></div> -->
+        <div ref="veryBottomTarget" class="-translate-y-72 h-20 text-center">
+            <i class="fas fa-spinner fa-spin fa-2x"></i>&nbsp;Cargando más publicaciones...
+        </div>
     </AppLayout>
 </template>
