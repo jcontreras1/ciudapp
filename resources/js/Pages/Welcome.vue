@@ -59,7 +59,7 @@ const { stop } = useIntersectionObserver(veryBottomTarget, ([{ isIntersecting }]
                 <a class="nav-link active" href="#">Para ti</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#">Reportes</a>
+                <del><a class="nav-link" href="#">Reportes</a></del>
             </li>
         </ul>
         <!-- CENTRO -Cuadro para crear un post -->

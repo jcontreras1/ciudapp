@@ -20,16 +20,20 @@ const logout = () => {
         
         <NavLink :href="route('home')" icon='<i class="fas fa-bars"></i>' title="Inicio" ></NavLink>
         
-        <NavLink :href="'#'" icon='<i class="far fa-plus-square"></i>' title="Nuevo Post" ></NavLink>
-
-        <NavLink :href="'#'" icon='<i class="fas fa-map"></i>' title="Mapa" ></NavLink>
-
-        <NavLink :href="'#'" icon='<i class="fas fa-compass"></i>' title="Explorar" ></NavLink>
+        <del><NavLink :href="'#'" icon='<i class="far fa-plus-square"></i>' title="Nuevo Post" ></NavLink></del>
         
-        <NavLink :href="'#'" icon='<i class="fas fa-user"></i>' title="Perfil" ></NavLink>
-
-        <NavLink :href="'#'" icon='<i class="fas fa-wrench"></i>' title="Configuración" ></NavLink>
-
+        <del><NavLink :href="'#'" icon='<i class="fas fa-map"></i>' title="Mapa" ></NavLink></del>
+        
+        
+        <del><NavLink :href="'#'" icon='<i class="fas fa-compass"></i>' title="Explorar" ></NavLink></del>
+        
+        
+        <del> <NavLink :href="'#'" icon='<i class="fas fa-user"></i>' title="Perfil" ></NavLink></del>
+        
+        
+        <del> <NavLink :href="'#'" icon='<i class="fas fa-wrench"></i>' title="Configuración" ></NavLink></del>
+        
+        
         <NavLink :href="route('category.index')" icon='<i class="fas fa-th-large"></i>' title="Categorías" ></NavLink>
         
     </ul>
