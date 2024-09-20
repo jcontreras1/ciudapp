@@ -1,15 +1,12 @@
 <script setup>
 import { reactive, ref } from 'vue'
-import { Head, Link, router } from '@inertiajs/vue3';
-import AppLayout from '@/Layouts/AppLayout.vue';
-import SinglePost from '@/Pages/Post/SinglePost.vue';
-import PostShow from '@/Pages/Post/Show.vue';
+import { router } from '@inertiajs/vue3';
 
 defineProps({
     categorias:{
         type: Array,
     },
-
+    
 });
 
 // Defino mis variables para usarlas en el componente
@@ -34,51 +31,71 @@ const onFileChange = (event) => {
         };
         reader.readAsDataURL(selectedFile);
         file.value = selectedFile;
+        form.image = file.value;
     }
 };
 
 // Metodo para enviar el formulario
 function funcionDeSubmit() {
-    let ubicacion = null;
-    return new Promise((resolve, reject) => {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function (position) {
-                form.image = file.value;
-                form.latitud = position.coords.latitude;
-                form.longitud = position.coords.longitude;
-                router.post('/posts', form);
-            },
-            (error) => {
-                switch (error.code) {
-                    case error.PERMISSION_DENIED:
-                    this.error = "Permiso denegado";
-                    break;
-                    case error.POSITION_UNAVAILABLE:
-                    this.error = "Posición no disponible";
-                    break;
-                    case error.TIMEOUT:
-                    this.error = "Tiempo de espera agotado";
-                    break;
-                    default:
-                    this.error = "Error desconocido";
-                    break;
-                }
+    if(form.subcategory_id === null){
+        Swal.fire({
+            'icon' : 'error',
+            'title' : 'Debe seleccionar una categoría y una subcategoría',
+            'toast': true,
+            'position': 'top-end',
+            'timer': 2500,
+            'timerProgressBar' : true,
+            'showConfirmButton' : false
+        });
+        return;
+    }
 
-            });
-
-        } else {
-            x.innerHTML = "no es compatible tu navegador";
-            reject('No es compatible');
-        }
-    });
+    if(form.image === null){
+        Swal.fire({
+            'icon' : 'error',
+            'title' : 'Debe seleccionar una imagen',
+            'toast': true,
+            'position': 'top-end',
+            'timer': 2500,
+            'timerProgressBar' : true,
+            'showConfirmButton' : false
+        });
+        return;
+    }
+    if(navigator.geolocation){
+        navigator.geolocation.getCurrentPosition((position) => {
+            form.latitud = position.coords.latitude;
+            form.longitud = position.coords.longitude;
+            router.post('/posts', form);
+        }, (error) => {
+            let mensaje = '';
+            switch (error.code) {
+                case error.PERMISSION_DENIED:
+                mensaje = "No se otorgó permiso para obtener la ubicación";
+                break;
+                case error.POSITION_UNAVAILABLE:
+                mensaje = "Posición no disponible";
+                break;
+                case error.TIMEOUT:
+                mensaje = "Tiempo de espera agotado";
+                break;
+                default:
+                mensaje = "Error desconocido";
+                break;
+            }
+            Swal.fire('Error', mensaje, 'error');
+        },{
+            enableHighAccuracy: true,
+            timeout: 5000,
+            maximumAge: 0
+        });
+    } else {
+        Swal.fire('No se pudo obtener la ubicación. ', 'error');
+    }
 }
 
 function toggleCategory(id){
     this.activeCategory = this.activeCategory === id ? null : id;
-}
-
-function subirImagen(){
-    console.log('Subir imagen');
 }
 
 function handleImageError() {
@@ -107,7 +124,7 @@ function handleImageError() {
                                     <span v-html="category.icon" class="fs-1"></span>
                                     <p class="fs-3">{{ category.name }}</p>
                                 </button>
-
+                                
                                 <!-- Subcategorías -->
                                 <div v-if="activeCategory === category.id " class="mt-2">
                                     <!-- Mensaje si no hay subcategorías -->
@@ -132,13 +149,13 @@ function handleImageError() {
                         </div>
                     </div>
                 </div>
-
+                
                 <input type="file" class="form-control border-2 p-2 rounded-5 mb-4" id="image"
                 name="image" capture="environment" accept="image/png, image/jpeg"
                 @change="onFileChange">
-
+                
                 <!-- Boton para postear -->
-                <button class="btn btn-primary rounded-4">Postear</button>
+                <button class="btn btn-primary rounded-4" :disabled="form.subcategory_id == null && form.image == null">Postear</button>
             </form>
         </div>
     </div>
