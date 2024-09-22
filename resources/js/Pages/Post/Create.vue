@@ -18,9 +18,8 @@ const form = reactive({
     subcategory_id:null,
 });
 
-let imageSrc = ref(null);
-let file = ref(null);
-let activeCategory = ref(null);
+const imageSrc = ref(null);
+const activeCategory = ref(null);
 
 const onFileChange = (event) => {
     const selectedFile = event.target.files[0];
@@ -30,8 +29,7 @@ const onFileChange = (event) => {
             imageSrc.value = e.target.result;
         };
         reader.readAsDataURL(selectedFile);
-        file.value = selectedFile;
-        form.image = file.value;
+        form.image = selectedFile;
     }
 };
 
@@ -95,7 +93,7 @@ function funcionDeSubmit() {
 }
 
 function toggleCategory(id){
-    this.activeCategory = this.activeCategory === id ? null : id;
+    activeCategory.value = activeCategory.value === id ? null : id;
 }
 
 function handleImageError() {
