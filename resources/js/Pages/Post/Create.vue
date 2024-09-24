@@ -1,12 +1,16 @@
 <script setup>
-import { onMounted, reactive, ref } from 'vue'
-import { router, useForm } from '@inertiajs/vue3';
+import { computed, ref } from 'vue'
+import { useForm } from '@inertiajs/vue3';
 
-defineProps({
+const props = defineProps({
     categorias:{
         type: Array,
     },
     
+});
+
+const cantidadSubcategorias = computed(() => {
+    return props.categorias.reduce((acc, category) => acc + category.subcategories.length, 0);
 });
 
 // Defino mis variables para usarlas en el componente
@@ -108,54 +112,61 @@ function toggleCategory(id){
     <!-- Crear un Post -->
     <div class=" card w-100">
         <div class="card-body">
-            <!-- <textarqea class="form-control border-2 p-2 rounded-5" id="contenido" name="contenido" rows="3" placeholder="¿Qué está pasando?"></textarea> -->
-                <form @submit.prevent="funcionDeSubmit" ref="formCreatePost">
-                    <div class="row">
-                        <p>Seleccione la categoria y subcategoria del posteo</p>
-                        <!-- <p for="formFile" class="form-label mr-4">Seleccione la categoria y subcategoria del posteo</p> -->
-                        <div v-for="category in categorias" :key="category.id" class="col-12 col-md-4 mb-3">
-                            <div class="mb-2">
-                                <!-- Boton para elegir las categorias -->
-                                <button type="button" class="btn shadow border-2 rounded-4 w-100" @click="toggleCategory(category.id)">
-                                    <!-- Category icon and name -->
-                                    <span v-html="category.icon" class="fs-1"></span>
-                                    <p class="fs-3">{{ category.name }}</p>
-                                </button>
-                                
-                                <!-- Subcategorías -->
-                                <div v-if="activeCategory === category.id " class="mt-2">
-                                    <!-- Mensaje si no hay subcategorías -->
-                                    <div v-if="category.subcategories.length === 0" class="alert alert-warning">
-                                        <div class="alert-body">
-                                            No tiene subcategorías
-                                        </div>
+            <div v-if="categorias.length === 0 || cantidadSubcategorias === 0">
+                <div class="alert alert-danger">
+                    <div class="alert-body">
+                        <i class="fas fa-exclamation-triangle"></i> No se puede crear un reporte porque no hay categorías, o las categorías no tienen subcategorías.
+                    </div>
+                </div>
+            </div>
+            <form @submit.prevent="funcionDeSubmit" ref="formCreatePost" v-else>
+                <div class="row">
+                    <div class="fs-4">Nuevo reporte</div>
+                    <p>Seleccione la categoria y subcategoria del posteo</p>
+                    <!-- <p for="formFile" class="form-label mr-4">Seleccione la categoria y subcategoria del posteo</p> -->
+                    <div v-for="category in categorias" :key="category.id" class="col-12 col-md-4 mb-3">
+                        <div class="mb-2">
+                            <!-- Boton para elegir las categorias -->
+                            <button type="button" class="btn shadow border-2 rounded-4 w-100" @click="toggleCategory(category.id)">
+                                <!-- Category icon and name -->
+                                <span v-html="category.icon" class="fs-1"></span>
+                                <p class="fs-3">{{ category.name }}</p>
+                            </button>
+                            
+                            <!-- Subcategorías -->
+                            <div v-if="activeCategory === category.id " class="mt-2">
+                                <!-- Mensaje si no hay subcategorías -->
+                                <div v-if="category.subcategories.length === 0" class="alert alert-warning">
+                                    <div class="alert-body">
+                                        No tiene subcategorías
                                     </div>
-                                    <ul class="list-group" v-else>
-                                        <li v-for="subcategory in category.subcategories" :key="subcategory.id"
-                                        class="list-group-item"
-                                        :class="{
-                                            'bg-success' : subcategory.id == form.subcategory_id,
-                                            // 'bg-secondary' : subcategory.id != form.subcategory_id
-                                        }"
-                                        role="button"
-                                        @click="form.subcategory_id = subcategory.id">
-                                        <span  v-html="subcategory.icon"></span> {{ subcategory.name }}
-                                    </li>
-                                </ul>
-                            </div>
+                                </div>
+                                <ul class="list-group" v-else>
+                                    <li v-for="subcategory in category.subcategories" :key="subcategory.id"
+                                    class="list-group-item"
+                                    :class="{
+                                        'bg-success' : subcategory.id == form.subcategory_id,
+                                        // 'bg-secondary' : subcategory.id != form.subcategory_id
+                                    }"
+                                    role="button"
+                                    @click="form.subcategory_id = subcategory.id">
+                                    <span  v-html="subcategory.icon"></span> {{ subcategory.name }}
+                                </li>
+                            </ul>
                         </div>
                     </div>
                 </div>
-                
-                <input type="file" class="form-control border-2 p-2 rounded-5 mb-4" id="image"
-                name="image" capture="environment" accept="image/png, image/jpeg"
-                @change="onFileChange">
-                
-                <!-- Boton para postear -->
-                <button class="btn btn-primary rounded-4" :disabled="(form.subcategory_id == null && form.image == null) || form.processing">
-                    {{ form.processing ? 'Guardando...' : 'Guardar' }}
-                </button>
-            </form>
-        </div>
+            </div>
+            
+            <input type="file" class="form-control border-2 p-2 rounded-5 mb-4" id="image"
+            name="image" capture="environment" accept="image/png, image/jpeg"
+            @change="onFileChange">
+            
+            <!-- Boton para postear -->
+            <button class="btn btn-primary rounded-4" :disabled="(form.subcategory_id == null && form.image == null) || form.processing">
+                {{ form.processing ? 'Guardando...' : 'Guardar' }}
+            </button>
+        </form>
     </div>
+</div>
 </template>
