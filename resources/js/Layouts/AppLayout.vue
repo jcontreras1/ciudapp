@@ -50,7 +50,7 @@ const logout = () => {
             <!-- Layout principal 3 columnas izquierda 6 derecha -->
             <div class="row">
                 <!-- Menu principal izquierdo -->
-                <div class="col-12 col-md-3 d-none d-sm-block" >
+                <div class="col-12 col-md-3" >
                     <MenuPrincipalLateral />
                 </div>
 

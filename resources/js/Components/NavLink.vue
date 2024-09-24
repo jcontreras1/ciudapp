@@ -17,10 +17,12 @@ const classes = computed(() => {
 </script>
 
 <template>
-    <li class="nav-item">
-        <a class="nav-link d-block" :href="href">
-            <i class="mx-3 fs-5" v-html="icon"></i>
-            <span class="fs-5 fw-lighter d-none d-sm-inline"> {{title}} </span>
+    <span class="nav-item">
+        <a class="nav-link d-flex flex-column flex-md-row" :href="href">
+            <!-- Icono siempre visible -->
+            <i class="fs-5" v-html="icon"></i>
+            <!-- Título visible solo en pantallas medianas o más grandes -->
+            <span class="fs-5 fw-lighter d-none d-md-block ms-md-2 mt-1 mt-md-0">{{title}}</span>
         </a>
-    </li>
+    </span>
 </template>
