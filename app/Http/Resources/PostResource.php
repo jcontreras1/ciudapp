@@ -21,12 +21,12 @@ class PostResource extends JsonResource
             'lat' => $this->lat,
             'lng' => $this->lng,
             'category' => [
-                'name' => $this->category->name,
-                'icon' => $this->category->icon,
+                'name' => $this->category ? $this->category->name : null,
+                'icon' => $this->category ? $this->category->name : null,
             ],
             'subcategory' => [
-                'name' => $this->subcategory->name,
-                'icon' => $this->subcategory->icon,
+                'name' => $this->subcategory ? $this->subcategory->name : null,
+                'icon' => $this->subcategory ? $this->subcategory->icon : null,
             ],
             'images' => $this->images,
             'comments' => $this->comments,

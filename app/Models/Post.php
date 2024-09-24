@@ -25,7 +25,7 @@ class Post extends Model
 
     public function subcategory()
     {
-        return $this->belongsTo(Subcategory::class)->withTrashed();
+        return $this->belongsTo(Subcategory::class);
     }
 
     public function comments()
@@ -35,6 +35,6 @@ class Post extends Model
 
     
     public function category(){
-        return $this->hasOneThrough(Category::class, Subcategory::class, 'id', 'id', 'subcategory_id', 'category_id')->withTrashed();
+        return $this->hasOneThrough(Category::class, Subcategory::class, 'id', 'id', 'subcategory_id', 'category_id');
     }
 }

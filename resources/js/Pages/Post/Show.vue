@@ -36,8 +36,8 @@ const logout = () => {
             <i class="fas fa-map-pin"></i> <b>{{ new Date(post.created_at).toLocaleDateString() }} </b>
             <h5>{{ post.comment }}</h5>
             <h5 class="d-flex nav-link">
-                <span><b> #{{ post.subcategory.name }} </b></span>
-                <span><b> #{{ post.category?.name }}</b></span>
+                <span v-if="post.category?.name"><b> #{{ post.category?.name }}</b>&nbsp;</span>
+                <span v-if="post.subcategory?.name"><b> #{{ post.subcategory.name }} </b></span>
             </h5>
             <div v-for="image in post.images" class="mb-2">
                 <a href="#" @click.prevent="$emit('showPostOnModal', post)" data-bs-toggle="modal" data-bs-target="#modalShowPost">

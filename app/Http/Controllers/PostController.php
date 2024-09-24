@@ -27,9 +27,9 @@ class PostController extends Controller
                 'user_id' => auth()->id(),
                 'lat' => $request->latitud,
                 'lng' => $request->longitud,
-                'comment' => "asd",
+                'comment' => "",
                 'private' => false,
-                'subcategory_id' => 1,
+                'subcategory_id' => $request->subcategory_id,
             ]);
 
             if(!$post){

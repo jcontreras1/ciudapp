@@ -24,7 +24,8 @@ watch(() => props.post, (first,) => {
         container: mapContainer.value, // container ID
         style: 'mapbox://styles/mapbox/streets-v11', // Add a style to your map
         center: [props.post.lng, props.post.lat], // Use props for dynamic location
-        zoom: 12  // Adjust zoom level for better visibility
+        zoom: 12,  // Adjust zoom level for better visibility
+        interactive: false
     });
     
     map.once('load', () => {

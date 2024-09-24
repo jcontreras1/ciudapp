@@ -1,6 +1,6 @@
 <script setup>
-import { reactive, ref } from 'vue'
-import { router } from '@inertiajs/vue3';
+import { onMounted, reactive, ref } from 'vue'
+import { router, useForm } from '@inertiajs/vue3';
 
 defineProps({
     categorias:{
@@ -10,13 +10,14 @@ defineProps({
 });
 
 // Defino mis variables para usarlas en el componente
-const form = reactive({
+const form = useForm({
     contenido: null,
     latitud: null,
     longitud: null,
     image: null,
     subcategory_id:null,
 });
+
 
 const imageSrc = ref(null);
 const activeCategory = ref(null);
@@ -47,7 +48,7 @@ function funcionDeSubmit() {
         });
         return;
     }
-
+    
     if(form.image === null){
         Swal.fire({
             'icon' : 'error',
@@ -64,12 +65,17 @@ function funcionDeSubmit() {
         navigator.geolocation.getCurrentPosition((position) => {
             form.latitud = position.coords.latitude;
             form.longitud = position.coords.longitude;
-            router.post('/posts', form);
+            form.post(route('posts.store'));
+            activeCategory.value = null;
+            imageSrc.value = null;
+            form.image = null;
+            form.subcategory_id = null;
+            document.getElementById('image').value = '';
         }, (error) => {
             let mensaje = '';
             switch (error.code) {
                 case error.PERMISSION_DENIED:
-                mensaje = "No se otorgó permiso para obtener la ubicación";
+                mensaje = "Esta aplicación no tiene permisos de geolocalización";
                 break;
                 case error.POSITION_UNAVAILABLE:
                 mensaje = "Posición no disponible";
@@ -96,13 +102,6 @@ function toggleCategory(id){
     activeCategory.value = activeCategory.value === id ? null : id;
 }
 
-function handleImageError() {
-    document.getElementById('screenshot-container')?.classList.add('!hidden');
-    document.getElementById('docs-card')?.classList.add('!row-span-1');
-    document.getElementById('docs-card-content')?.classList.add('!flex-row');
-    document.getElementById('background')?.classList.add('!hidden');
-}
-
 </script>
 
 <template>
@@ -110,7 +109,7 @@ function handleImageError() {
     <div class=" card w-100">
         <div class="card-body">
             <!-- <textarqea class="form-control border-2 p-2 rounded-5" id="contenido" name="contenido" rows="3" placeholder="¿Qué está pasando?"></textarea> -->
-                <form @submit.prevent="funcionDeSubmit">
+                <form @submit.prevent="funcionDeSubmit" ref="formCreatePost">
                     <div class="row">
                         <p>Seleccione la categoria y subcategoria del posteo</p>
                         <!-- <p for="formFile" class="form-label mr-4">Seleccione la categoria y subcategoria del posteo</p> -->
@@ -153,7 +152,9 @@ function handleImageError() {
                 @change="onFileChange">
                 
                 <!-- Boton para postear -->
-                <button class="btn btn-primary rounded-4" :disabled="form.subcategory_id == null && form.image == null">Postear</button>
+                <button class="btn btn-primary rounded-4" :disabled="(form.subcategory_id == null && form.image == null) || form.processing">
+                    {{ form.processing ? 'Guardando...' : 'Guardar' }}
+                </button>
             </form>
         </div>
     </div>
