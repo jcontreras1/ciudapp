@@ -23,3 +23,5 @@ Route::middleware([
 });
 
 //Auth::routes();
+
+include('auth.php');

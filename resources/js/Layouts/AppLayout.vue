@@ -8,9 +8,11 @@ import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import MenuPrincipalLateral from '@/Layouts/MenuPrincipalLateral.vue';
+import AuthenticationCardLogo from '@/Components/AuthenticationCardLogo.vue';
 
 defineProps({
     title: String,
+    canLogout: Boolean,
 });
 
 const showingNavigationDropdown = ref(false);
@@ -37,7 +39,8 @@ const logout = () => {
         <nav class="navbar navbar-expand-lg bg-dark border-bottom border-bottom-dark ticky-top bg-body-tertiary mb-4" data-bs-theme="dark">
             <div class="container">
                 <a class="navbar-brand fw-light" href="/">
-                    <span class="fas fa-brain me-1"></span>
+                    <!-- <span class="fas fa-brain me-1"></span> -->
+                     <AuthenticationCardLogo />
                     Ciudapp
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">

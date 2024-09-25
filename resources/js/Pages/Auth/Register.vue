@@ -6,7 +6,7 @@ import Checkbox from '@/Components/Checkbox.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
+// import input from '@/Components/input.vue';
 
 const form = useForm({
     name: '',
@@ -33,12 +33,12 @@ const submit = () => {
 
         <form @submit.prevent="submit">
             <div>
-                <InputLabel for="name" value="Name" />
-                <TextInput
+                <InputLabel for="name" value="Nombre" />
+                <input
                     id="name"
                     v-model="form.name"
                     type="text"
-                    class="mt-1 block w-full"
+                    class="form-control"
                     required
                     autofocus
                     autocomplete="name"
@@ -48,11 +48,11 @@ const submit = () => {
 
             <div class="mt-4">
                 <InputLabel for="email" value="Email" />
-                <TextInput
+                <input
                     id="email"
                     v-model="form.email"
                     type="email"
-                    class="mt-1 block w-full"
+                    class="form-control"
                     required
                     autocomplete="username"
                 />
@@ -60,12 +60,12 @@ const submit = () => {
             </div>
 
             <div class="mt-4">
-                <InputLabel for="password" value="Password" />
-                <TextInput
+                <InputLabel for="password" value="Clave" />
+                <input
                     id="password"
                     v-model="form.password"
                     type="password"
-                    class="mt-1 block w-full"
+                    class="form-control"
                     required
                     autocomplete="new-password"
                 />
@@ -73,12 +73,12 @@ const submit = () => {
             </div>
 
             <div class="mt-4">
-                <InputLabel for="password_confirmation" value="Confirm Password" />
-                <TextInput
+                <InputLabel for="password_confirmation" value="Confirmar clave" />
+                <input
                     id="password_confirmation"
                     v-model="form.password_confirmation"
                     type="password"
-                    class="mt-1 block w-full"
+                    class="form-control"
                     required
                     autocomplete="new-password"
                 />
@@ -99,12 +99,12 @@ const submit = () => {
             </div>
 
             <div class="flex items-center justify-end mt-4">
-                <Link :href="route('login')" class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
-                    Already registered?
+                <Link :href="route('login')" class="link">
+                    Ya tengo cuenta
                 </Link>
 
-                <PrimaryButton class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    Register
+                <PrimaryButton class="ms-4" :class="{ 'disabled': form.processing }" :disabled="form.processing">
+                    Registrar
                 </PrimaryButton>
             </div>
         </form>

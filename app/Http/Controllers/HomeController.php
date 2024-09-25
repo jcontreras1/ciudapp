@@ -42,6 +42,7 @@ class HomeController extends Controller
         //esto es inertia
         return Inertia::render('Welcome', [
             'canLogin' => Route::has('login'),
+            'canLogout' => Route::has('logout') && auth()->check(),
             'canRegister' => Route::has('register'),
             'laravelVersion' => Application::VERSION,
             'posts' => PostResource::collection($posts),
