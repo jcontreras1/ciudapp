@@ -5,7 +5,6 @@ import CardPost from '@/Components/CardPost.vue';
 import DialogModal from '@/Components/DialogModal.vue';
 import SinglePost from './SinglePost.vue';
 import Create from '@/Pages/Comment/Create.vue';
-import Mapa from '@/Pages/Mapa/index.vue';
 
 // const commentForm = useForm({
 //     comment : "",
@@ -31,7 +30,7 @@ const logout = () => {
 
 <template>
 
-    <Mapa></Mapa>
+    
     <div class="card">
         <div class="card-body">
             <i class="fas fa-map-pin"></i> <b>{{ new Date(post.created_at).toLocaleDateString() }} </b>
