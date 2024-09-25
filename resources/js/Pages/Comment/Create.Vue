@@ -1,7 +1,7 @@
 <script setup>
 import { reactive, ref } from 'vue'
-import { Head, Link, router, useForm  } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
+import { Head, Link, router, useForm  } from '@inertiajs/vue3';
 
 
 defineProps({

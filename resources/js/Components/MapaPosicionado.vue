@@ -9,15 +9,11 @@ const props = defineProps({
 
 onMounted(() => {
     mapboxgl.accessToken = apiKey;
-    
+
 });
 
 
 const mapContainer = ref(null);
-onMounted(() => {
-    
-    mapboxgl.accessToken = apiKey;
-});
 
 watch(() => props.post, (first,) => {
     const map = new mapboxgl.Map({
@@ -27,19 +23,19 @@ watch(() => props.post, (first,) => {
         zoom: 12,  // Adjust zoom level for better visibility
         interactive: false
     });
-    
+
     map.once('load', () => {
         map.resize();
     });
-    
+
     const marker1 = new mapboxgl.Marker()
     .setLngLat([props.post.lng, props.post.lat])
     .addTo(map);
 });
 
 /**
-* 
-* 
+*
+*
 * mapboxgl.accessToken = apiKey;
 const map = new mapboxgl.Map({
 container: mapContainer.value, // container ID
