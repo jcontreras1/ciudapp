@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('address')->nullable();
             $table->unsignedBigInteger('city_id')->nullable();
             $table->foreign('city_id')->references('id')->on('city');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

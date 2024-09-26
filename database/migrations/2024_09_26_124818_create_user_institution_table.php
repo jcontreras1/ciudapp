@@ -17,7 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('institution_id');
             $table->boolean('is_admin')->default(false);
 
-            $table->foreign('user_id')->references('id')->on('user');
+            $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('institution_id')->references('id')->on('institution');
             $table->timestamps();
         });
