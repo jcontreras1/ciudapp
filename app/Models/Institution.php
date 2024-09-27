@@ -26,4 +26,9 @@ class Institution extends Model
     {
         return $this->belongsToMany(User::class)->withPivot('user_institution');
     }
+
+    public function regions()
+    {
+        return $this->hasMany(Region::class);
+    }
 }
