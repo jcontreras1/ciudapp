@@ -25,7 +25,8 @@ Route::middleware([
         
     });
     
-    Route::resource('institution', App\Http\Controllers\InstitutionController::class);
+    Route::resource('institution', App\Http\Controllers\InstitutionController::class)->except('show');
+    Route::resource('institution/{institution}/region', App\Http\Controllers\RegionController::class)->except('show');
 //Auth::routes();
 
 include('auth.php');
