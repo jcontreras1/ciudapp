@@ -28,7 +28,9 @@ const logout = () => {
         <del><NavLink :href="'#'" icon='<i class="fas fa-map"></i>' title="Mapa" ></NavLink></del>
 
 
-        <del><NavLink :href="'#'" icon='<i class="fas fa-user"></i>' title="Perfil" v-if="$page.props.auth.user"></NavLink></del>
+        <!-- <del><NavLink :href="'#'" icon='<i class="fas fa-user"></i>' title="Perfil" v-if="$page.props.auth.user"></NavLink></del> -->
+
+        <NavLink :href="route('institution.index')" icon='<i class="fas fa-landmark"></i>' title="Instituciones" v-if="$page.props.auth.user"></NavLink>
 
         <del><NavLink :href="'#'" icon='<i class="fas fa-wrench"></i>' title="Configuración" v-if="$page.props.auth.user"></NavLink></del>
 
