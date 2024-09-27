@@ -23,6 +23,32 @@ const submit = () => {
 };
 </script>
 
+<style scoped>
+.custom-input {
+    /* Hace que el fondo del input sea transparente */
+    border: none;
+    border-bottom: 1px solid #000; /* Solo el borde inferior */
+    border-radius: 0;
+    box-shadow: none;
+    color: #000; /* Color del texto */
+}
+.custom-input:focus {
+    box-shadow: none;
+    border-bottom-color: #000;
+}
+.custom-input:focus {
+    box-shadow: none;
+    border-bottom-color: #000;
+    /* Cambia el color del texto al enfocar */
+}
+/* Cambia el color del placeholder a blanco */
+.custom-input::placeholder {
+
+    opacity: 1; /* Asegura que el color se vea claramente */
+}
+
+</style>
+
 <template>
     <Head title="Register" />
 
@@ -32,55 +58,64 @@ const submit = () => {
         </template>
 
         <form @submit.prevent="submit">
-            <div>
-                <InputLabel for="name" value="Nombre" />
+            <!-- Nombre -->
+            <div class="mb-3">
+                <label for="name" class="form-label"><i class="fas fa-user"></i></label>
                 <input
-                    id="name"
-                    v-model="form.name"
-                    type="text"
-                    class="form-control"
-                    required
-                    autofocus
-                    autocomplete="name"
+                id="name"
+                v-model="form.name"
+                type="text"
+                class="form-control custom-input"
+                required
+                autofocus
+                placeholder="Nombre"
+                autocomplete="name"
                 />
                 <InputError class="mt-2" :message="form.errors.name" />
             </div>
 
-            <div class="mt-4">
-                <InputLabel for="email" value="Email" />
+            <div class="mb-3">
+                <label for="email" class="form-label"><i class="fas fa-envelope"></i></label>
                 <input
-                    id="email"
-                    v-model="form.email"
-                    type="email"
-                    class="form-control"
-                    required
-                    autocomplete="username"
+                id="email"
+                v-model="form.email"
+                type="email"
+                class="form-control custom-input"
+                required
+                autofocus
+                placeholder="Correo electrónico"
+                autocomplete="username"
                 />
                 <InputError class="mt-2" :message="form.errors.email" />
             </div>
 
-            <div class="mt-4">
-                <InputLabel for="password" value="Clave" />
+            <!-- Clave -->
+            <div class="mb-3">
+                <label for="password" class="form-label"><i class="fas fa-key"></i></label>
                 <input
-                    id="password"
-                    v-model="form.password"
-                    type="password"
-                    class="form-control"
-                    required
-                    autocomplete="new-password"
+                id="password"
+                v-model="form.password"
+                type="password"
+                class="form-control custom-input"
+                required
+                placeholder="Clave"
+                autocomplete="current-password"
                 />
                 <InputError class="mt-2" :message="form.errors.password" />
             </div>
 
-            <div class="mt-4">
-                <InputLabel for="password_confirmation" value="Confirmar clave" />
+
+            <!-- Clave -->
+            <div class="mb-3">
+                <label for="password_confirmation" class="form-label"><i class="fas fa-key"></i></label>
                 <input
-                    id="password_confirmation"
-                    v-model="form.password_confirmation"
-                    type="password"
-                    class="form-control"
-                    required
-                    autocomplete="new-password"
+                id="password_confirmation"
+                v-model="form.password_confirmation"
+                type="password"
+                class="form-control custom-input"
+                required
+                placeholder="Confirmar clave"
+                autocomplete="current-password"
                 />
                 <InputError class="mt-2" :message="form.errors.password_confirmation" />
             </div>
@@ -98,15 +133,17 @@ const submit = () => {
                 </InputLabel>
             </div>
 
-            <div class="flex items-center justify-end mt-4">
+            <!-- Olvide mi clave -->
+            <div class="flex items-center justify-center mb-3">
                 <Link :href="route('login')" class="link">
                     Ya tengo cuenta
                 </Link>
-
-                <PrimaryButton class="ms-4" :class="{ 'disabled': form.processing }" :disabled="form.processing">
-                    Registrar
-                </PrimaryButton>
             </div>
+
+
+            <PrimaryButton :class="{ 'disabled': form.processing }" :disabled="form.processing">
+                REGISTRAR
+            </PrimaryButton>
         </form>
     </AuthenticationCard>
 </template>

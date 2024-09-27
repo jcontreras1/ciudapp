@@ -31,7 +31,7 @@ const props = defineProps({
     user : {
         type: Object,
         // required: true,
-        
+
     }
 });
 
@@ -58,7 +58,7 @@ const { stop } = useIntersectionObserver(veryBottomTarget, ([{ isIntersecting }]
             confirmButtonText: 'Ok'
         });
     });
-    
+
 });
 
 </script>
@@ -76,6 +76,10 @@ const { stop } = useIntersectionObserver(veryBottomTarget, ([{ isIntersecting }]
                 <del><a class="nav-link" href="#">Reportes</a></del>
             </li>
         </ul>
+        {{$page.props.auth.user}}
+        <img :src="$page.props.auth.user?.profile_photo_url" class="img-fluid rounded-circle" alt="Foto de perfil" v-if="$page.props.auth.user">
+
+
         <!-- CENTRO -Cuadro para crear un post -->
         <div class="mt-3" v-if="$page.props.auth.user">
             <div class="d-flex align-items-start">

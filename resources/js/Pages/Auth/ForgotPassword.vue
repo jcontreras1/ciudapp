@@ -20,6 +20,32 @@ const submit = () => {
 };
 </script>
 
+<style scoped>
+.custom-input {
+    background-color:  #fff; /* Hace que el fondo del input sea transparente */
+    border: none;
+    border-bottom: 1px solid #000; /* Solo el borde inferior */
+    border-radius: 0;
+    box-shadow: none;
+    color: #000; /* Color del texto */
+}
+.custom-input:focus {
+    box-shadow: none;
+    border-bottom-color: #000;
+}
+.custom-input:focus {
+    box-shadow: none;
+    border-bottom-color: #000;
+    /* Cambia el color del texto al enfocar */
+}
+/* Cambia el color del placeholder a blanco */
+.custom-input::placeholder {
+
+    opacity: 1; /* Asegura que el color se vea claramente */
+}
+
+</style>
+
 <template>
     <Head title="Forgot Password" />
 
@@ -30,7 +56,7 @@ const submit = () => {
 
         <div class="mb-4 text-sm text-gray-600 dark:text-gray-400">
             <!-- Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one. -->
-            ¿Olvidaste tu contraseña? No hay problema. Solo dinos tu dirección de correo electrónico y te enviaremos un enlace de restablecimiento 
+            ¿Olvidaste tu contraseña? No hay problema. Solo dinos tu dirección de correo electrónico y te enviaremos un enlace de restablecimiento
             de contraseña por correo electrónico que te permitirá elegir una nueva.
         </div>
 
@@ -39,25 +65,25 @@ const submit = () => {
         </div>
 
         <form @submit.prevent="submit">
-            <div>
-                <InputLabel for="email" value="Email" />
-                <TextInput
-                    id="email"
-                    v-model="form.email"
-                    type="email"
-                    class="mt-1 block w-full"
-                    required
-                    autofocus
-                    autocomplete="username"
+            <div class="mb-3">
+                <label for="email" class="form-label"><i class="fas fa-envelope"></i></label>
+                <input
+                id="email"
+                v-model="form.email"
+                type="email"
+                class="form-control custom-input"
+                required
+                autofocus
+                placeholder="Correo electrónico"
+                autocomplete="username"
                 />
                 <InputError class="mt-2" :message="form.errors.email" />
             </div>
 
-            <div class="flex items-center justify-end mt-4">
-                <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    Enviar email para restablecer contraseña
-                </PrimaryButton>
-            </div>
+            <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                Enviar email para restablecer contraseña
+            </PrimaryButton>
+
         </form>
     </AuthenticationCard>
 </template>

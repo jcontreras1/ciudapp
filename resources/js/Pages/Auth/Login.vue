@@ -29,21 +29,44 @@ const submit = () => {
 };
 </script>
 
+<style scoped>
+.custom-input {
+     /* Hace que el fondo del input sea transparente */
+    border: none;
+    border-bottom: 1px solid #000; /* Solo el borde inferior */
+    border-radius: 0;
+    box-shadow: none;
+    color: #000; /* Color del texto */
+}
+.custom-input:focus {
+    box-shadow: none;
+    border-bottom-color: #000;
+}
+.custom-input:focus {
+    box-shadow: none;
+    border-bottom-color: #000;
+    /* Cambia el color del texto al enfocar */
+}
+/* Cambia el color del placeholder a blanco */
+.custom-input::placeholder {
+
+  opacity: 1; /* Asegura que el color se vea claramente */
+}
+
+</style>
+
 <template>
-    <Head title="Log in" />
+    <Head title="Log in"/>
+
 
     <AuthenticationCard>
         <template #logo>
             <AuthenticationCardLogo />
         </template>
 
-        <!-- <div v-if="status" class="mb-4 font-medium text-sm text-red-600 dark:text-red-400"> -->
-            <!-- {{ status }} -->
-        <!-- </div> -->
-
         <div v-if="status">
-        <div class="alert alert-danger">
-            <div class="alert-body">
+            <div class="alert alert-danger">
+                <div class="alert-body">
                     <strong>
                         <i class="fas fa-exclamation-circle me-1"></i>
                         {{ status }}
@@ -54,49 +77,55 @@ const submit = () => {
         </div>
 
         <form @submit.prevent="submit">
-            <div>
-                <InputLabel for="email" value="Email" />
-                <TextInput
-                    id="email"
-                    v-model="form.email"
-                    type="email"
-                    class="mt-1 block w-full"
-                    required
-                    autofocus
-                    autocomplete="username"
+
+            <!--Email -->
+            <div class="mb-3">
+                <label for="email" class="form-label"><i class="fas fa-envelope"></i></label>
+                <input
+                id="email"
+                v-model="form.email"
+                type="email"
+                class="form-control custom-input"
+                required
+                autofocus
+                placeholder="Correo electrónico"
+                autocomplete="username"
                 />
                 <InputError class="mt-2" :message="form.errors.email" />
             </div>
 
-            <div class="mt-4">
-                <InputLabel for="password" value="Clave" />
-                <TextInput
-                    id="password"
-                    v-model="form.password"
-                    type="password"
-                    class="mt-1 block w-full"
-                    required
-                    autocomplete="current-password"
+            <!-- Clave -->
+            <div class="mb-3">
+                <label for="password" class="form-label"><i class="fas fa-key"></i></label>
+                <input
+                id="password"
+                v-model="form.password"
+                type="password"
+                class="form-control custom-input"
+                required
+                placeholder="Clave"
+                autocomplete="current-password"
                 />
                 <InputError class="mt-2" :message="form.errors.password" />
             </div>
 
-            <div class="block mt-4">
-                <label class="flex items-center">
-                    <Checkbox v-model:checked="form.remember" name="remember" />
-                    <span class="ms-2 text-sm text-gray-600 dark:text-gray-400">Recordarme</span>
-                </label>
+            <!-- Recordame -->
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault"  name="remember">
+                <label class="form-check-label" for="flexSwitchCheckDefault">Recordarme</label>
             </div>
 
-            <div class="flex items-center justify-end mt-4">
-                <Link v-if="canResetPassword" :href="route('password.request')" class="">
+            <!-- Olvide mi clave -->
+            <div class="flex items-center justify-center mb-3">
+                <Link v-if="canResetPassword" :href="route('password.request')" >
                     Olvidé mi clave
                 </Link>
-
-                <PrimaryButton class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    Ingresar
-                </PrimaryButton>
             </div>
+
+            <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                    INGRESAR
+            </PrimaryButton>
+
         </form>
     </AuthenticationCard>
 </template>
