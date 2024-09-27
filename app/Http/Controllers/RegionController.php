@@ -12,8 +12,6 @@ use Inertia\Inertia;
 class RegionController extends Controller
 {
     public function index(Institution $institution){
-        return $institution->regions;
-        
         return Inertia::render('Region/Index',['regiones' => $institution->regions]);
     }
 
@@ -44,7 +42,7 @@ class RegionController extends Controller
     }
 
     public function edit(Institution $institution, Region $region){
-        return Inertia::render('Region/Edit', ['region' => $region, 'institution' => $institution]);
+        return Inertia::render('Region/Edit', ['region' => $region->loadMissing('points'), 'institucion' => $institution]);
     }
 
     public function destroy(Institution $institution, Region $region){
