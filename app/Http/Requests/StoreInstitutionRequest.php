@@ -34,7 +34,7 @@ class StoreInstitutionRequest extends FormRequest
                     return $query->where('city_id', $this->city_id);
                 })->ignore($institutionId),
             ],
-            'mail' => ['required', 'email', 'max:190'],
+            'mail' => ['nullable', 'email', 'max:190'],
             'city_id' => 'required|exists:city,id',
         ];
     }
@@ -46,7 +46,6 @@ class StoreInstitutionRequest extends FormRequest
             'name.required' => 'El nombre es requerido',
             'name.string' => 'El nombre debe ser un texto',
             'name.max' => 'El nombre no debe exceder los 190 caracteres',
-            'email.required' => 'El email es requerido',
             'email.email' => 'El email debe ser un email valido',
             'email.max' => 'El email no debe exceder los 190 caracteres',
             'city_id.required' => 'La ciudad es requerida',
