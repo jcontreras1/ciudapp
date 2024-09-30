@@ -6,7 +6,7 @@ import SectionTitle from '@/Components/SectionTitle.vue';
 import DialogModal from '@/Components/DialogModal.vue';
 
 defineProps({
-    
+
     categorias:{
         type: Array,
         // required: true,
@@ -17,6 +17,7 @@ const destroy = (categoria) => {
     showModal.value = true;
     selectedCategory.value = categoria;
 }
+
 const deleteCategory = () => {
     router.delete(route('category.destroy', selectedCategory.value.id), {preserveScroll: true});
     ocultarModal();
@@ -29,50 +30,51 @@ const selectedCategory = ref(null);
 </script>
 
 <template>
-    <AppLayout>        
+    <AppLayout>
         <Head title="Categorías" />
 
         <SectionTitle>
-                <template #title>
-                    Categorías
-                </template>
-                <template #aside>
-                    <Link :href="route('category.create')" class="btn btn-primary">Crear categoría</Link>
-                    </template>
-            </SectionTitle>
-      
+            <template #title>
+                Categorías
+            </template>
+            <template #aside>
+                <Link :href="route('category.create')" class="btn btn-primary">Crear categoría</Link>
+            </template>
+        </SectionTitle>
+        <hr>
+
         <hr class="mb-3">
         <div v-if="categorias.length">
             <div class="table-responsive">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Nombre</th>
-                        <th>Icono</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="categoria in categorias" :key="categoria.id">
-                        <td><Link :href="route('subcategory.index', categoria.id)">
-                            <strong>{{ categoria.name }}</strong>
-                            <small>
-                                <em>
-                                    <span v-if="categoria.subcategories?.length > 1">&nbsp;&nbsp;{{ `[${categoria.subcategories?.length} subcategorías]` }}</span>
-                                    <span v-else-if="categoria.subcategories?.length == 1">&nbsp;&nbsp;[1 subcategoría]</span>
-                                </em>
-                            </small>
-                        </Link></td>
-                        <td><span class="fs-3" v-html="categoria.icon"></span></td>
-                        <td>
-                            <Link class="btn btn-primary btn-sm" title="Editar" :href="route('category.edit', categoria.id)">Editar</Link>
-                            <button class="btn btn-danger btn-sm" title="Eliminar" @click="destroy(categoria)">Eliminar</button>
-                            <!-- <button class="btn btn-danger btn-sm" title="Eliminar" @click="destroy(categoria.id)">Eliminar</button> -->
-                        </td>
-                    </tr>
-                </tbody>
-            </table>            
-        </div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Icono</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="categoria in categorias" :key="categoria.id">
+                            <td><Link :href="route('subcategory.index', categoria.id)">
+                                <strong>{{ categoria.name }}</strong>
+                                <small>
+                                    <em>
+                                        <span v-if="categoria.subcategories?.length > 1">&nbsp;&nbsp;{{ `[${categoria.subcategories?.length} subcategorías]` }}</span>
+                                        <span v-else-if="categoria.subcategories?.length == 1">&nbsp;&nbsp;[1 subcategoría]</span>
+                                    </em>
+                                </small>
+                            </Link></td>
+                            <td><span class="fs-3" v-html="categoria.icon"></span></td>
+                            <td>
+                                <Link class="btn btn-primary btn-sm" title="Editar" :href="route('category.edit', categoria.id)">Editar</Link>
+                                <button class="btn btn-danger btn-sm" title="Eliminar" @click="destroy(categoria)">Eliminar</button>
+                                <!-- <button class="btn btn-danger btn-sm" title="Eliminar" @click="destroy(categoria.id)">Eliminar</button> -->
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         <div v-else>
