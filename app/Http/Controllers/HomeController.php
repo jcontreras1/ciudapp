@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\PostResource;
 use App\Models\Category;
 use App\Models\Post;
+use App\Models\Region;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
@@ -32,7 +33,7 @@ class HomeController extends Controller
      */
     public function index(Request $request)
     {
-        $posts = Post::with('category', 'subcategory', 'images', 'comments')->orderBy('id', 'desc')->cursorPaginate(10);
+        $posts = Post::with('category', 'subcategory', 'images', 'comments')->orderBy('id', 'desc')->cursorPaginate(5);
 
         //Esto es solo api
         if($request->wantsJson()){
