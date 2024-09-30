@@ -24,7 +24,17 @@ class Institution extends Model
 
     public function users()
     {
-        return $this->belongsToMany(User::class)->withPivot('user_institution');
+        // return $this->hasManyThrough(
+        //     User::class,
+        //     UserInstitution::class,
+        //     'institution_id', // Foreign key on user_institution table...
+        //     'id',             // Foreign key on users table...
+        //     'id',             // Local key on institutions table...
+        //     'user_id'        // Local key on user_institution table...
+        // ); // Esto permite acceder a la columna is_admin
+
+        return $this->belongsToMany(User::class, 'user_institution', 'institution_id', 'user_id')
+                    ->withPivot('is_admin');
     }
 
     public function regions()
