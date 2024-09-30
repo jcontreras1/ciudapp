@@ -65,7 +65,7 @@ const submit = () => {
         </template>
 
         <div v-if="status">
-            <div class="alert alert-danger">
+            <div class="alert alert-warning">
                 <div class="alert-body">
                     <strong>
                         <i class="fas fa-exclamation-circle me-1"></i>
