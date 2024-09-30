@@ -17,6 +17,26 @@ const props = defineProps({
     }
 });
 
+const deleteUser = useForm({
+    
+})
+
+const eliminarUsuario = (user) => {
+    console.log(user.name)
+    Swal.fire({
+        title: `¿Remover a ${user.name} de esta institución?`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Eliminar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            deleteUser.delete(route('userInstitution.destroy', {'institution' : props.institucion, 'userInstitution' : user.pivot.id}));
+        }
+    });
+}
+
+
 
 const newUser = useForm({
     name : '',
@@ -29,7 +49,7 @@ const newUser = useForm({
 <template>
     
     <!-- Modal create user - institution -->
-    <form @submit.prevent="newUser.post(route('userToInstitution', institucion))">
+    <form @submit.prevent="newUser.post(route('userInstitution.store', institucion))">
         <div class="modal fade" id="mdlCreateUserInstitution" tabindex="-1" aria-labelledby="mdlCreateUserInstitutionLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -85,7 +105,7 @@ const newUser = useForm({
             <button data-bs-target="#mdlCreateUserInstitution" data-bs-toggle="modal" href="#" class="btn btn-success"><i class="fas fa-plus"></i> agregar usuario</button>
         </span>
     </h3>
-    
+    <pre>{{ users }}</pre>
     <table class="table">
         <thead>
             <tr>
@@ -100,7 +120,7 @@ const newUser = useForm({
                 <td>{{ user.pivot.is_admin ? 'Si' : 'No' }}</td>
                 <td>
                     <a href="#" class="btn btn-primary">Editar</a>&nbsp;
-                    <a href="#" class="btn btn-danger">Eliminar</a>
+                    <a href="#" class="btn btn-danger" @click="eliminarUsuario(user)">Eliminar</a>
                 </td>
             </tr>
         </tbody>

@@ -34,7 +34,7 @@ class Institution extends Model
         // ); // Esto permite acceder a la columna is_admin
 
         return $this->belongsToMany(User::class, 'user_institution', 'institution_id', 'user_id')
-                    ->withPivot('is_admin');
+                    ->withPivot(['is_admin', 'id']);
     }
 
     public function regions()

@@ -27,7 +27,10 @@ Route::middleware([
     
     Route::resource('institution', App\Http\Controllers\InstitutionController::class)->except('show');
     Route::resource('institution/{institution}/region', App\Http\Controllers\RegionController::class)->except('show');
-    Route::post('institution/{institution}/user', [App\Http\Controllers\InstitutionController::class, 'newUser'])->name('userToInstitution');
+
+    Route::resource('institution/{institution}/userInstitution', App\Http\Controllers\UserInstitutionController::class)->only(['store', 'destroy', 'update']);
+    // Route::post('institution/{institution}/user', [App\Http\Controllers\InstitutionController::class, 'newUser'])->name('userToInstitution');
+    // Route::delete('institution/{institution}/user/{user}', [App\Http\Controllers\InstitutionController::class, 'deleteUser'])->name('userToInstitution');
 //Auth::routes();
 
 include('auth.php');
