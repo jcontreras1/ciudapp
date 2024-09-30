@@ -31,6 +31,7 @@ class PostResource extends JsonResource
             'images' => $this->images,
             'comments' => $this->comments,
             'created_at' => $this->created_at,
+            'location' => $this->location_short,
         ];
     }
 }

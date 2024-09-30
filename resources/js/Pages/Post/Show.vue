@@ -33,7 +33,14 @@ const logout = () => {
     
     <div class="card">
         <div class="card-body">
-            <i class="fas fa-map-pin"></i> <b>{{ new Date(post.created_at).toLocaleDateString() }} </b>
+            <div>
+                <i class="fas fa-calendar-alt"></i> {{ new Date(post.created_at).toLocaleDateString() }}
+            </div>
+            <div>
+                <i class="fas fa-map-marker-alt"></i>
+                {{ post.location }}
+            </div>
+            
             <h5>{{ post.comment }}</h5>
             <h5 class="d-flex nav-link">
                 <span v-if="post.category?.name"><b> #{{ post.category?.name }}</b>&nbsp;</span>
