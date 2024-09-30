@@ -1,10 +1,11 @@
 <script setup>
-import { onMounted, ref, watch  } from 'vue'
+import { onMounted, ref } from 'vue'
 import mapboxgl from 'mapbox-gl';
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import * as turf from '@turf/turf';
 
+const emit = defineEmits(['puntos'])
 onMounted(() => {
     mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
     // Crear el mapa y centrarlo en una ubicación
@@ -14,6 +15,7 @@ onMounted(() => {
         center: [-65.0385100, -42.7692000], // Coordenadas [lng, lat]
         zoom: 14
     });
+
 
     const draw = new MapboxDraw({
         displayControlsDefault: false,
@@ -63,10 +65,10 @@ onMounted(() => {
         const answer = document.getElementById('calculated-area');
         if (data.features.length > 0) {
             const coordinates = data.features[0].geometry.coordinates[0]; // Coordenadas del polígono
-            console.log('Puntos del polígono:', coordinates); // Mostrar los puntos en consola
-
+            // console.log('Puntos del polígono:', coordinates); // Mostrar los puntos en consola
+            emit('puntos', coordinates);
             const area = turf.area(data);
-            console.log('Área:', area);
+            // console.log('Área:', area);
             // Restrict the area to 2 decimal points.
             const rounded_area = Math.round(area * 100) / 100;
             answer.innerHTML = `<p><strong>${rounded_area}</strong></p><p>square meters</p>`;
@@ -76,22 +78,23 @@ onMounted(() => {
             alert('Click the map to draw a polygon.');
         }
     }
-
-    // Añadir un marcador
-    new mapboxgl.Marker()
-    .setLngLat([-65.0385100, -42.7692000])
-    .addTo(map);
 });
 </script>
 
 
 
 <template>
-    <div id="map" style="height: 400px;"></div>
+    <div id="map"></div>
     <div class="calculation-box">
-        <p>Haga clic en el mapa para dibujar un polígono.</p>
+        <p>Haga clic en el mapa para comenzar a definir la región</p>
         <div id="calculated-area"></div>
     </div>
 </template>
+
+<style>
+#map{
+    height: 80vh;
+}
+</style>
 
 

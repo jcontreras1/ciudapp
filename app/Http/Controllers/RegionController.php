@@ -32,8 +32,8 @@ class RegionController extends Controller
         ]);
         foreach ($points as $pointData) {
             Point::create([
-                'lat' => $pointData['lat'],
-                'lng' => $pointData['lng'],
+                'lat' => $pointData[1],
+                'lng' => $pointData[0],
                 'region_id' => $region->id,
             ]);
         }

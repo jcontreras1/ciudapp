@@ -1,7 +1,6 @@
 <script setup>
 import { computed, ref } from 'vue'
 import { useForm } from '@inertiajs/vue3';
-import Mapa from '@/Pages/Mapa/Index.vue';
 
 const props = defineProps({
     categorias:{
@@ -168,10 +167,6 @@ function toggleCategory(id){
                 {{ form.processing ? 'Guardando...' : 'Guardar' }}
             </button>
         </form>
-        <div class="mt-4">
-
-            <Mapa></Mapa>
-        </div>
     </div>
 </div>
 </template>

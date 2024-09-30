@@ -88,31 +88,38 @@ const agregarUsuario = () =>{
     </form>
     
     
-    <div class="display-2">Editar {{ institucion.name }}</div>
-    <hr>
+    <div class="display-4">Editar {{ institucion.name }}</div>
     
-    <br>
-    <br>
     
     <hr>
-    <h3>Lista de regiones:</h3>
+    <h3>Regiones definidas
+        <a class="btn btn-success float-end" :href="route('region.create', institucion)"><i class="fas fa-plus"></i> Crear región</a>
+    </h3>
     <br>
-    <a :href="route('region.create', institucion)">Crear una región, o polígono o lo que sea</a>
-    <div v-for="region in regiones" :key="region.id">
-        #{{ region.id }} --- {{ region.name }}  ------>      <a :href="route('region.edit', {'institution' : institucion, 'region' : region})">editar</a>
-    </div>
-    <br>
-    <br>
-    <br>
-    <br>
-    <hr>
+    <table class="table table-sm mb-4">
+        <thead>
+            <tr>
+                <th>Región</th>
+                <th>Opciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="region in regiones" :key="region.id">
+                <td>{{ region.name }}</td>
+                <td>
+                    <a :href="route('region.edit', {'institution' : institucion, 'region' : region})" class="btn btn-primary">Editar</a>&nbsp;
+                    <button class="btn btn-danger">Eliminar</button>
+                </td>
+            </tr>
+            </tbody>
+    </table>
     <h3>
         Lista de usuarios asociados a  esta institución
         <span class="float-end">
-            <button data-bs-target="#mdlCreateUserInstitution" data-bs-toggle="modal" href="#" class="btn btn-success"><i class="fas fa-plus"></i> agregar usuario</button>
+            <button data-bs-target="#mdlCreateUserInstitution" data-bs-toggle="modal" href="#" class="btn btn-success"><i class="fas fa-plus"></i> Agregar usuario</button>
         </span>
     </h3>
-    <table class="table">
+    <table class="table table-sm">
         <thead>
             <tr>
                 <th>Usuario</th>
