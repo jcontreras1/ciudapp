@@ -38,7 +38,7 @@ class RegionController extends Controller
             ]);
         }
 
-        return redirect()->route('region.index', $institution)->with('message', 'Región creada correctamente');
+        return redirect()->route('institution.edit', $institution)->with('message', 'Región creada correctamente');
     }
 
     public function edit(Institution $institution, Region $region){
