@@ -30,7 +30,7 @@ class UserInstitutionController extends Controller
                 'user_id' => $user->id,
                 'institution_id' => $institution->id,
             ],[
-                'is_admin' => $request->isAdmin
+                'is_admin' => $request->is_admin
             ]);
             Notification::send($user, new CollaborateWithInstitutionNotification($institution, $user));
         } else {
@@ -46,6 +46,7 @@ class UserInstitutionController extends Controller
             UserInstitution::create([
                 'user_id' => $user->id,
                 'institution_id' => $institution->id,
+                'is_admin' => $request->is_admin,
             ]);
             Notification::send($user, new NewUserWithInstitutionNotification($institution, $user, $token));
         }
@@ -59,8 +60,11 @@ class UserInstitutionController extends Controller
     }
 
     public function update(Institution $institution, UserInstitution $userInstitution, Request $request){
+        $request->validate([
+            'is_admin' => 'required|boolean'
+        ]);
         $userInstitution->update([
-            'is_admin' => $request->isAdmin
+            'is_admin' => $request->is_admin
         ]);
         return redirect()->route('institution.edit', $institution)->with('message', 'Usuario actualizado correctamente');
     }

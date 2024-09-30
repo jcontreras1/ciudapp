@@ -1,5 +1,6 @@
 <script setup>
 import { useForm } from '@inertiajs/vue3';
+import { Modal } from 'bootstrap';
 import { ref, defineProps } from 'vue'
 
 const props = defineProps({
@@ -17,12 +18,18 @@ const props = defineProps({
     }
 });
 
-const deleteUser = useForm({
-    
-})
-
+const modalCreate = ref(null);
+const genericForm = useForm({is_admin : 0});
+const toggleAdmin = (user) => {
+    genericForm.is_admin = user.pivot.is_admin ? 0 : 1
+    genericForm.put(route('userInstitution.update', {'institution' : props.institucion, 'userInstitution' : user.pivot.id}), {preserveScroll: true});
+}
+const newUser = useForm({
+    name : '',
+    email: '',
+    is_admin: 0,
+});
 const eliminarUsuario = (user) => {
-    console.log(user.name)
     Swal.fire({
         title: `¿Remover a ${user.name} de esta institución?`,
         icon: 'question',
@@ -31,26 +38,26 @@ const eliminarUsuario = (user) => {
         cancelButtonText: 'Cancelar'
     }).then((result) => {
         if (result.isConfirmed) {
-            deleteUser.delete(route('userInstitution.destroy', {'institution' : props.institucion, 'userInstitution' : user.pivot.id}));
+            genericForm.delete(route('userInstitution.destroy', {'institution' : props.institucion, 'userInstitution' : user.pivot.id}), {preserveScroll: true});
         }
     });
 }
-
-
-
-const newUser = useForm({
-    name : '',
-    email: '',
-    isAdmin: 0,
-});
+const agregarUsuario = () =>{
+    newUser.post(route('userInstitution.store', props.institucion), {preserveScroll: true, onSuccess: () => {
+        newUser.name = '';
+        newUser.email = '';
+        newUser.is_admin = 0;
+        Modal.getInstance(modalCreate.value)?.hide();
+    }});
+}
 
 </script>
 
 <template>
     
     <!-- Modal create user - institution -->
-    <form @submit.prevent="newUser.post(route('userInstitution.store', institucion))">
-        <div class="modal fade" id="mdlCreateUserInstitution" tabindex="-1" aria-labelledby="mdlCreateUserInstitutionLabel" aria-hidden="true">
+    <form @submit.prevent="agregarUsuario">
+        <div class="modal fade" id="mdlCreateUserInstitution" ref="modalCreate" tabindex="-1" aria-labelledby="mdlCreateUserInstitutionLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -67,7 +74,7 @@ const newUser = useForm({
                             <input type="email" class="form-control" id="email" v-model="newUser.email">
                         </div>
                         <div class="form-check form-switch">
-                            <input class="form-check-input" v-model="newUser.isAdmin" type="checkbox" role="switch" id="switchAdministraRegion">
+                            <input class="form-check-input" v-model="newUser.is_admin" type="checkbox" role="switch" id="switchAdministraRegion">
                             <label class="form-check-label" for="switchAdministraRegion">¿Administra la Región?</label>
                         </div>
                     </div>
@@ -105,21 +112,24 @@ const newUser = useForm({
             <button data-bs-target="#mdlCreateUserInstitution" data-bs-toggle="modal" href="#" class="btn btn-success"><i class="fas fa-plus"></i> agregar usuario</button>
         </span>
     </h3>
-    <pre>{{ users }}</pre>
     <table class="table">
         <thead>
             <tr>
                 <th>Usuario</th>
-                <th>Nivel</th>
+                <th>Puede administrar</th>
                 <th>Opciones</th>
             </tr>
         </thead>
         <tbody>
             <tr v-for="user in users" :key="user.id">
-                <td>{{ user.name }}</td>
-                <td>{{ user.pivot.is_admin ? 'Si' : 'No' }}</td>
+                <td>{{ user.name }} - {{ user.email }}</td>
                 <td>
-                    <a href="#" class="btn btn-primary">Editar</a>&nbsp;
+                    <div class="form-check form-switch">
+                        <input @change="toggleAdmin(user)" class="form-check-input" :checked="user.pivot.is_admin" type="checkbox" role="switch" :id="'check' + user.pivot.id ">
+                        <label class="form-check-label" :for="'check' + user.pivot.id">{{ user.pivot.is_admin ? 'Si' : 'No' }}</label>
+                    </div>
+                </td>
+                <td>
                     <a href="#" class="btn btn-danger" @click="eliminarUsuario(user)">Eliminar</a>
                 </td>
             </tr>

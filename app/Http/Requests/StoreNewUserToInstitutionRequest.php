@@ -24,7 +24,7 @@ class StoreNewUserToInstitutionRequest extends FormRequest
         return [
             'name' => 'required|string|min:2|max:190',
             'email' => 'required|email|max:190',
-            'isAdmin' => 'present'
+            'is_admin' => 'required|boolean',
         ];
     }
 }
