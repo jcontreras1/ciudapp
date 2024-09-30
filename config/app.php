@@ -123,4 +123,7 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    'mapbox_api_key' => env('VITE_MAPBOX_TOKEN', 'pk.eyJ1IjoiamNvbnRyZXJhczEiLCJhIjoiY20xNTJzMmN4MDMxYjJqcHNlcHk5Z2d6NyJ9.9wn__xVAiSc51mSPJmnpYA'),
+    
+
 ];

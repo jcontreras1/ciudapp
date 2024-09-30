@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\NewPostEvent;
 use App\Models\Post;
 use App\Models\PostImage;
+use App\Models\Region;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
@@ -49,6 +51,8 @@ class PostController extends Controller
                 DB::rollBack();
                 return back()->with('error', 'Post no pudo ser creado');
             }
+            //eventos relacionados con nuevo Post
+            NewPostEvent::dispatch($post);
 
         }
         DB::commit();

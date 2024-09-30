@@ -10,7 +10,17 @@ class Post extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['user_id', 'lat', 'lng', 'comment', 'private', 'deleted_at', 'subcategory_id'];
+    protected $fillable = [
+        'user_id', 
+        'lat', 
+        'lng', 
+        'comment', 
+        'private', 
+        'deleted_at', 
+        'subcategory_id',
+        'location_short',           // llenables desde un listener
+        'location_long',            // llenables desde un listener
+    ];
     protected $table = "post";
 
     public function user()
