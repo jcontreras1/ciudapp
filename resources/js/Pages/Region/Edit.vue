@@ -1,6 +1,9 @@
 <script setup>
-import { useForm } from '@inertiajs/vue3';
+import { useForm, Head } from '@inertiajs/vue3';
 import { ref, defineProps } from 'vue'
+import AppLayout from '@/Layouts/AppLayout.vue'
+import SectionTitle from '@/Components/SectionTitle.vue';
+import EditPolygon from '@/Pages/Mapa/EditPolygon.vue';
 
 const props = defineProps({
     institucion : {
@@ -10,18 +13,20 @@ const props = defineProps({
     region : {
         type : Object,
         required : true,
-    }
+    },
+
 });
 
 const fomrulario = useForm({
     'name' : '', //este hay que llenarlo en el formu
     'institution' : props.institucion.id,
+    'region' : props.region.name,
     'puntos' : [], //Este es el arreglo de todas las coordenadas que hacen el polígono. Tienen que estar en formato array así como lo dejo abajo:
 });
 
 
 /**
- * 
+ *
 {
     "puntos" : [
         {
@@ -42,9 +47,34 @@ const fomrulario = useForm({
 </script>
 
 <template>
-        <div class="display-1">✨ EDITAR institución 💅 </div>
+    <AppLayout>
+        <Head title="Editar Región" />
+        <SectionTitle>
+            <template #title>
+                Editar región de la institución <b>{{institucion.name}}</b>
+            </template>
+        </SectionTitle>
         <hr>
-        Metele que no llegás<hr>
+        <form @submit.prevent="fomrulario.post(route('region.update', props.region.id))">
+
+                <div class="mb-3">
+                    <div class="form-group">
+                        <label for="institution" class="mb-2"><b>Región</b></label>
+                        <input type="text" class="form-control" id="institution" v-model="fomrulario.region">
+                    </div>
+                </div>
+                 <div class="mb-2">
+                    <div class="form-group">
+                        <label for="institution" class="mb-2"><b>Coordenadas</b></label>
+                        <EditPolygon :puntos="region.points"/>
+                    </div>
+                </div>
+
+
+
+
+        </form>
+    <!-- {{institucion}}} -->
         institución: <strong>{{ institucion.name }}</strong> <br>
         region: <strong>{{ region.name }}</strong>
   <br>
@@ -55,8 +85,9 @@ const fomrulario = useForm({
 
     estos son los puntos:
 
-    <ul>
-        <li v-for="punto in region.points" :key="punto.id">{{ punto }}</li>
-    </ul>
+    <!-- <ul> -->
+        <!-- <li v-for="punto in region.points" :key="punto.id">{{ punto }}</li> -->
 
+    <!-- </ul> -->
+</AppLayout>
 </template>

@@ -36,9 +36,10 @@ class StoreInstitutionRequest extends FormRequest
             ],
             'mail' => ['nullable', 'email', 'max:190'],
             'city_id' => 'required|exists:city,id',
+            'address' => 'present|string|max:190|nullable',
         ];
     }
-    
+
     public function messages()
     {
         return [

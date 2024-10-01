@@ -2,7 +2,9 @@
 import { useForm } from '@inertiajs/vue3';
 import { Modal } from 'bootstrap';
 import { ref, defineProps } from 'vue'
+import { Head, Link, router } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue'
+import SectionTitle from '@/Components/SectionTitle.vue';
 
 const props = defineProps({
     institucion : {
@@ -18,6 +20,20 @@ const props = defineProps({
         required : true
     }
 });
+const cities = ref([])
+const searchCity = async (query) => {
+    if (query.length > 2) {
+        const response = await axios.get(`/api/cities?query=${query}`)
+        cities.value = response.data
+    }
+}
+
+const selectCity = (city) => {
+    updateIntitutionForm.city_id = city.id
+    // Si deseas limpiar el input después de seleccionar, puedes usar esto:
+    updateIntitutionForm.city_name = city.name + ' - ' + city.province?.name // O asignar el nombre de la ciudad al input visible si lo deseas
+    cities.value = [] // Limpiar la lista de ciudades
+}
 
 const modalCreate = ref(null);
 const genericForm = useForm({is_admin : 0});
@@ -52,6 +68,14 @@ const agregarUsuario = () =>{
     }});
 }
 
+const updateIntitutionForm = useForm({
+    name: props.institucion.name,
+    mail: props.institucion.mail,
+    address: props.institucion.address,
+    city_id: props.institucion.city_id,
+    city_name: props.institucion.city.name + ' - ' + props.institucion.city?.province?.name,
+});
+
 </script>
 
 <template>
@@ -59,16 +83,10 @@ const agregarUsuario = () =>{
         <Head title="Editar Institución" />
         <SectionTitle>
             <template #title>
-                Instituciones
+                Editar Institución
             </template>
-            <template #aside>
-                <Link :href="route('institution.create')" class="btn btn-primary" title="Crear institución"><i class="fas fa-plus"></i> </Link>
-            </template>
+
         </SectionTitle>
-
-
-
-
         <!-- Modal create user - institution -->
         <form @submit.prevent="agregarUsuario">
             <div class="modal fade" id="mdlCreateUserInstitution" ref="modalCreate" tabindex="-1" aria-labelledby="mdlCreateUserInstitutionLabel" aria-hidden="true">
@@ -101,62 +119,109 @@ const agregarUsuario = () =>{
             </div>
         </form>
 
-
-        <div class="display-4">Editar {{ institucion.name }}</div>
-
-
         <hr>
-        <h3>Regiones definidas
-            <a class="btn btn-success float-end" :href="route('region.create', institucion)"><i class="fas fa-plus"></i> Crear región</a>
-        </h3>
-        <br>
-        <table class="table table-sm mb-4">
-            <thead>
-                <tr>
-                    <th>Región</th>
-                    <th>Opciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="region in regiones" :key="region.id">
-                    <td>{{ region.name }}</td>
-                    <td>
-                        <a :href="route('region.edit', {'institution' : institucion, 'region' : region})" class="btn btn-primary">Editar</a>&nbsp;
-                        <button class="btn btn-danger">Eliminar</button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-        <h3>
-            Lista de usuarios asociados a  esta institución
-            <span class="float-end">
-                <button data-bs-target="#mdlCreateUserInstitution" data-bs-toggle="modal" href="#" class="btn btn-success"><i class="fas fa-plus"></i> Agregar usuario</button>
-            </span>
-        </h3>
-        <table class="table table-sm">
-            <thead>
-                <tr>
-                    <th>Usuario</th>
-                    <th>Puede administrar</th>
-                    <th>Opciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="user in users" :key="user.id">
-                    <td>{{ user.name }} - {{ user.email }}</td>
-                    <td>
-                        <div class="form-check form-switch">
-                            <input @change="toggleAdmin(user)" class="form-check-input" :checked="user.pivot.is_admin" type="checkbox" role="switch" :id="'check' + user.pivot.id ">
-                            <label class="form-check-label" :for="'check' + user.pivot.id">{{ user.pivot.is_admin ? 'Si' : 'No' }}</label>
-                        </div>
-                    </td>
-                    <td>
-                        <a href="#" class="btn btn-danger" @click="eliminarUsuario(user)">Eliminar</a>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-        <!-- {{ users }} -->
-    </AppLayout>
+        <!-- <div class="display-4">Editar {{ institucion.name }}</div> -->
+
+        <div>
+            <form @submit.prevent="updateIntitutionForm.put(route('institution.update', institucion), {preserveScroll: true})">
+                <div class="row">
+                    <div class="col-12 col-md-6 mb-3">
+                        <label for="name" class="form-label"><b>Nombre de la institución</b></label>
+                        <input type="text" class="form-control" id="name" v-model="updateIntitutionForm.name">
+                    </div>
+                    <div class="col-12 col-md-6 mb-3">
+                        <label for="mail" class="form-label"><b>Correo electrónico</b></label>
+                        <input type="email" class="form-control" id="mail" v-model="updateIntitutionForm.mail">
+                    </div>
+                    <div class="col-12 col-md-6 mb-3">
+                        <label for="address" class="form-label"><b>Dirección</b></label>
+                        <input type="text" class="form-control" id="address" v-model="updateIntitutionForm.address">
+                    </div>
+                    <div class="col-12 col-md-6 mb-3">
+                        <label for="city_id" class="form-label"><b>Ciudad</b></label>
+                        <input type="hidden" v-model="updateIntitutionForm.city_id" /> <!-- Campo oculto para el city_id -->
+                        <input
+                        type="text"
+                        class="form-control"
+                        autocomplete="nope"
+                        id="city_id"
+                        @input="searchCity($event.target.value)"
+                        required
+                        v-model="updateIntitutionForm.city_name"
+                        >
+                        <ul v-if="cities.length" class="list-group">
+                            <li
+                            role="button"
+                            v-for="city in cities"
+                            :key="city.id"
+                            class="list-group-item"
+                            @click="selectCity(city)"
+                            >
+                            {{ city.name }} - {{ city.province.name }}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="text-end">
+                <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Guardar</button>
+
+            </div>
+
+
+
+        </form>
+
+    </div>
+
+
+    <hr>
+    <h3>Regiones definidas
+        <a class="btn btn-success float-end" :href="route('region.create', institucion)" title="Crear región"><i class="fas fa-plus"></i></a>
+    </h3>
+    <br>
+    <div class="row mb-4">
+        <div class="col-12 col-md-3" v-for="region in regiones" :key="region.id">
+            <div class="card text-center h-100" >
+                <div class="card-body">
+                    <h4 class="mb-3">{{ region.name }}</h4>
+                    <span><a :href="route('region.edit', {'institution' : institucion, 'region' : region})" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i></a>&nbsp;
+                        <button class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i></button>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr>
+    <h3>
+        Lista de usuarios asociados a  esta institución
+        <span class="float-end">
+            <button data-bs-target="#mdlCreateUserInstitution" data-bs-toggle="modal" href="#" class="btn btn-success" title="Agregar usuario"><i class="fas fa-plus"></i> </button>
+        </span>
+    </h3>
+    <table class="table table-sm">
+        <thead>
+            <tr>
+                <th>Usuario</th>
+                <th>Puede administrar</th>
+                <th>Opciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="user in users" :key="user.id">
+                <td>{{ user.name }} - {{ user.email }}</td>
+                <td>
+                    <div class="form-check form-switch">
+                        <input @change="toggleAdmin(user)" class="form-check-input" :checked="user.pivot.is_admin" type="checkbox" role="switch" :id="'check' + user.pivot.id ">
+                        <label class="form-check-label" :for="'check' + user.pivot.id">{{ user.pivot.is_admin ? 'Si' : 'No' }}</label>
+                    </div>
+                </td>
+                <td class="text-end">
+                    <a href="#" class="btn btn-danger" @click="eliminarUsuario(user)"><i class="fas fa-trash-alt"></i></a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</AppLayout>
 
 </template>
