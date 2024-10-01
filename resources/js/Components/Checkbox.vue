@@ -2,13 +2,17 @@
 import { computed } from 'vue';
 
 const emit = defineEmits(['update:checked']);
-
+const superRandomId = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 const props = defineProps({
     checked: {
         type: [Array, Boolean],
         default: false,
     },
     value: {
+        type: String,
+        default: 'Seleccionar',
+    },
+    name: {
         type: String,
         default: null,
     },
@@ -18,7 +22,7 @@ const proxyChecked = computed({
     get() {
         return props.checked;
     },
-
+    
     set(val) {
         emit('update:checked', val);
     },
@@ -27,10 +31,15 @@ const proxyChecked = computed({
 
 
 <template>
-    <input
-        v-model="proxyChecked"
-        type="checkbox"
+    <div class="form-check form-switch">
+        <input 
+        class="form-check-input" 
+        v-model="proxyChecked" 
+        type="checkbox" 
+        role="switch"   
         :value="value"
-        class="rounded dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-indigo-600 shadow-sm focus:ring-indigo-500 dark:focus:ring-indigo-600 dark:focus:ring-offset-gray-800"
-    >
+        :id="superRandomId"
+        >
+        <label class="form-check-label" :for="superRandomId">{{ name }}</label>
+    </div>
 </template>

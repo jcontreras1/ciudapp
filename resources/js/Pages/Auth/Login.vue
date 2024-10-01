@@ -31,7 +31,7 @@ const submit = () => {
 
 <style scoped>
 .custom-input {
-     /* Hace que el fondo del input sea transparente */
+    /* Hace que el fondo del input sea transparente */
     border: none;
     border-bottom: 1px solid #000; /* Solo el borde inferior */
     border-radius: 0;
@@ -49,21 +49,21 @@ const submit = () => {
 }
 /* Cambia el color del placeholder a blanco */
 .custom-input::placeholder {
-
-  opacity: 1; /* Asegura que el color se vea claramente */
+    
+    opacity: 1; /* Asegura que el color se vea claramente */
 }
 
 </style>
 
 <template>
     <Head title="Log in"/>
-
-
+    
+    
     <AuthenticationCard>
         <template #logo>
             <AuthenticationCardLogo />
         </template>
-
+        
         <div v-if="status">
             <div class="alert alert-warning">
                 <div class="alert-body">
@@ -75,9 +75,9 @@ const submit = () => {
             </div>
             <hr>
         </div>
-
+        
         <form @submit.prevent="submit">
-
+            
             <!--Email -->
             <div class="mb-3">
                 <label for="email" class="form-label"><i class="fas fa-envelope"></i></label>
@@ -93,7 +93,7 @@ const submit = () => {
                 />
                 <InputError class="mt-2" :message="form.errors.email" />
             </div>
-
+            
             <!-- Clave -->
             <div class="mb-3">
                 <label for="password" class="form-label"><i class="fas fa-key"></i></label>
@@ -108,24 +108,25 @@ const submit = () => {
                 />
                 <InputError class="mt-2" :message="form.errors.password" />
             </div>
-
+            
             <!-- Recordame -->
-            <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault"  name="remember">
-                <label class="form-check-label" for="flexSwitchCheckDefault">Recordarme</label>
+            <!-- <input class="form-check-input" v-model:checked="form.remember" type="checkbox" role="switch" id="flexSwitchCheckDefault"  name="remember"> -->
+            <div class="mb-3"> 
+                <Checkbox v-model:checked="form.remember" name="Recordarme" />
             </div>
-
+            <!-- <label class="form-check-label">Recordarme</label> -->
+            
             <!-- Olvide mi clave -->
-            <div class="flex items-center justify-center mb-3">
+            <div class="flex items-center mb-3">
                 <Link v-if="canResetPassword" :href="route('password.request')" >
                     Olvidé mi clave
                 </Link>
             </div>
-
+            
             <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    INGRESAR
+                INGRESAR
             </PrimaryButton>
-
+            
         </form>
     </AuthenticationCard>
 </template>
