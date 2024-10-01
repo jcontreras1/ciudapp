@@ -1,22 +1,17 @@
 <template>
-    
     <div class="dropdown nav-link">
         <span role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            
             <i class="fs-5">
                 <i class="fas fa-adjust"></i>
             </i>
             <span class="fs-5 fw-lighter d-none d-md-inline ms-md-2 mt-1 mt-md-0">Modo</span>
         </span>
-        <ul class="dropdown-menu">
+        <ul class="dropdown-menu my-2">
             <li v-for="theme in themes" :key="theme">
-                <a class="dropdown-item" :data-bs-theme-value="theme" @click="changeTheme(theme)">
-                    {{ theme.charAt(0).toUpperCase() + theme.slice(1) }}
-                </a>
+                <a class="dropdown-item" :data-bs-theme-value="theme" @click="changeTheme(theme)" v-html="translateTheme(theme)"></a>
             </li>
         </ul>
     </div>
-    
 </template>
 
 <script>
@@ -95,6 +90,14 @@ export default {
                 this.setTheme(preferredTheme);
                 this.showActiveTheme(preferredTheme);
             }
+        },
+        translateTheme(theme) {
+            const translations = {
+                light: '<i class="fas fa-sun"></i>&nbsp;Claro',
+                dark: '<i class="fas fa-moon"></i>&nbsp;Oscuro',
+                auto: '<i class="fas fa-magic"></i>&nbsp;Automático'
+            };
+            return translations[theme] || theme;
         }
     }
 }

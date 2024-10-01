@@ -12,7 +12,6 @@
         <!-- Scripts -->
         @routes
         @vite([
-            'resources/js/dark.js',
             'resources/js/app.js', 
             "resources/js/Pages/{$page['component']}.vue",
             'resources/scss/app.scss'
