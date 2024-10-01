@@ -2,6 +2,8 @@
 import { ref } from 'vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import NavLink from '@/Components/NavLink.vue';
+import ThemeToggler from '@/Components/ThemeToggler.vue';
+
 
 defineProps({
     title: String,
@@ -41,6 +43,9 @@ const logout = () => {
         <NavLink :href="route('login')" icon='<i class="fas fa-sign-in-alt"></i>' title="Iniciar Sesión" v-if="!$page.props.auth.user"></NavLink>
 
         <NavLink :href="route('register')" icon='<i class="fas fa-user-plus"></i>' title="Registrarse" v-if="!$page.props.auth.user"></NavLink>
+
+        <ThemeToggler />
+
 
     </div>
     <div class="d-block d-md-none py-1"></div>
