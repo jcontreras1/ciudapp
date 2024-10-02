@@ -43,6 +43,10 @@ class Post extends Model
         return $this->hasMany(PostComment::class)->withTrashed();
     }
 
+    public function likes()
+    {
+        return $this->hasMany(PostLike::class);
+    }
     
     public function category(){
         return $this->hasOneThrough(Category::class, Subcategory::class, 'id', 'id', 'subcategory_id', 'category_id');

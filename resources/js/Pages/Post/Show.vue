@@ -5,7 +5,7 @@ import CardPost from '@/Components/CardPost.vue';
 import DialogModal from '@/Components/DialogModal.vue';
 import SinglePost from './SinglePost.vue';
 import Create from '@/Pages/Comment/Create.vue';
-
+import Like from '@/Pages/Post/Like.vue';
 // const commentForm = useForm({
 //     comment : "",
 // });
@@ -51,7 +51,8 @@ const logout = () => {
                     <img :src="image.file" alt="Imagen" class="img-fluid w-30"/>
                 </a>
             </div>
-
+            <Like :post="post" />
+                
             <div>
                 <Create :post="post"></Create>
             </div>

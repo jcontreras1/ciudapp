@@ -16,4 +16,6 @@ Route::middleware('auth:sanctum')->group(function () {
     
     Route::get('/cities', [CityController::class, 'search']);
     Route::post('/post/{post}/comment', [ApiPostController::class, 'store']);
+    Route::post('/post/{post}/like', [ApiPostController::class, 'like']);
+
 });
