@@ -19,7 +19,7 @@ class CommentController extends Controller
                 $request->validated(),
                 [
                     'post_id' => $post->id,
-                    'user_id' => '0',
+                    'user_id' => auth()->id(),
                 ]
             )
         );

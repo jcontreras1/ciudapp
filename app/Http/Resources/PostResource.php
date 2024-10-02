@@ -29,7 +29,7 @@ class PostResource extends JsonResource
                 'icon' => $this->subcategory ? $this->subcategory->icon : null,
             ],
             'images' => $this->images,
-            'comments' => $this->comments,
+            'comments' => $this->comments->loadMissing('user'),
             'created_at' => $this->created_at,
             'location' => $this->location_short,
         ];

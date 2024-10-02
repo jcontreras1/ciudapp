@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\api\ApiPostController;
 use App\Http\Controllers\Api\CityController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -9,4 +10,10 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 
-Route::get('/cities', [CityController::class, 'search']);
+Route::middleware('auth:sanctum')->group(function () {
+
+    
+    
+    Route::get('/cities', [CityController::class, 'search']);
+    Route::post('/post/{post}/comment', [ApiPostController::class, 'store']);
+});
