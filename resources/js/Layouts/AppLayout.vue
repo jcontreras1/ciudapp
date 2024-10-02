@@ -58,7 +58,7 @@ const logout = () => {
                     class="rounded-circle mr-2"
                     style="width: 40px;"
                     alt="Foto de perfil" v-if="$page.props.auth.user">
-                    <span class="fs-5">{{$page.props.auth.user.name}}</span>
+                    <span class="fs-5">{{$page.props.auth.user?.name}}</span>
                 </div>
                 <!-- <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>

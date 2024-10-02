@@ -12,6 +12,14 @@ class DeleteUser implements DeletesUsers
      */
     public function delete(User $user): void
     {
+        $likes = $user->likes;
+        foreach($likes as $like) {
+            $like->delete();
+        }
+        $posts = $user->posts;
+        foreach($posts as $post) {
+            $post->delete();
+        }
         $user->deleteProfilePhoto();
         $user->tokens->each->delete();
         $user->delete();

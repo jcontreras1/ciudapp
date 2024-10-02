@@ -10,7 +10,7 @@ defineProps({
 <template>
 
     <div class="d-grid gap-2">
-        <button class="btn btn-success" :type="type">
+        <button class="btn btn-primary" :type="type">
             <slot />
         </button>
     </div>
