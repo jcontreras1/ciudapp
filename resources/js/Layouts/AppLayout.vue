@@ -29,9 +29,19 @@ const logout = () => {
     router.post(route('logout'));
 };
 </script>
-
+<style>
+.fixed-column {
+            /* height: 100vh; */
+            overflow-y: auto;
+            position: sticky;
+        }
+        .scrollable-column {
+            height: 90vh; /* Ajusta la altura según lo necesites */
+            overflow-y: auto;
+        }
+</style>
 <template>
-    <div>
+    <div class="h-100">
         <!-- Sección de titulo -->
         <Head :title="title" />
 
@@ -53,12 +63,12 @@ const logout = () => {
             <!-- Layout principal 3 columnas izquierda 6 derecha -->
             <div class="row">
                 <!-- Menu principal izquierdo -->
-                <div class="col-12 col-md-3" >
+                <div class="col-12 col-md-3 fixed-column" >
                     <MenuPrincipalLateral />
                 </div>
 
                 <!-- Contenido principal -->
-                <div class="col-12 col-md-6">
+                <div class="col-12 col-md-6 scrollable-column">
                     <!-- Page Content -->
                     <main>
                         <slot />
@@ -66,7 +76,7 @@ const logout = () => {
                 </div>
 
                 <!-- Barra derecha de utilidades -->
-                <div class="col-12 col-md-3 d-none d-sm-block">
+                <div class="col-12 col-md-3 d-none d-sm-block fixed-column">
                     <!-- <h5 class="py-2"><i class="fas fa-search"></i> Buscar</h5>
                     <input placeholder="Buscar" class="form-control rounded-pill w-100" type="text" id="search"> -->
                 </div>
