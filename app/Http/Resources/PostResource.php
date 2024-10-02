@@ -32,6 +32,7 @@ class PostResource extends JsonResource
             'comments' => $this->comments->loadMissing('user'),
             'created_at' => $this->created_at,
             'location' => $this->location_short,
+            'likes' => $this->likes,
         ];
     }
 }
