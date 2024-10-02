@@ -8,6 +8,7 @@ import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
+import SectionTitle from '@/Components/SectionTitle.vue';
 
 const props = defineProps({
     user: Object,
@@ -76,18 +77,12 @@ const clearPhotoFileInput = () => {
 </script>
 
 <template>
+    <h3> Información del perfil</h3>
+    <p>Actualice la información del perfil y la dirección de correo electrónico de su cuenta.</p>
     <FormSection @submitted="updateProfileInformation">
-        <template #title>
-            Profile Information
-        </template>
-
-        <template #description>
-            Update your account's profile information and email address.
-        </template>
-
         <template #form>
             <!-- Profile Photo -->
-            <div v-if="$page.props.jetstream.managesProfilePhotos" class="col-span-6 sm:col-span-4">
+            <div v-if="$page.props.jetstream.managesProfilePhotos" >
                 <!-- Profile Photo File Input -->
                 <input
                     id="photo"
@@ -129,8 +124,9 @@ const clearPhotoFileInput = () => {
             </div>
 
             <!-- Name -->
-            <div class="col-span-6 sm:col-span-4">
-                <InputLabel for="name" value="Name" />
+            <div class="col-span-6 sm:col-span-6">
+                <i class="fas fa-user mr-2"></i>
+                <InputLabel for="name" value="Nombre" />
                 <TextInput
                     id="name"
                     v-model="form.name"
@@ -143,7 +139,8 @@ const clearPhotoFileInput = () => {
             </div>
 
             <!-- Email -->
-            <div class="col-span-6 sm:col-span-4">
+            <div class="col-span-6 sm:col-span-6">
+                <i class="fas fa-envelope mr-2"></i>
                 <InputLabel for="email" value="Email" />
                 <TextInput
                     id="email"
@@ -166,12 +163,12 @@ const clearPhotoFileInput = () => {
                             class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800"
                             @click.prevent="sendEmailVerification"
                         >
-                            Click here to re-send the verification email.
+                            Haga clic aquí para volver a enviar el correo electrónico de verificación.
                         </Link>
                     </p>
 
                     <div v-show="verificationLinkSent" class="mt-2 font-medium text-sm text-green-600 dark:text-green-400">
-                        A new verification link has been sent to your email address.
+                       Se ha enviado un nuevo enlace de verificación a su dirección de correo electrónico.
                     </div>
                 </div>
             </div>
@@ -179,11 +176,11 @@ const clearPhotoFileInput = () => {
 
         <template #actions>
             <ActionMessage :on="form.recentlySuccessful" class="me-3">
-                Saved.
+                Guardar
             </ActionMessage>
 
             <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                Save
+                Guardar
             </PrimaryButton>
         </template>
     </FormSection>

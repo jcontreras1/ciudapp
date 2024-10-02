@@ -31,14 +31,14 @@ const logout = () => {
 </script>
 <style>
 .fixed-column {
-            /* height: 100vh; */
-            overflow-y: auto;
-            position: sticky;
-        }
-        .scrollable-column {
-            height: 90vh; /* Ajusta la altura según lo necesites */
-            overflow-y: auto;
-        }
+    /* height: 100vh; */
+    overflow-y: auto;
+    position: sticky;
+}
+.scrollable-column {
+    height: 90vh; /* Ajusta la altura según lo necesites */
+    overflow-y: auto;
+}
 </style>
 <template>
     <div class="h-100">
@@ -50,12 +50,19 @@ const logout = () => {
             <div class="container">
                 <a class="navbar-brand fw-light" href="/">
                     <!-- <span class="fas fa-brain me-1"></span> -->
-                     <AuthenticationCardLogo />
+                    <AuthenticationCardLogo />
                     Ciudapp
                 </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <div class="d-flex justify-content-center align-items-center text-white">
+                    <img :src="$page.props.auth.user?.profile_photo_url"
+                    class="rounded-circle mr-2"
+                    style="width: 40px;"
+                    alt="Foto de perfil" v-if="$page.props.auth.user">
+                    <span class="fs-5">{{$page.props.auth.user.name}}</span>
+                </div>
+                <!-- <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
-                </button>
+                </button> -->
             </div>
         </nav>
 
@@ -68,7 +75,8 @@ const logout = () => {
                 </div>
 
                 <!-- Contenido principal -->
-                <div class="col-12 col-md-6 scrollable-column">
+                <div class="col-12 col-md-6 ">
+                <!-- <div class="col-12 col-md-6 scrollable-column"> -->
                     <!-- Page Content -->
                     <main>
                         <slot />
