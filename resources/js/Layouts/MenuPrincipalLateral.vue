@@ -43,14 +43,16 @@ const logout = () => {
 
         <!-- Editar Perfil -->
         <NavLink :href="route('profile')" icon='<i class="fas fa-user-edit"></i>' title="Perfil" v-if="$page.props.auth.user"></NavLink>
+        
+        <ThemeToggler />
+        
         <NavLink :href="'#'" icon='<i class="fas fa-sign-out-alt"></i>' @click.prevent="logout" title="Salir" v-if="$page.props.auth.user"></NavLink>
 
         <NavLink :href="route('login')" icon='<i class="fas fa-sign-in-alt"></i>' title="Iniciar Sesión" v-if="!$page.props.auth.user"></NavLink>
 
+        
         <NavLink :href="route('register')" icon='<i class="fas fa-user-plus"></i>' title="Registrarse" v-if="!$page.props.auth.user"></NavLink>
-
-        <ThemeToggler />
-
+        
 
     </div>
     <div class="d-block d-md-none py-1"></div>

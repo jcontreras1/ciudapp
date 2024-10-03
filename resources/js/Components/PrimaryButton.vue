@@ -9,7 +9,7 @@ defineProps({
 
 <template>
 
-    <div class="d-grid gap-2">
+    <div class="gap-2 float-end">
         <button class="btn btn-primary" :type="type">
             <slot />
         </button>

@@ -75,8 +75,8 @@ const logout = () => {
                 </div>
 
                 <!-- Contenido principal -->
-                <div class="col-12 col-md-6 ">
-                <!-- <div class="col-12 col-md-6 scrollable-column"> -->
+                <!-- <div class="col-12 col-md-6 "> -->
+                <div class="col-12 col-md-6 scrollable-column">
                     <!-- Page Content -->
                     <main>
                         <slot />

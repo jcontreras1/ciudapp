@@ -1,6 +1,7 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue'
 import { useForm } from '@inertiajs/vue3';
+import MapaLatLng from '@/Components/MapaLatLng.vue';
 
 const WIDTH = 1280;
 const HEIGHT = 720;
@@ -12,6 +13,38 @@ const props = defineProps({
     
 });
 
+const reposicionarTemporal = () => {
+    if(navigator.geolocation){
+        navigator.geolocation.getCurrentPosition((position) => {
+            form.latitud = position.coords.latitude;
+            form.longitud = position.coords.longitude;
+        }, (error) => {
+            let mensaje = '';
+            switch (error.code) {
+                case error.PERMISSION_DENIED:
+                mensaje = "Esta aplicación no tiene permisos de geolocalización";
+                break;
+                case error.POSITION_UNAVAILABLE:
+                mensaje = "Posición no disponible";
+                break;
+                case error.TIMEOUT:
+                mensaje = "Tiempo de espera agotado";
+                break;
+                default:
+                mensaje = "Error desconocido";
+                break;
+            }
+            Swal.fire('Error', mensaje, 'error');
+        },{
+            enableHighAccuracy: true,
+            timeout: 5000,
+            maximumAge: 0
+        });
+    } else {
+        Swal.fire('No se pudo obtener la ubicación. ', 'error');
+    }
+}
+
 const cantidadSubcategorias = computed(() => {
     return props.categorias.reduce((acc, category) => acc + category.subcategories.length, 0);
 });
@@ -19,8 +52,8 @@ const cantidadSubcategorias = computed(() => {
 // Defino mis variables para usarlas en el componente
 const form = useForm({
     contenido: null,
-    latitud: null,
-    longitud: null,
+    latitud: 0,
+    longitud: 0,
     image: null,
     subcategory_id:null,
 });
@@ -47,7 +80,7 @@ const onFileChange = (event) => {
                 let width = e.target.width;
                 let height = e.target.height;
                 let ratio;
-
+                
                 if (width > height) {
                     ratio = WIDTH / width;
                     canvas.width = WIDTH;
@@ -57,9 +90,9 @@ const onFileChange = (event) => {
                     canvas.width = width * ratio;
                     canvas.height = HEIGHT;
                 }
-
+                
                 ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-
+                
                 let newImgUrl = ctx.canvas.toDataURL('image/jpeg', 0.8);
                 form.image = urlToFile(newImgUrl);
             }
@@ -108,44 +141,19 @@ function funcionDeSubmit() {
         });
         return;
     }
-    if(navigator.geolocation){
-        navigator.geolocation.getCurrentPosition((position) => {
-            form.latitud = position.coords.latitude;
-            form.longitud = position.coords.longitude;
-            form.post(route('posts.store'));
-            activeCategory.value = null;
-            imageSrc.value = null;
-            form.image = null;
-            form.subcategory_id = null;
-            document.getElementById('image').value = '';
-        }, (error) => {
-            let mensaje = '';
-            switch (error.code) {
-                case error.PERMISSION_DENIED:
-                mensaje = "Esta aplicación no tiene permisos de geolocalización";
-                break;
-                case error.POSITION_UNAVAILABLE:
-                mensaje = "Posición no disponible";
-                break;
-                case error.TIMEOUT:
-                mensaje = "Tiempo de espera agotado";
-                break;
-                default:
-                mensaje = "Error desconocido";
-                break;
-            }
-            Swal.fire('Error', mensaje, 'error');
-        },{
-            enableHighAccuracy: true,
-            timeout: 5000,
-            maximumAge: 0
-        });
-    } else {
-        Swal.fire('No se pudo obtener la ubicación. ', 'error');
-    }
+    
+    form.post(route('posts.store'));
+    activeCategory.value = null;
+    imageSrc.value = null;
+    form.image = null;
+    form.latitud = 0;
+    form.longitud = 0;
+    form.subcategory_id = null;
+    document.getElementById('image').value = '';    
 }
 
 function toggleCategory(id){
+    reposicionarTemporal();
     activeCategory.value = activeCategory.value === id ? null : id;
 }
 
@@ -153,6 +161,7 @@ function toggleCategory(id){
 
 <template>
     <!-- Crear un Post -->
+    
     <div id="c"></div>
     <div class=" card w-100">
         <div class="card-body">
@@ -205,12 +214,15 @@ function toggleCategory(id){
             <input type="file" class="form-control border-2 p-2 rounded-5 mb-4" id="image"
             name="image" capture="environment" accept="image/png, image/jpeg"
             @change="onFileChange">
-            
-            <!-- Boton para postear -->
-            <button class="btn btn-primary rounded-4" :disabled="(form.subcategory_id == null && form.image == null) || form.processing">
-                {{ form.processing ? 'Guardando...' : 'Guardar' }}
-            </button>
-        </form>
+            <div class="mb-3">
+                <MapaLatLng :lat="form.latitud" :lng="form.longitud" @update:lat="(lat) => {form.latitud = lat;}" @update:lng="(lng) => {form.longitud = lng}" />
+                </div>
+                
+                <!-- Boton para postear -->
+                <button class="btn btn-primary rounded-4" :disabled="(form.subcategory_id == null && form.image == null) || form.processing">
+                    {{ form.processing ? 'Guardando...' : 'Guardar' }}
+                </button>
+            </form>
+        </div>
     </div>
-</div>
 </template>
