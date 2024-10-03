@@ -18,32 +18,12 @@ const props = defineProps({
 });
 
 const fomrulario = useForm({
-    'name' : '', //este hay que llenarlo en el formu
+    'name' : props.region.name,
     'institution' : props.institucion.id,
-    'region' : props.region.name,
     'puntos' : [], //Este es el arreglo de todas las coordenadas que hacen el polígono. Tienen que estar en formato array así como lo dejo abajo:
 });
 
 
-/**
- *
-{
-    "puntos" : [
-        {
-            "lat" : 1,
-            "lng" : 2
-        },
-        {
-            "lat" : 2,
-            "lng" : 2
-        },
-        {
-            "lat" : 3,
-            "lng" : 3
-        }
-    ]
-}
- */
 </script>
 
 <template>
@@ -55,39 +35,31 @@ const fomrulario = useForm({
             </template>
         </SectionTitle>
         <hr>
-        <form @submit.prevent="fomrulario.post(route('region.update', props.region.id))">
+        <form @submit.prevent="fomrulario.put(route('region.update', {
+            'region' : props.region.id,
+            'institution' : props.institucion.id
+        }))">
 
                 <div class="mb-3">
                     <div class="form-group">
                         <label for="institution" class="mb-2"><b>Región</b></label>
-                        <input type="text" class="form-control" id="institution" v-model="fomrulario.region">
+                        <input type="text" class="form-control" id="institution" v-model="fomrulario.name">
                     </div>
                 </div>
                  <div class="mb-2">
                     <div class="form-group">
                         <label for="institution" class="mb-2"><b>Coordenadas</b></label>
-                        <EditPolygon :puntos="region.points"/>
+                        <EditPolygon :puntos="region.points"  v-on:puntos="(puntos) => fomrulario.puntos = puntos" />
                     </div>
                 </div>
+                <button type="submit" class="btn btn-primary">Guardar</button>
 
 
 
 
         </form>
-    <!-- {{institucion}}} -->
-        institución: <strong>{{ institucion.name }}</strong> <br>
-        region: <strong>{{ region.name }}</strong>
-  <br>
-  <br>
-  <br>
-  <br>
-    <<<<<<<<<<<<<<<< aca hay que meter el mapingo con los puntos >>>>>>>>>>>>>>
+        <!-- institución: <strong>{{ institucion.name }}</strong> <br> -->
+        <!-- region: <strong>{{ region.name }}</strong> -->
 
-    estos son los puntos:
-
-    <!-- <ul> -->
-        <!-- <li v-for="punto in region.points" :key="punto.id">{{ punto }}</li> -->
-
-    <!-- </ul> -->
 </AppLayout>
 </template>

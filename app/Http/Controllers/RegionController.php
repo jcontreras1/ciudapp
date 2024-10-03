@@ -24,7 +24,7 @@ class RegionController extends Controller
         if(count($points) < 3){
             return redirect()->back()->with('error', 'Debe ingresar al menos 3 puntos');
         }
-        
+
         $region = Region::create([
             'name' => $request->input('name'),
             'institution_id' => $institution->id,
@@ -48,6 +48,27 @@ class RegionController extends Controller
     public function destroy(Institution $institution, Region $region){
         $region->delete();
         return redirect()->route('region.index', $institution)->with('message', 'Región eliminada correctamente');
+    }
+
+    public function update(Institution $institution, Region $region, Request $request){
+        $points = $request->input('puntos');
+        if(count($points) < 3){
+            return redirect()->back()->with('error', 'Debe ingresar al menos 3 puntos');
+        }
+
+        $region->update([
+            'name' => $request->input('name'),
+        ]);
+
+        $region->points()->delete();
+        foreach ($points as $pointData) {
+            Point::create([
+                'lat' => $pointData[1],
+                'lng' => $pointData[0],
+                'region_id' => $region->id,
+            ]);
+        }
+        return redirect()->route('institution.edit', $institution)->with('message', 'Región actualizada correctamente');
     }
 
 }
