@@ -27,7 +27,7 @@ class InstitutionController extends Controller
     public function edit(Institution $institution){
         return Inertia::render('Institucion/Edit',
         [
-            'institucion' => $institution->with('city.province')->first(),
+            'institucion' => $institution->loadMissing('city.province'),
             'regiones' => $institution->regions,
             'users' => $institution->users,
             ]

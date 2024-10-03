@@ -31,7 +31,6 @@ onMounted(() => {
             // polygon: true,
             // trash: true,
         },
-        // defaultMode: 'draw_polygon',
     });
 
     map.addControl(draw);
@@ -46,6 +45,8 @@ onMounted(() => {
                     coordinates: [arrayBidimensional]
                 }
             });
+            emit('puntos', arrayBidimensional); // Emitir puntos inicialmente
+            centerMap(arrayBidimensional); // Centrar el mapa en el polígono
         }
 
         // Actualizar el área y emitir puntos en eventos de dibujo
@@ -54,6 +55,12 @@ onMounted(() => {
         map.on('draw.update', updateArea);
     });
 
+    // Función para centrar el mapa en el polígono
+    function centerMap(coordinates) {
+        const center = turf.center(turf.polygon([coordinates]));
+        map.setCenter([center.geometry.coordinates[0], center.geometry.coordinates[1]]);
+    }
+
     // Función para actualizar el área y emitir los puntos
     function updateArea(e) {
         const data = draw.getAll();
@@ -61,11 +68,11 @@ onMounted(() => {
         if (data.features.length > 0) {
             const coordinates = data.features[0].geometry.coordinates[0]; // Coordenadas del polígono
 
-            console.log(coordinates);
-            emit('puntos', coordinates);
+            emit('puntos', coordinates); // Emitir puntos cada vez que se actualiza el polígono
             const area = turf.area(data);
             const rounded_area = Math.round(area * 100) / 100;
             answer.innerHTML = `<p><strong>${rounded_area}</strong></p><p>square meters</p>`;
+            centerMap(coordinates); // Centrar el mapa en el nuevo polígono
         } else {
             answer.innerHTML = '';
             if (e.type !== 'draw.delete')
@@ -85,17 +92,17 @@ onMounted(() => {
                     coordinates: [newArrayBidimensional]
                 }
             });
+            emit('puntos', newArrayBidimensional); // Emitir nuevos puntos
+            centerMap(newArrayBidimensional); // Centrar el mapa en el nuevo polígono
         }
     });
 });
 </script>
 
 <template>
-
     <div id="map"></div>
-
     <div class="calculation-box">
-        <p>Haga clic en la zona y muevalo para editar</p>
+        <p>Haga clic en la zona y muévalo para editar</p>
         <!-- <div id="calculated-area"></div> -->
     </div>
 </template>
