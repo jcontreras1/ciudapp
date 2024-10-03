@@ -26,7 +26,7 @@ const props = defineProps({
     
     
     
-    <div v-for="image in post?.images" class="mb-3">
+    <div v-for="image in post?.images" class="mb-3 text-center">
         <img :src="image.file" alt="Imagen" class="img-fluid">
     </div>
     

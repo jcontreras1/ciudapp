@@ -1,6 +1,9 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useForm } from '@inertiajs/vue3';
+
+const WIDTH = 1280;
+const HEIGHT = 720;
 
 const props = defineProps({
     categorias:{
@@ -34,9 +37,49 @@ const onFileChange = (event) => {
             imageSrc.value = e.target.result;
         };
         reader.readAsDataURL(selectedFile);
-        form.image = selectedFile;
+        reader.onload = (event) => {
+            let img_url = event.target.result; //base64
+            let image = document.createElement('img');
+            image.src = img_url;
+            image.onload = (e) => {
+                let canvas = document.createElement('canvas');
+                let ctx = canvas.getContext('2d');
+                let width = e.target.width;
+                let height = e.target.height;
+                let ratio;
+
+                if (width > height) {
+                    ratio = WIDTH / width;
+                    canvas.width = WIDTH;
+                    canvas.height = height * ratio;
+                } else {
+                    ratio = HEIGHT / height;
+                    canvas.width = width * ratio;
+                    canvas.height = HEIGHT;
+                }
+
+                ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+                let newImgUrl = ctx.canvas.toDataURL('image/jpeg', 0.8);
+                form.image = urlToFile(newImgUrl);
+            }
+        }
     }
 };
+
+const urlToFile = (url) => {
+    let arr = url.split(',');
+    let mime = arr[0].match(/:(.*?);/)[1];
+    let data = arr[1];
+    let dataStr = atob(data);
+    let n = dataStr.length;
+    let dataArr = new Uint8Array(n);
+    while (n--) {
+        dataArr[n] = dataStr.charCodeAt(n);
+    }
+    let file = new File([dataArr], 'image.jpg', { type: mime });
+    return file;
+}
 
 // Metodo para enviar el formulario
 function funcionDeSubmit() {
@@ -110,6 +153,7 @@ function toggleCategory(id){
 
 <template>
     <!-- Crear un Post -->
+    <div id="c"></div>
     <div class=" card w-100">
         <div class="card-body">
             <div v-if="categorias.length === 0 || cantidadSubcategorias === 0">
