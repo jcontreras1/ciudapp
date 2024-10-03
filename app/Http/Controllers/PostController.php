@@ -32,6 +32,7 @@ class PostController extends Controller
                 'comment' => "",
                 'private' => false,
                 'subcategory_id' => $request->subcategory_id,
+                'location_long' => $request->fullAddress ?? null
             ]);
 
             if(!$post){

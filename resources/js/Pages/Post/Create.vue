@@ -5,7 +5,7 @@ import MapaLatLng from '@/Components/MapaLatLng.vue';
 
 const WIDTH = 1280;
 const HEIGHT = 720;
-
+const apiKey = import.meta.env.VITE_MAPBOX_TOKEN;
 const props = defineProps({
     categorias:{
         type: Array,
@@ -18,6 +18,7 @@ const reposicionarTemporal = () => {
         navigator.geolocation.getCurrentPosition((position) => {
             form.latitud = position.coords.latitude;
             form.longitud = position.coords.longitude;
+            geocoding();
         }, (error) => {
             let mensaje = '';
             switch (error.code) {
@@ -56,6 +57,7 @@ const form = useForm({
     longitud: 0,
     image: null,
     subcategory_id:null,
+    fullAddress : null,
 });
 
 
@@ -99,6 +101,26 @@ const onFileChange = (event) => {
         }
     }
 };
+const searchingGeocode = ref(false);
+const geocoding = () =>{
+    searchingGeocode.value = true;
+    //let url = `https://api.mapbox.com/search/geocode/v6/reverse?longitude=${form.longitud}&latitude=${form.latitud}&access_token=${apiKey}`;
+    axios.get('/api/geocoding', {
+        params: {
+            lng: form.longitud,
+            lat: form.latitud
+        }
+    })
+    .then((response) => {
+        searchingGeocode.value = false;
+        form.fullAddress = response.data.features[0]?.properties.full_address;
+        // console.log();
+    })
+    .catch((error) => {
+        searchingGeocode.value = false;
+        console.log(error);
+    });
+}
 
 const urlToFile = (url) => {
     let arr = url.split(',');
@@ -146,6 +168,7 @@ function funcionDeSubmit() {
     activeCategory.value = null;
     imageSrc.value = null;
     form.image = null;
+    fullAddress = null;
     form.latitud = 0;
     form.longitud = 0;
     form.subcategory_id = null;
@@ -211,18 +234,22 @@ function toggleCategory(id){
                 </div>
             </div>
             
-            <input type="file" class="form-control border-2 p-2 rounded-5 mb-4" id="image"
+            <input type="file" class="form-control border-2 p-2 rounded-5 mb-1" id="image"
             name="image" capture="environment" accept="image/png, image/jpeg"
             @change="onFileChange">
             <div class="mb-3">
-                <MapaLatLng :lat="form.latitud" :lng="form.longitud" @update:lat="(lat) => {form.latitud = lat;}" @update:lng="(lng) => {form.longitud = lng}" />
-                </div>
-                
-                <!-- Boton para postear -->
-                <button class="btn btn-primary rounded-4" :disabled="(form.subcategory_id == null && form.image == null) || form.processing">
-                    {{ form.processing ? 'Guardando...' : 'Guardar' }}
-                </button>
-            </form>
-        </div>
+                <MapaLatLng :lat="form.latitud" :lng="form.longitud" @update:lat="(lat) => {form.latitud = lat; geocoding()}" @update:lng="(lng) => {form.longitud = lng}" > </MapaLatLng>
+            </div>
+            <div v-if="searchingGeocode" class="d-flex mb-3 ml-2">
+                <i class="fas fa-spinner fa-spin"></i>
+            </div>
+            <input type="text" class="form-control border-2 p-2 rounded-5 mb-4" id="contenido" readonly v-show="form.fullAddress" v-model="form.fullAddress" required>
+            
+            <!-- Boton para postear -->
+            <button class="btn btn-primary rounded-4" :disabled="(form.subcategory_id == null && form.image == null) || form.processing">
+                {{ form.processing ? 'Guardando...' : 'Guardar' }}
+            </button>
+        </form>
     </div>
+</div>
 </template>

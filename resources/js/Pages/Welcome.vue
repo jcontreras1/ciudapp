@@ -1,6 +1,6 @@
 <script setup>
 import { Head, router, Link } from '@inertiajs/vue3';
-import AppLayout from '@/Layouts/AppLayout.vue';
+import AppLayoutHome from '@/Layouts/AppLayoutHome.vue';
 import PostShow from '@/Pages/Post/Show.vue';
 import CreatePost from '@/Pages/Post/Create.vue';
 import { ref } from 'vue';
@@ -64,7 +64,7 @@ const { stop } = useIntersectionObserver(veryBottomTarget, ([{ isIntersecting }]
 </script>
 
 <template>
-    <AppLayout >
+    <AppLayoutHome >
         <BootstrapModal :post="selectedPostToModal"></BootstrapModal>
         <Head title="Inicio"></Head>
         <!--LATERAL IZQUIERDO - Barra de navegación -->
@@ -92,5 +92,5 @@ const { stop } = useIntersectionObserver(veryBottomTarget, ([{ isIntersecting }]
         <div ref="veryBottomTarget" class="-translate-y-72 h-20 text-center">
             <i class="fas fa-spinner fa-spin fa-2x"></i>&nbsp;Cargando más publicaciones...
         </div>
-    </AppLayout>
+    </AppLayoutHome>
 </template>
