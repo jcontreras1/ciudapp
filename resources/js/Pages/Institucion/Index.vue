@@ -36,7 +36,7 @@ const props = defineProps({
                             <th>Email</th>
                             <th>Dirección</th>
                             <th>City</th>
-                            <th>Opciones</th>
+                            <th class="text-end">Opciones</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -44,10 +44,12 @@ const props = defineProps({
                             <td>{{ institucion.name }}</td>
                             <td>{{ institucion.mail }}</td>
                             <td>{{ institucion.address }}</td>
-                            <td>{{ institucion.city_id }}</td>
-                            <td class="float-end">
-                                <a :href="route('institution.edit', institucion)" class="btn btn-primary mr-1"><i class="fas fa-edit"></i></a>
-                                <button @click="destroy(institucion)" class="btn btn-danger"><i class="fas fa-trash-alt"></i></button>
+                            <td>{{ institucion.city.name }} - {{ institucion.city.province.name }}</td>
+                            <td>
+                                <div class="float-end">
+                                    <a :href="route('institution.edit', institucion)" class="btn btn-sm btn-primary mr-1"><i class="fas fa-edit"></i></a>
+                                    <button @click="destroy(institucion)" class="btn btn-sm btn-danger"><i class="fas fa-trash-alt"></i></button>
+                                </div>
                             </td>
 
                         </tr>

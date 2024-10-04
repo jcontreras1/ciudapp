@@ -34,7 +34,10 @@ class PolygonSearchListener
             });
             
             if (pointInPolygon($putoABuscar, $poli->toArray())){
-                info("El post {$post->id} está en la región {$region->name}");
+                $existingComment = $post->comment;
+                $newComment = "Está en la región {$region->name}<br>";
+                $post->update(['comment' => $existingComment . $newComment]);
+                // info("El post {$post->id} está en la región {$region->name}");
             }else{
                 info("El post {$post->id} NO está en la región {$region->name}");
             }

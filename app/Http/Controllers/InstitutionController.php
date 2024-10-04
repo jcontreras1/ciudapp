@@ -14,7 +14,7 @@ class InstitutionController extends Controller
 {
     public function index(){
 
-        $instituciones = Institution::orderBy('name', 'asc')->paginate(10);
+        $instituciones = Institution::with('city.province')->orderBy('name', 'asc')->paginate(10);
         return Inertia::render('Institucion/Index', ['instituciones' => $instituciones]);
 
     }

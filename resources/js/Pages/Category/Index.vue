@@ -43,7 +43,6 @@ const selectedCategory = ref(null);
         </SectionTitle>
         <hr>
 
-        <hr class="mb-3">
         <div v-if="categorias.length">
             <div class="table-responsive">
                 <table class="table">
@@ -67,7 +66,7 @@ const selectedCategory = ref(null);
                             </Link></td>
                             <td><span class="fs-3" v-html="categoria.icon"></span></td>
                             <td>
-                                <Link class="btn btn-primary btn-sm" title="Editar" :href="route('category.edit', categoria.id)">Editar</Link>
+                                <Link class="btn btn-primary btn-sm mr-1" title="Editar" :href="route('category.edit', categoria.id)">Editar</Link>
                                 <button class="btn btn-danger btn-sm" title="Eliminar" @click="destroy(categoria)">Eliminar</button>
                                 <!-- <button class="btn btn-danger btn-sm" title="Eliminar" @click="destroy(categoria.id)">Eliminar</button> -->
                             </td>

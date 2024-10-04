@@ -40,9 +40,13 @@ const logout = () => {
                 <i class="fas fa-map-marker-alt"></i>
                 {{ post.location }}
             </div>
-
-            <h5>{{ post.comment }}</h5>
-            <h5 class="d-flex nav-link">
+            <div v-if="post.comment">
+                <hr>
+                <span class="text-info">Esto es temporal:</span>
+                <p v-html="post.comment"></p>
+                <hr>
+            </div>
+                <h5 class="d-flex nav-link">
                 <span v-if="post.category?.name"><b> #{{ post.category?.name }}</b>&nbsp;</span>
                 <span v-if="post.subcategory?.name"><b> #{{ post.subcategory.name }} </b></span>
             </h5>

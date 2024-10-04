@@ -181,13 +181,14 @@ const updateIntitutionForm = useForm({
     </h3>
     <br>
     <div class="row mb-4">
-        <div class="col-12 col-md-3" v-for="region in regiones" :key="region.id">
+        <div class="col-12 col-md-4" v-for="region in regiones" :key="region.id">
             <div class="card text-center h-100" >
                 <div class="card-body">
                     <h4 class="mb-3">{{ region.name }}</h4>
-                    <span><a :href="route('region.edit', {'institution' : institucion, 'region' : region})" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i></a>&nbsp;
-                        <button class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i></button>
-                    </span>
+                    <div class="">
+                        <a :href="route('region.edit', {'institution' : institucion, 'region' : region})" class="btn btn-primary mr-1"><i class="fas fa-edit"></i></a>
+                        <button class="btn btn-danger"><i class="fas fa-trash-alt"></i></button>
+                    </div>
                 </div>
             </div>
         </div>
