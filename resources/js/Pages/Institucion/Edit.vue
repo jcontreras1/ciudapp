@@ -59,6 +59,24 @@ const eliminarUsuario = (user) => {
         }
     });
 }
+
+const eliminarRegion = (region) => {
+    Swal.fire({
+        title: `¿Eliminar región`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Eliminar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            genericForm.delete(route('region.destroy', {'institution' : props.institucion, 'region' : region.id}), {preserveScroll: true});
+        }
+    });
+}
+
+
+
+
 const agregarUsuario = () =>{
     newUser.post(route('userInstitution.store', props.institucion), {preserveScroll: true, onSuccess: () => {
         newUser.name = '';
@@ -176,23 +194,29 @@ const updateIntitutionForm = useForm({
 
 
     <hr>
-    <h3>Regiones definidas
-        <a class="btn btn-success float-end" :href="route('region.create', institucion)" title="Crear región"><i class="fas fa-plus"></i></a>
-    </h3>
-    <br>
-    <div class="row mb-4">
-        <div class="col-12 col-md-4" v-for="region in regiones" :key="region.id">
-            <div class="card text-center h-100" >
-                <div class="card-body">
-                    <h4 class="mb-3">{{ region.name }}</h4>
-                    <div class="">
-                        <a :href="route('region.edit', {'institution' : institucion, 'region' : region})" class="btn btn-primary mr-1"><i class="fas fa-edit"></i></a>
-                        <button class="btn btn-danger"><i class="fas fa-trash-alt"></i></button>
-                    </div>
+ <h3>Regiones definidas
+    <a class="btn btn-success float-end" :href="route('region.create', institucion)" title="Crear región">
+        <i class="fas fa-plus"></i>
+    </a>
+</h3>
+<br>
+<div class="row mb-4">
+    <div class="col-12 col-md-4" v-for="region in regiones" :key="region.id">
+        <div class="card text-center h-100">
+            <div class="card-body">
+                <h4 class="mb-3">{{ region.name }}</h4>
+                <div class="">
+                    <a :href="route('region.edit', {'institution' : institucion, 'region' : region})" class="btn btn-primary mr-1">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <button @click="eliminarRegion(region)" class="btn btn-danger">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
                 </div>
             </div>
         </div>
     </div>
+</div>
     <hr>
     <h3>
         Lista de usuarios asociados a  esta institución

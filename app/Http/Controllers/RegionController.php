@@ -45,9 +45,11 @@ class RegionController extends Controller
         return Inertia::render('Region/Edit', ['region' => $region->loadMissing('points'), 'institucion' => $institution]);
     }
 
+
     public function destroy(Institution $institution, Region $region){
+        $region->points()->delete();
         $region->delete();
-        return redirect()->route('region.index', $institution)->with('message', 'Región eliminada correctamente');
+        return redirect()->route('institution.edit', $institution)->with('message', 'Región eliminada correctamente');
     }
 
     public function update(Institution $institution, Region $region, Request $request){
