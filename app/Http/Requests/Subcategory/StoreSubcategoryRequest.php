@@ -39,6 +39,7 @@ class StoreSubcategoryRequest extends FormRequest
                 ->ignore($subcategoria),
             ],
             'icon' => 'required|string|min:3|max:190',
+            'relevance_minutes' => 'nullable|numeric|min:0',
         ];
     }
 }

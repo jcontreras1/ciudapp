@@ -8,8 +8,7 @@ use App\Models\Subcategory;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
-class SubcategoryController extends Controller
-{
+class SubcategoryController extends Controller{
     /**
     * Display a listing of the resource.
     */
@@ -39,7 +38,8 @@ class SubcategoryController extends Controller
             'category_id' => $category->id,
         ],[
             'deleted_at' => null,
-            'icon' => $request->icon
+            'icon' => $request->icon,
+            'relevance_minutes' => $request->relevance_minutes
             ]
         );
         return redirect()->route('subcategory.index', $category->id)->with('message', 'Subcategoría creada correctamente');

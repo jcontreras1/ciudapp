@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Carbon\Carbon;
 
 class PostResource extends JsonResource
 {
@@ -33,6 +34,7 @@ class PostResource extends JsonResource
             'created_at' => $this->created_at,
             'location' => $this->location_short,
             'likes' => $this->likes,
+            'valid_until' => $this->valid_until ? date('d/m/Y H:i', strtotime($this->valid_until)) : null, // Carbon::parse($this->valid_until)->diffForHumans() : null,
         ];
     }
 }

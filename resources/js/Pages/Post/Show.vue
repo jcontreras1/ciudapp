@@ -34,7 +34,7 @@ const logout = () => {
     <div class="card">
         <div class="card-body">
             <div>
-                <i class="fas fa-calendar-alt"></i> {{ new Date(post.created_at).toLocaleDateString() }}
+                <i class="fas fa-calendar-alt"></i> {{ new Date(post.created_at).toLocaleDateString() }} {{ post.valid_until ? ' - ' + post.valid_until : '' }}
             </div>
             <div v-if="post.location">
                 <i class="fas fa-map-marker-alt"></i>

@@ -25,6 +25,16 @@ const deleteSubcategory = () => {
     router.delete(route('subcategory.destroy', {'category' : props.categoria.id, 'subcategory' : selectedSubcategory.value.id}), {preserveScroll: true});
     ocultarModal();
 }
+const duracionSubcategoria = (duracion) => {
+
+    let dias = Math.floor(duracion / 1440);
+    let horas = Math.floor((duracion % 1440) / 60);
+    let minutos = duracion % 60;
+
+    return `${dias}d ${horas}h ${minutos}m`;
+}
+
+
 
 const ocultarModal = () => { showModal.value = false; }
 const showModal = ref(false);
@@ -53,6 +63,7 @@ const selectedSubcategory = ref(null);
                     <tr>
                         <th>Nombre</th>
                         <th>Icono</th>
+                        <th>Duración</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
@@ -60,6 +71,7 @@ const selectedSubcategory = ref(null);
                     <tr v-for="subcategoria in subcategorias" :key="subcategoria.id">
                         <td>{{ subcategoria.name }}</td>
                         <td><span class="fs-3" v-html="subcategoria.icon"></span></td>
+                        <td>{{ duracionSubcategoria(subcategoria.relevance_minutes) }}</td>
                         <td>
                             <Link class="btn btn-primary btn-sm" title="Editar" :href="route('subcategory.edit', {'category' : categoria.id, 'subcategory' : subcategoria.id})">Editar</Link>
                             <button class="btn btn-danger btn-sm" title="Eliminar" @click="destroy(subcategoria)">Eliminar</button>

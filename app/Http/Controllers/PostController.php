@@ -35,6 +35,11 @@ class PostController extends Controller
                 'location_long' => $request->fullAddress ?? null
             ]);
 
+            //Ver hasta cuando sería considerado valido el post
+            $subcategory = $post->subcategory;
+            $post->valid_until = now()->addMinutes($subcategory->relevance_minutes);
+            $post->save();
+
             if(!$post){
                 DB::rollBack();
                 return back()->with('error', 'Post no pudo ser creado');

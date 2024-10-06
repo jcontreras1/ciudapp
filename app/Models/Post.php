@@ -16,10 +16,10 @@ class Post extends Model
         'lng', 
         'comment', 
         'private', 
-        'deleted_at', 
         'subcategory_id',
         'location_short',           // llenables desde un listener
         'location_long',            // llenables desde un listener
+        'valid_until',              // valido hasta un período de tiempo dado por la subcategoría 
     ];
     protected $table = "post";
 
