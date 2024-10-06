@@ -25,6 +25,7 @@ class PolygonSearchListener
         /** Busco las zonas que tengan un polígono que contenga a este post */
         $post = $event->post;
         $putoABuscar = ['lat' => $post->lat, 'lng' => $post->lng];
+        $foundRegions = [];
         foreach (Region::all() as $region){
             $poli = $region->points->map(function ($point) {
                 return [
@@ -34,13 +35,15 @@ class PolygonSearchListener
             });
             
             if (pointInPolygon($putoABuscar, $poli->toArray())){
-                $existingComment = $post->comment;
-                $newComment = "Está en la región {$region->name}<br>";
-                $post->update(['comment' => $existingComment . $newComment]);
-                // info("El post {$post->id} está en la región {$region->name}");
+                $foundRegions[] = $region->name . ' - ' . $region->institution->name; 
             }else{
                 info("El post {$post->id} NO está en la región {$region->name}");
             }
+        }
+
+        if (!empty($foundRegions)) {
+            $newComment = implode("<br>", $foundRegions);
+            $post->update(['comment' => $newComment]);
         }
     }
 }

@@ -30,12 +30,11 @@ Route::middleware([
         Route::resource('category', App\Http\Controllers\CategoryController::class)->except('show');
         Route::resource('category/{category}/subcategory', App\Http\Controllers\SubcategoryController::class)->except('show');
         Route::resource('post/{post}/comment', App\Http\Controllers\CommentController::class)->only(['index', 'store', 'update']);
-
+ 
+        Route::resource('institution', App\Http\Controllers\InstitutionController::class)->except('show');
+        Route::resource('institution/{institution}/region', App\Http\Controllers\RegionController::class)->except('show');
+        Route::resource('institution/{institution}/userInstitution', App\Http\Controllers\UserInstitutionController::class)->only(['store', 'destroy', 'update']);
     });
-
-    Route::resource('institution', App\Http\Controllers\InstitutionController::class)->except('show');
-    Route::resource('institution/{institution}/region', App\Http\Controllers\RegionController::class)->except('show');
-    Route::resource('institution/{institution}/userInstitution', App\Http\Controllers\UserInstitutionController::class)->only(['store', 'destroy', 'update']);
 //Auth::routes();
 
 include('auth.php');

@@ -16,13 +16,15 @@ const emit = defineEmits(['puntos'])
 
 onMounted(() => {
     const arrayBidimensional = props.puntos.map(item => [item.lng, item.lat]);
+    const center = turf.center(turf.polygon([arrayBidimensional]));
     mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
     const map = new mapboxgl.Map({
         container: 'map',
         style: 'mapbox://styles/mapbox/streets-v11',
-        center: [-65.0385100, -42.7692000],
-        zoom: 13
+        center: [center.geometry.coordinates[0], center.geometry.coordinates[1]],
+        zoom: 10
     });
+    
 
     const draw = new MapboxDraw({
         simple_select: true,
@@ -55,11 +57,27 @@ onMounted(() => {
         map.on('draw.update', updateArea);
     });
 
-    // Función para centrar el mapa en el polígono
     function centerMap(coordinates) {
-        const center = turf.center(turf.polygon([coordinates]));
-        map.setCenter([center.geometry.coordinates[0], center.geometry.coordinates[1]]);
-    }
+    // Calcular los límites del polígono
+    const bounds = coordinates.reduce((bounds, coord) => {
+        return [
+            [Math.min(bounds[0][0], coord[0]), Math.min(bounds[0][1], coord[1])],
+            [Math.max(bounds[1][0], coord[0]), Math.max(bounds[1][1], coord[1])]
+        ];
+    }, [[Infinity, Infinity], [-Infinity, -Infinity]]);
+
+    // Ajustar el mapa a los límites
+    map.fitBounds(bounds, {
+        padding: { top: 20, bottom: 20, left: 20, right: 20 },
+        maxZoom: 15 // Ajusta el zoom máximo según tus necesidades
+    });
+}
+
+    // // Función para centrar el mapa en el polígono
+    // function centerMap(coordinates) {
+    //     const center = turf.center(turf.polygon([coordinates]));
+    //     map.setCenter([center.geometry.coordinates[0], center.geometry.coordinates[1]]);
+    // }
 
     // Función para actualizar el área y emitir los puntos
     function updateArea(e) {

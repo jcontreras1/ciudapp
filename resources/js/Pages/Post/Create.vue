@@ -103,23 +103,24 @@ const onFileChange = (event) => {
 };
 const searchingGeocode = ref(false);
 const geocoding = () =>{
-    searchingGeocode.value = true;
-    //let url = `https://api.mapbox.com/search/geocode/v6/reverse?longitude=${form.longitud}&latitude=${form.latitud}&access_token=${apiKey}`;
-    axios.get('/api/geocoding', {
-        params: {
-            lng: form.longitud,
-            lat: form.latitud
-        }
-    })
-    .then((response) => {
-        searchingGeocode.value = false;
-        form.fullAddress = response.data.features[0]?.properties.full_address;
-        // console.log();
-    })
-    .catch((error) => {
-        searchingGeocode.value = false;
-        console.log(error);
-    });
+    setTimeout(() => {
+        searchingGeocode.value = true;
+        axios.get('/api/geocoding', {
+            params: {
+                lng: form.longitud,
+                lat: form.latitud
+            }
+        })
+        .then((response) => {
+            searchingGeocode.value = false;
+            form.fullAddress = response.data.features[0]?.properties.full_address;
+            // console.log();
+        })
+        .catch((error) => {
+            searchingGeocode.value = false;
+            console.log(error);
+        });
+    }, 150);
 }
 
 const urlToFile = (url) => {
@@ -168,7 +169,8 @@ function funcionDeSubmit() {
     activeCategory.value = null;
     imageSrc.value = null;
     form.image = null;
-    form.fullAddress = null;
+    form.
+    fullAddress = null;
     form.latitud = 0;
     form.longitud = 0;
     form.subcategory_id = null;

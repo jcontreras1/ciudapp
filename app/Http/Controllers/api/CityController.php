@@ -16,7 +16,9 @@ class CityController extends Controller
         }
 
         $cities = City::where('name', 'LIKE', '%' . $query . '%')->with('province')->get();
-
+        if ($cities->isEmpty()) {
+            return response()->json([]);
+        }
         return response()->json($cities);
     }
 }
