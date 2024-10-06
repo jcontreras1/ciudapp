@@ -168,7 +168,7 @@ function funcionDeSubmit() {
     activeCategory.value = null;
     imageSrc.value = null;
     form.image = null;
-    fullAddress = null;
+    form.fullAddress = null;
     form.latitud = 0;
     form.longitud = 0;
     form.subcategory_id = null;
