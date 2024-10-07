@@ -44,6 +44,16 @@ class InstitutionController extends Controller
     }
 
     public function destroy(Institution $institution){
+        //eliminto todos los usuairos asociados
+        $institution->userPivot()->delete();
+        
+        //eliminto todas las regiones y los puntos asociados
+        $regiones = $institution->regions;
+        foreach ($regiones as $region) {
+            $region->points()->delete();
+            $region->delete();
+        }
+
         $institution->delete();
         return redirect()->route('institution.index')->with('message', 'Institución eliminada correctamente');
     }

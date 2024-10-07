@@ -37,6 +37,10 @@ class Institution extends Model
                     ->withPivot(['is_admin', 'id']);
     }
 
+    public function userPivot(){
+        return $this->hasMany(UserInstitution::class);
+    }
+
     public function regions()
     {
         return $this->hasMany(Region::class);

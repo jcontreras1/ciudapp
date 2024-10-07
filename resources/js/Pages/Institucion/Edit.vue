@@ -130,7 +130,10 @@ const updateIntitutionForm = useForm({
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" :disabled="newUser.processing">Cerrar</button>
-                            <button type="submit" class="btn btn-success" :disabled="newUser.processing"><i class="fas fa-user-plus"></i> Agregar</button>
+                            <button type="submit" class="btn btn-success" :disabled="newUser.processing">
+                                <span v-if="newUser.processing">Notificando ususario... <i class="fas fa-spin fa-spinner"></i></span>
+                                <span v-else><i class="fas fa-user-plus"></i>Guardar</span>
+                            </button>
                         </div>
                     </div>
                 </div>

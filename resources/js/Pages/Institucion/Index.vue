@@ -8,9 +8,24 @@ import SectionTitle from '@/Components/SectionTitle.vue';
 const props = defineProps({
     instituciones: {
         type: Object,
-
+        
     }
-})
+});
+
+const destroy = (institution) => {
+    Swal.fire({
+        title: `¿Eliminar institución: ${institution.name}?`,
+        text: "También se eliminarán las  regiones y usuarios de esta institución",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonText: 'Eliminar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            router.delete(route('institution.destroy', institution.id));
+        }
+    });
+}
 </script>
 
 <template>
@@ -24,8 +39,8 @@ const props = defineProps({
                 <Link :href="route('institution.create')" class="btn btn-primary" title="Crear institución"><i class="fas fa-plus"></i> </Link>
             </template>
         </SectionTitle>
-
-
+        
+        
         <hr class="mb-3">
         <div v-if="instituciones?.data?.length">
             <div class="table-responsive">
@@ -51,13 +66,13 @@ const props = defineProps({
                                     <button @click="destroy(institucion)" class="btn btn-sm btn-danger"><i class="fas fa-trash-alt"></i></button>
                                 </div>
                             </td>
-
+                            
                         </tr>
                     </tbody>
                 </table>
             </div>
         </div>
-
+        
         <div v-else>
             <em>No hay instituciones</em>
         </div>
