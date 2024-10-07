@@ -18,7 +18,6 @@ const likePost = () => {
     })
     .catch(error => {
         sending.value = false;
-        console.error(error)
         Swal.fire({
             title: '¡Error!',
             text: 'Ocurrió un error al sumarse al post: ' + error.message,

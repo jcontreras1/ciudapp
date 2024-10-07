@@ -6,12 +6,16 @@ import MapaLatLng from '@/Components/MapaLatLng.vue';
 const WIDTH = 1280;
 const HEIGHT = 720;
 const apiKey = import.meta.env.VITE_MAPBOX_TOKEN;
+const sending = ref(false)
 const props = defineProps({
     categorias:{
         type: Array,
     },
     
 });
+
+const emit = defineEmits(['newPost']);
+
 
 const reposicionarTemporal = () => {
     if(navigator.geolocation){
@@ -138,44 +142,99 @@ const urlToFile = (url) => {
 }
 
 // Metodo para enviar el formulario
-function funcionDeSubmit() {
-    if(form.subcategory_id === null){
+// function funcionDeSubmit_old() {
+//     if(form.subcategory_id === null){
+//         Swal.fire({
+//             'icon' : 'error',
+//             'title' : 'Debe seleccionar una categoría y una subcategoría',
+//             'toast': true,
+//             'position': 'top-end',
+//             'timer': 2500,
+//             'timerProgressBar' : true,
+//             'showConfirmButton' : false
+//         });
+//         return;
+//     }
+
+//     if(form.image === null){
+//         Swal.fire({
+//             'icon' : 'error',
+//             'title' : 'Debe seleccionar una imagen',
+//             'toast': true,
+//             'position': 'top-end',
+//             'timer': 2500,
+//             'timerProgressBar' : true,
+//             'showConfirmButton' : false
+//         });
+//         return;
+//     }
+
+//     form.post(route('posts.store'));
+//     activeCategory.value = null;
+//     imageSrc.value = null;
+//     form.image = null;
+//     form.
+//     fullAddress = null;
+//     form.latitud = 0;
+//     form.longitud = 0;
+//     form.subcategory_id = null;
+//     document.getElementById('image').value = '';    
+// }
+const funcionDeSubmit = () => {
+    if (form.subcategory_id === null) {
         Swal.fire({
-            'icon' : 'error',
-            'title' : 'Debe seleccionar una categoría y una subcategoría',
-            'toast': true,
-            'position': 'top-end',
-            'timer': 2500,
-            'timerProgressBar' : true,
-            'showConfirmButton' : false
+            icon: 'error',
+            title: 'Debe seleccionar una categoría y una subcategoría',
+            toast: true,
+            position: 'top-end',
+            timer: 2500,
+            timerProgressBar: true,
+            showConfirmButton: false
         });
         return;
     }
     
-    if(form.image === null){
+    if (form.image === null) {
         Swal.fire({
-            'icon' : 'error',
-            'title' : 'Debe seleccionar una imagen',
-            'toast': true,
-            'position': 'top-end',
-            'timer': 2500,
-            'timerProgressBar' : true,
-            'showConfirmButton' : false
+            icon: 'error',
+            title: 'Debe seleccionar una imagen',
+            toast: true,
+            position: 'top-end',
+            timer: 2500,
+            timerProgressBar: true,
+            showConfirmButton: false
         });
         return;
     }
-    
-    form.post(route('posts.store'));
-    activeCategory.value = null;
-    imageSrc.value = null;
-    form.image = null;
-    form.
-    fullAddress = null;
-    form.latitud = 0;
-    form.longitud = 0;
-    form.subcategory_id = null;
-    document.getElementById('image').value = '';    
-}
+    sending.value = true;
+    // Crear el post usando Axios
+    axios.post('/api/post', form,  { headers: {
+        'accept': 'application/json',
+        'Content-Type': `multipart/form-data;`,
+    }})
+    .then((response) => {
+        sending.value = false;
+        // Emitir el nuevo post creado
+        emit('newPost', response.data);
+        activeCategory.value = null;
+        imageSrc.value = null;
+        form.image = null;
+        form.
+        fullAddress = null;
+        form.latitud = 0;
+        form.longitud = 0;
+        form.subcategory_id = null;
+        document.getElementById('image').value = ''; 
+    })
+    .catch(error => {
+        sending.value = false;
+        Swal.fire({
+            icon: 'error',
+            title: 'Error al crear el post',
+            text: error.response?.data.message || 'Ocurrió un error inesperado.',
+        });
+    });
+};
 
 function toggleCategory(id){
     reposicionarTemporal();
@@ -205,56 +264,56 @@ function toggleCategory(id){
                     <div v-for="category in categorias" :key="category.id" class="col-12 col-md-4 mb-3">
                         <!-- Boton para elegir las categorias -->
                         <button type="button" class="btn shadow border-2 rounded-4 w-100" :class="{
-                                    'bg-success' : category.id === activeCategory,
-                                    // 'bg-secondary' : subcategory.id != form.subcategory_id
-                                }" @click="toggleCategory(category.id)">
-                            <!-- Category icon and name -->
-                            <span v-if="!activeCategory" v-html="category.icon" class="fs-3"></span>
-                            <p class="fs-4">{{ category.name }}</p>
-                        </button>
-                        
-                        <!-- Subcategorías -->
-                        <div v-if="activeCategory === category.id " class="mt-1">
-                            <!-- Mensaje si no hay subcategorías -->
-                            <div v-if="category.subcategories.length === 0" class="alert alert-warning">
-                                <div class="alert-body">
-                                    No tiene subcategorías
-                                </div>
+                            'bg-success' : category.id === activeCategory,
+                            // 'bg-secondary' : subcategory.id != form.subcategory_id
+                        }" @click="toggleCategory(category.id)">
+                        <!-- Category icon and name -->
+                        <span v-if="!activeCategory" v-html="category.icon" class="fs-3"></span>
+                        <p class="fs-4">{{ category.name }}</p>
+                    </button>
+                    
+                    <!-- Subcategorías -->
+                    <div v-if="activeCategory === category.id " class="mt-1">
+                        <!-- Mensaje si no hay subcategorías -->
+                        <div v-if="category.subcategories.length === 0" class="alert alert-warning">
+                            <div class="alert-body">
+                                No tiene subcategorías
                             </div>
-                            <ul class="list-group" v-else>
-                                <li v-for="subcategory in category.subcategories" :key="subcategory.id"
-                                class="list-group-item rounded-4"
-                                :class="{
-                                    'bg-success' : subcategory.id == form.subcategory_id,
-                                    // 'bg-secondary' : subcategory.id != form.subcategory_id
-                                }"
-                                role="button"
-                                @click="form.subcategory_id = subcategory.id"
-                                >
-                                <span v-html="subcategory.icon"></span> 
-                                {{ subcategory.name }}
-                            </li>
-                        </ul>
-                    </div>
+                        </div>
+                        <ul class="list-group" v-else>
+                            <li v-for="subcategory in category.subcategories" :key="subcategory.id"
+                            class="list-group-item rounded-4"
+                            :class="{
+                                'bg-success' : subcategory.id == form.subcategory_id,
+                                // 'bg-secondary' : subcategory.id != form.subcategory_id
+                            }"
+                            role="button"
+                            @click="form.subcategory_id = subcategory.id"
+                            >
+                            <span v-html="subcategory.icon"></span> 
+                            {{ subcategory.name }}
+                        </li>
+                    </ul>
                 </div>
             </div>
-            
-            <input type="file" class="form-control border-2 p-2 rounded-5 mb-1" id="image"
-            name="image" capture="environment" accept="image/png, image/jpeg"
-            @change="onFileChange">
-            <div class="mb-3">
-                <MapaLatLng :lat="form.latitud" :lng="form.longitud" @update:lat="(lat) => {form.latitud = lat; geocoding()}" @update:lng="(lng) => {form.longitud = lng}" > </MapaLatLng>
-            </div>
-            <div v-if="searchingGeocode" class="d-flex mb-3 ml-2">
-                <i class="fas fa-spinner fa-spin"></i>
-            </div>
-            <input type="text" class="form-control border-2 p-2 rounded-5 mb-4" id="contenido" readonly v-show="form.fullAddress" v-model="form.fullAddress" required>
-            
-            <!-- Boton para postear -->
-            <button class="btn btn-primary rounded-4" :disabled="(form.subcategory_id == null && form.image == null) || form.processing">
-                {{ form.processing ? 'Guardando...' : 'Guardar' }}
-            </button>
-        </form>
-    </div>
+        </div>
+        
+        <input type="file" class="form-control border-2 p-2 rounded-5 mb-1" id="image"
+        name="image" capture="environment" accept="image/png, image/jpeg"
+        @change="onFileChange">
+        <div class="mb-3">
+            <MapaLatLng :lat="form.latitud" :lng="form.longitud" @update:lat="(lat) => {form.latitud = lat; geocoding()}" @update:lng="(lng) => {form.longitud = lng}" > </MapaLatLng>
+        </div>
+        <div v-if="searchingGeocode" class="d-flex mb-3 ml-2">
+            <i class="fas fa-spinner fa-spin"></i>
+        </div>
+        <input type="text" class="form-control border-2 p-2 rounded-5 mb-4" id="contenido" readonly v-show="form.fullAddress" v-model="form.fullAddress" required>
+        
+        <!-- Boton para postear -->
+        <button class="btn btn-primary rounded-4" :disabled="(form.subcategory_id == null && form.image == null) || sending">
+            {{ sending ? 'Guardando...' : 'Guardar' }}
+        </button>
+    </form>
+</div>
 </div>
 </template>

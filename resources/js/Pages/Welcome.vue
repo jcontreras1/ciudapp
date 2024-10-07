@@ -105,7 +105,7 @@ const { stop } = useIntersectionObserver(veryBottomTarget, ([{ isIntersecting }]
         <!-- CENTRO -Cuadro para crear un post -->
         <div class="mt-0" v-if="$page.props.auth.user">
             <div class="d-flex align-items-start">
-                <CreatePost :categorias="categorias" />
+                <CreatePost :categorias="categorias" v-on:newPost="(post) => {props.posts.data = [post, ...props.posts.data]}" />
             </div>
         </div>
         <hr>
