@@ -27,7 +27,6 @@ const emit = defineEmits(['showPostOnModal', 'deletePost']);
         <div class="card-body">
             <div class="d-flex justify-content-between">
                 <div>
-                    {{ post.id }}
                 <i class="fas fa-calendar-alt"></i> {{ new Date(post.created_at).toLocaleDateString() }} {{ post.valid_until ? ' - ' + post.valid_until : '' }}
                 </div>
 
