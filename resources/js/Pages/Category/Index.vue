@@ -42,7 +42,6 @@ const selectedCategory = ref(null);
             </template>
         </SectionTitle>
         <hr>
-
         <div v-if="categorias.length">
             <div class="table-responsive">
                 <table class="table">
@@ -50,7 +49,7 @@ const selectedCategory = ref(null);
                         <tr>
                             <th>Nombre</th>
                             <th>Icono</th>
-                            <th>Acciones</th>
+                            <th class="text-end">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -66,8 +65,10 @@ const selectedCategory = ref(null);
                             </Link></td>
                             <td><span class="fs-3" v-html="categoria.icon"></span></td>
                             <td>
-                                <Link class="btn btn-primary btn-sm mr-1" title="Editar" :href="route('category.edit', categoria.id)">Editar</Link>
-                                <button class="btn btn-danger btn-sm" title="Eliminar" @click="destroy(categoria)">Eliminar</button>
+                                <div class="float-end">
+                                <Link class="btn btn-primary btn-sm mr-1" title="Editar" :href="route('category.edit', categoria.id)"><i class="fas fa-edit"></i></Link>
+                                <button class="btn btn-danger btn-sm" title="Eliminar" @click="destroy(categoria)"><i class="fas fa-trash-alt"></i></button>
+                                </div>
                                 <!-- <button class="btn btn-danger btn-sm" title="Eliminar" @click="destroy(categoria.id)">Eliminar</button> -->
                             </td>
                         </tr>

@@ -50,8 +50,8 @@ const destroy = (institution) => {
                             <th>Nombre</th>
                             <th>Email</th>
                             <th>Dirección</th>
-                            <th>City</th>
-                            <th class="text-end">Opciones</th>
+                            <th>Ciudad</th>
+                            <th class="text-end">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>

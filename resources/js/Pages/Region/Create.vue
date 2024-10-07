@@ -33,28 +33,29 @@ const submitForm = () => {
 </script>
 
 <template>
-    
+
     <AppLayout>
         <Head title="Definir región" />
         <SectionTitle>
             <template #title>
                 Nueva region para <strong>{{ institution.name }}</strong>
             </template>
-            
+
         </SectionTitle>
         <hr>
-        
+
         <form @submit.prevent="submitForm" class="mb-2">
             <div class="mb-3">
                 <label for="name" class="form-label">Ingresar un nombre para la región y dibujar el polígono correspondiente en el mapa.</label>
                 <input type="text" class="form-control" id="name" v-model="fomrulario.name" required>
             </div>
+            <div class="">
+                <CreatePolygon v-on:puntos="(puntos) => fomrulario.puntos = puntos" ></CreatePolygon>
+            </div>
             <button type="submit" class="btn btn-primary">Guardar</button>
         </form>
 
-        <div class="">
-            <CreatePolygon v-on:puntos="(puntos) => fomrulario.puntos = puntos" ></CreatePolygon>
-        </div>
+
     </AppLayout>
-    
+
 </template>
