@@ -6,7 +6,7 @@ import SectionTitle from '@/Components/SectionTitle.vue';
 import DialogModal from '@/Components/DialogModal.vue';
 
 const props = defineProps({
-    
+
     subcategorias:{
         type: Array,
         // required: true,
@@ -43,7 +43,7 @@ const selectedSubcategory = ref(null);
 </script>
 
 <template>
-    <AppLayout>        
+    <AppLayout>
         <Head title="Subcategorías" />
 
         <SectionTitle>
@@ -54,7 +54,7 @@ const selectedSubcategory = ref(null);
                     <Link :href="route('subcategory.create', categoria)" class="btn btn-primary">Crear subcategoría</Link>
                     </template>
             </SectionTitle>
-      
+
         <hr class="mb-3">
         <div v-if="subcategorias.length">
             <div class="table-responsive">
@@ -64,7 +64,7 @@ const selectedSubcategory = ref(null);
                         <th>Nombre</th>
                         <th>Icono</th>
                         <th>Duración</th>
-                        <th>Acciones</th>
+                        <th class="text-end">Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -73,13 +73,15 @@ const selectedSubcategory = ref(null);
                         <td><span class="fs-3" v-html="subcategoria.icon"></span></td>
                         <td>{{ duracionSubcategoria(subcategoria.relevance_minutes) }}</td>
                         <td>
-                            <Link class="btn btn-primary btn-sm" title="Editar" :href="route('subcategory.edit', {'category' : categoria.id, 'subcategory' : subcategoria.id})">Editar</Link>
-                            <button class="btn btn-danger btn-sm" title="Eliminar" @click="destroy(subcategoria)">Eliminar</button>
+                            <div class="float-end">
+                            <Link class="btn btn-primary btn-sm mr-1" title="Editar" :href="route('subcategory.edit', {'category' : categoria.id, 'subcategory' : subcategoria.id})"><i class="fas fa-edit"></i></Link>
+                            <button class="btn btn-danger btn-sm" title="Eliminar" @click="destroy(subcategoria)"><i class="fas fa-trash-alt"></i></button>
+                            </div>
                             <!-- <button class="btn btn-danger btn-sm" title="Eliminar" @click="destroy(subcategoria.id)">Eliminar</button> -->
                         </td>
                     </tr>
                 </tbody>
-            </table>            
+            </table>
         </div>
         </div>
 

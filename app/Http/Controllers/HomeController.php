@@ -34,7 +34,8 @@ class HomeController extends Controller
     public function index(Request $request)
     {
         $posts = Post::with('category', 'subcategory', 'images', 'comments')->orderBy('id', 'desc')->cursorPaginate(5);
-
+        // $post = Post::where('id', 1003)->first();
+        // return new PostResource($post);
         //Esto es solo api
         if($request->wantsJson()){
             return PostResource::collection($posts);

@@ -46,6 +46,7 @@ const newUser = useForm({
     email: '',
     is_admin: 0,
 });
+
 const eliminarUsuario = (user) => {
     Swal.fire({
         title: `¿Remover a ${user.name} de esta institución?`,
@@ -74,9 +75,6 @@ const eliminarRegion = (region) => {
     });
 }
 
-
-
-
 const agregarUsuario = () =>{
     newUser.post(route('userInstitution.store', props.institucion), {preserveScroll: true, onSuccess: () => {
         newUser.name = '';
@@ -103,8 +101,8 @@ const updateIntitutionForm = useForm({
             <template #title>
                 Editar Institución
             </template>
-
         </SectionTitle>
+
         <!-- Modal create user - institution -->
         <form @submit.prevent="agregarUsuario">
             <div class="modal fade" id="mdlCreateUserInstitution" ref="modalCreate" tabindex="-1" aria-labelledby="mdlCreateUserInstitutionLabel" aria-hidden="true">
@@ -138,7 +136,6 @@ const updateIntitutionForm = useForm({
         </form>
 
         <hr>
-        <!-- <div class="display-4">Editar {{ institucion.name }}</div> -->
 
         <div>
             <form @submit.prevent="updateIntitutionForm.put(route('institution.update', institucion), {preserveScroll: true})">
@@ -183,13 +180,8 @@ const updateIntitutionForm = useForm({
 
             <div class="text-end">
                 <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Guardar</button>
-
             </div>
-
-
-
         </form>
-
     </div>
 
 
@@ -201,7 +193,7 @@ const updateIntitutionForm = useForm({
 </h3>
 <br>
 <div class="row mb-4">
-    <div class="col-12 col-md-4" v-for="region in regiones" :key="region.id">
+    <div class="col-12 col-md-4" v-for="region in regiones" :key="region.id" v-if="regiones.length > 0">
         <div class="card text-center h-100">
             <div class="card-body">
                 <h4 class="mb-3">{{ region.name }}</h4>
@@ -216,6 +208,9 @@ const updateIntitutionForm = useForm({
             </div>
         </div>
     </div>
+    <div class="col-12 col-md-12" v-if="regiones.length == 0">
+        <p class="fst-italic text-muted">No hay regiones definidas a esta institución.</p>
+    </div>
 </div>
     <hr>
     <h3>
@@ -224,7 +219,12 @@ const updateIntitutionForm = useForm({
             <button data-bs-target="#mdlCreateUserInstitution" data-bs-toggle="modal" href="#" class="btn btn-success" title="Agregar usuario"><i class="fas fa-plus"></i> </button>
         </span>
     </h3>
-    <table class="table table-sm">
+    <br>
+    <div class="col-12 col-md-12" v-if="users.length == 0">
+         <p class="fst-italic text-muted">No hay usuarios asociados a esta institución.</p>
+
+    </div>
+    <table class="table table-sm" v-if="users.length > 0">
         <thead>
             <tr>
                 <th>Usuario</th>

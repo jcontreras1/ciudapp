@@ -12,17 +12,18 @@ use Illuminate\Http\Request;
 class ApiPostController extends Controller
 {
 
-    
+
     public function store(Post $post, StoreCommentRequest $request){
-        PostComment::create(
-            array_merge($request->validated(), ['post_id' => $post->id, 'user_id' => auth()->id() ?? 1, ])
+       PostComment::create(
+           array_merge($request->validated(), ['post_id' => $post->id, 'user_id' => auth()->id() ?? 1, ])
         );
+
         return response(
-            $post->loadMissing('comments.user'),
+            new PostResource($post),
             201
         );
     }
-    
+
     public function like(Post $post)
     {
         $user = auth()->user();
@@ -34,7 +35,7 @@ class ApiPostController extends Controller
 
         return response(new PostResource($post) ,201);
     }
-    
+
     /**
     * Update the specified resource in storage.
     */
@@ -42,7 +43,7 @@ class ApiPostController extends Controller
     {
         //
     }
-    
+
     /**
     * Remove the specified resource from storage.
     */
