@@ -200,38 +200,41 @@ function toggleCategory(id){
             <form @submit.prevent="funcionDeSubmit" ref="formCreatePost" v-else>
                 <div class="row">
                     <div class="fs-4">Nuevo reporte</div>
-                    <p>Seleccione la categoria y subcategoria del posteo</p>
+                    <p>Seleccione la categoria y subcategoria del posteo <i class="fas fa-carret-down"></i> </p>
                     <!-- <p for="formFile" class="form-label mr-4">Seleccione la categoria y subcategoria del posteo</p> -->
                     <div v-for="category in categorias" :key="category.id" class="col-12 col-md-4 mb-3">
-                        <div class="mb-1">
-                            <!-- Boton para elegir las categorias -->
-                            <button type="button" class="btn shadow border-2 rounded-4 w-100" @click="toggleCategory(category.id)">
-                                <!-- Category icon and name -->
-                                <span v-html="category.icon" class="fs-3"></span>
-                                <p class="fs-4">{{ category.name }}</p>
-                            </button>
-                            
-                            <!-- Subcategorías -->
-                            <div v-if="activeCategory === category.id " class="mt-1">
-                                <!-- Mensaje si no hay subcategorías -->
-                                <div v-if="category.subcategories.length === 0" class="alert alert-warning">
-                                    <div class="alert-body">
-                                        No tiene subcategorías
-                                    </div>
+                        <!-- Boton para elegir las categorias -->
+                        <button type="button" class="btn shadow border-2 rounded-4 w-100" :class="{
+                                    'bg-success' : category.id === activeCategory,
+                                    // 'bg-secondary' : subcategory.id != form.subcategory_id
+                                }" @click="toggleCategory(category.id)">
+                            <!-- Category icon and name -->
+                            <span v-if="!activeCategory" v-html="category.icon" class="fs-3"></span>
+                            <p class="fs-4">{{ category.name }}</p>
+                        </button>
+                        
+                        <!-- Subcategorías -->
+                        <div v-if="activeCategory === category.id " class="mt-1">
+                            <!-- Mensaje si no hay subcategorías -->
+                            <div v-if="category.subcategories.length === 0" class="alert alert-warning">
+                                <div class="alert-body">
+                                    No tiene subcategorías
                                 </div>
-                                <ul class="list-group" v-else>
-                                    <li v-for="subcategory in category.subcategories" :key="subcategory.id"
-                                    class="list-group-item"
-                                    :class="{
-                                        'bg-success' : subcategory.id == form.subcategory_id,
-                                        // 'bg-secondary' : subcategory.id != form.subcategory_id
-                                    }"
-                                    role="button"
-                                    @click="form.subcategory_id = subcategory.id">
-                                    <span  v-html="subcategory.icon"></span> {{ subcategory.name }}
-                                </li>
-                            </ul>
-                        </div>
+                            </div>
+                            <ul class="list-group" v-else>
+                                <li v-for="subcategory in category.subcategories" :key="subcategory.id"
+                                class="list-group-item rounded-4"
+                                :class="{
+                                    'bg-success' : subcategory.id == form.subcategory_id,
+                                    // 'bg-secondary' : subcategory.id != form.subcategory_id
+                                }"
+                                role="button"
+                                @click="form.subcategory_id = subcategory.id"
+                                >
+                                <span v-html="subcategory.icon"></span> 
+                                {{ subcategory.name }}
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>

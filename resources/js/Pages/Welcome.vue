@@ -93,17 +93,17 @@ const { stop } = useIntersectionObserver(veryBottomTarget, ([{ isIntersecting }]
         <BootstrapModal :post="selectedPostToModal"></BootstrapModal>
         <Head title="Inicio"></Head>
         <!--LATERAL IZQUIERDO - Barra de navegación -->
-        <ul class="nav nav-tabs">
+        <!-- <ul class="nav nav-tabs">
             <li class="nav-item">
                 <a class="nav-link active" href="#">Para ti</a>
             </li>
             <li class="nav-item">
                 <del><a class="nav-link" href="#">Reportes</a></del>
             </li>
-        </ul>
+        </ul> -->
 
         <!-- CENTRO -Cuadro para crear un post -->
-        <div class="mt-3" v-if="$page.props.auth.user">
+        <div class="mt-0" v-if="$page.props.auth.user">
             <div class="d-flex align-items-start">
                 <CreatePost :categorias="categorias" />
             </div>
