@@ -203,16 +203,16 @@ function toggleCategory(id){
                     <p>Seleccione la categoria y subcategoria del posteo</p>
                     <!-- <p for="formFile" class="form-label mr-4">Seleccione la categoria y subcategoria del posteo</p> -->
                     <div v-for="category in categorias" :key="category.id" class="col-12 col-md-4 mb-3">
-                        <div class="mb-2">
+                        <div class="mb-1">
                             <!-- Boton para elegir las categorias -->
                             <button type="button" class="btn shadow border-2 rounded-4 w-100" @click="toggleCategory(category.id)">
                                 <!-- Category icon and name -->
-                                <span v-html="category.icon" class="fs-1"></span>
-                                <p class="fs-3">{{ category.name }}</p>
+                                <span v-html="category.icon" class="fs-3"></span>
+                                <p class="fs-4">{{ category.name }}</p>
                             </button>
                             
                             <!-- Subcategorías -->
-                            <div v-if="activeCategory === category.id " class="mt-2">
+                            <div v-if="activeCategory === category.id " class="mt-1">
                                 <!-- Mensaje si no hay subcategorías -->
                                 <div v-if="category.subcategories.length === 0" class="alert alert-warning">
                                     <div class="alert-body">

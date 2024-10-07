@@ -27,9 +27,11 @@ const emit = defineEmits(['showPostOnModal', 'deletePost']);
         <div class="card-body">
             <div class="d-flex justify-content-between">
                 <div>
+                    {{ post.id }}
                 <i class="fas fa-calendar-alt"></i> {{ new Date(post.created_at).toLocaleDateString() }} {{ post.valid_until ? ' - ' + post.valid_until : '' }}
                 </div>
-                <div v-if="post.user_id = $page.props.auth?.user?.id">
+
+                <div v-if="post.user_id == $page.props.auth?.user?.id">
                     <i role="button" title="Borrar" class="fas fa-trash-alt text-danger" @click="emit('deletePost', post)"></i>
                 </div>
             </div>
