@@ -8,6 +8,8 @@ use App\Http\Resources\PostResource;
 use App\Models\Post;
 use App\Models\PostComment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+
 
 class ApiPostController extends Controller
 {
@@ -48,6 +50,14 @@ class ApiPostController extends Controller
     */
     public function destroy(Post $post)
     {
-        //
+        //eliminar imagenes del disco
+        Storage::deleteDirectory('public/post/' . $post->id);
+        $post->images()->delete();
+        $post->comments()->delete();
+        $post->likes()->delete();
+
+        $post->delete();
+
+        return response([], 201);
     }
 }

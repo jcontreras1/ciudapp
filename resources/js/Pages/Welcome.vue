@@ -38,6 +38,31 @@ const props = defineProps({
 const veryBottomTarget = ref(null) // Elemento para detectar el final de la página
 const selectedPostToModal = ref(null) // Elemento para detectar el final de la página
 
+const deletePost = (post) => {
+    Swal.fire({
+        title: '¿Eliminar Post?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Eliminar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            axios.delete(`/api/post/${post.id}`)
+                .then(() => {
+                    props.posts.data = props.posts.data.filter(p => p.id !== post.id);
+                })
+                .catch(error => {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Ocurrió un error al eliminar la publicación:' + error.message,
+                        icon: 'error',
+                        confirmButtonText: 'Ok'
+                    });
+                });
+        }
+    });
+}
+
 const { stop } = useIntersectionObserver(veryBottomTarget, ([{ isIntersecting }]) => {
     if (!isIntersecting) {
         return;
@@ -76,7 +101,6 @@ const { stop } = useIntersectionObserver(veryBottomTarget, ([{ isIntersecting }]
                 <del><a class="nav-link" href="#">Reportes</a></del>
             </li>
         </ul>
-        <!-- {{$page.props.auth.user}} -->
 
         <!-- CENTRO -Cuadro para crear un post -->
         <div class="mt-3" v-if="$page.props.auth.user">
@@ -87,7 +111,7 @@ const { stop } = useIntersectionObserver(veryBottomTarget, ([{ isIntersecting }]
         <hr>
         <!-- Post -->
         <div class="mb-2" v-for="post in props.posts.data" :key="post.id">
-            <PostShow :post="post" v-on:showPostOnModal="selectedPostToModal = post"></PostShow>
+            <PostShow :post="post" v-on:deletePost="deletePost(post)" v-on:showPostOnModal="selectedPostToModal = post"></PostShow>
         </div>
         <div ref="veryBottomTarget" class="-translate-y-72 h-20 text-center">
             <i class="fas fa-spinner fa-spin fa-2x"></i>&nbsp;Cargando más publicaciones...

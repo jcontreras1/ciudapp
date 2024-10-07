@@ -16,16 +16,8 @@ defineProps({
     post: Object,
 });
 
-const emit = defineEmits(['showPostOnModal']);
+const emit = defineEmits(['showPostOnModal', 'deletePost']);
 
-
-// const showingNavigationDropdown = ref(false);
-let selectedPost = ref(null)
-let showModal = ref(false)
-//Cerrar sesión (para después)
-const logout = () => {
-    router.post(route('logout'));
-};
 </script>
 
 <template>
@@ -33,8 +25,13 @@ const logout = () => {
 
     <div class="card">
         <div class="card-body">
-            <div>
+            <div class="d-flex justify-content-between">
+                <div>
                 <i class="fas fa-calendar-alt"></i> {{ new Date(post.created_at).toLocaleDateString() }} {{ post.valid_until ? ' - ' + post.valid_until : '' }}
+                </div>
+                <div v-if="post.user_id = $page.props.auth?.user?.id">
+                    <i role="button" title="Borrar" class="fas fa-trash-alt text-danger" @click="emit('deletePost', post)"></i>
+                </div>
             </div>
             <div v-if="post.location">
                 <i class="fas fa-map-marker-alt"></i>
