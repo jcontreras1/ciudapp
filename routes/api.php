@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\api\ApiPostController;
-use App\Http\Controllers\Api\CityController;
+use App\Http\Controllers\api\CityController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
