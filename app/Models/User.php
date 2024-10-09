@@ -39,6 +39,11 @@ class User extends Authenticatable
         'remember_token',
         'two_factor_recovery_codes',
         'two_factor_secret',
+        'email_verified_at',
+        'two_factor_confirmed_at',
+        'current_team_id',
+        'created_at',
+        'updated_at',
     ];
 
     /**
@@ -71,5 +76,15 @@ class User extends Authenticatable
     public function likes()
     {
         return $this->hasMany(PostLike::class);
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(PostComment::class);
+    }
+
+    public function commentLikes()
+    {
+        return $this->hasMany(PostCommentLike::class);
     }
 }

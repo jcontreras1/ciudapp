@@ -19,6 +19,9 @@ use Illuminate\Support\Str;
 class ApiPostController extends Controller
 {
 
+    public function show(Post $post){
+        return response(new PostResource($post), 200);
+    }
 
     public function storeComment(Post $post, StoreCommentRequest $request){
        PostComment::create(

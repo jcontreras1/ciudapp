@@ -1,7 +1,7 @@
 <script setup>
 
 import { defineProps, ref } from 'vue';
-
+import Tooltip from '@/Components/Tooltip.vue';
 const props = defineProps({
     post: Object,
 });
@@ -31,8 +31,15 @@ const likePost = () => {
 
 <template>
     <span class="float-end">
-        <a class="link-underline link-underline-opacity-0" href="#" @click.prevent="likePost">
-            <i class="fas fa-heart" :class="{'text-danger' : myPost.likes?.map(like => like.user_id).includes($page.props.auth?.user?.id)}"></i> {{ myPost.likes?.length }}
-        </a>
+        <Tooltip :list="myPost.likes">
+            <a class="link-underline link-underline-opacity-0" href="#" @click.prevent="likePost">
+                <i class="fas fa-heart" :class="{'text-danger' : myPost.likes?.map(like => like.user_id).includes($page.props.auth?.user?.id)}"></i> {{ myPost.likes?.length }}
+            </a>
+        </Tooltip>
     </span>
+    <!-- <span class="float-end"> -->
+        <!-- <a class="link-underline link-underline-opacity-0" href="#" @click.prevent="likePost"> -->
+            <!-- <i class="fas fa-heart" :class="{'text-danger' : myPost.likes?.map(like => like.user_id).includes($page.props.auth?.user?.id)}"></i> {{ myPost.likes?.length }} -->
+        <!-- </a> -->
+    <!-- </span> -->
 </template>
