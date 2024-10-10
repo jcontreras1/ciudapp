@@ -1,18 +1,24 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Institution;
 
+use App\Models\Institution;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class StoreInstitutionRequest extends FormRequest
+class UpdateInstitutionRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return auth()->user()->is_admin;
+        if($this->route('institution') == null){
+            return false;
+        }
+    
+        return $this->user()->can('update', $this->route('institution'));
+        
     }
 
     /**

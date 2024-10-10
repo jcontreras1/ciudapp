@@ -9,6 +9,16 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class SubcategoryController extends Controller{
+
+    public function __construct()
+    {
+        $this->middleware(\App\Http\Middleware\isAdmin::class);
+            // ->only([
+            //     'destroy',
+            //     'store',
+            //     'update',
+            // ]);
+    }
     /**
     * Display a listing of the resource.
     */

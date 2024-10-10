@@ -107,8 +107,8 @@ const { stop } = useIntersectionObserver(veryBottomTarget, ([{ isIntersecting }]
             <div class="d-flex align-items-start">
                 <CreatePost :categorias="categorias" v-on:newPost="(post) => {props.posts.data = [post, ...props.posts.data]}" />
             </div>
+            <hr>
         </div>
-        <hr>
         <!-- Post -->
         <div class="mb-2" v-for="post in props.posts.data" :key="post.id">
             <PostShow :post="post" v-on:deletePost="deletePost(post)" v-on:showPostOnModal="selectedPostToModal = post"></PostShow>

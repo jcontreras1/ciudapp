@@ -68,6 +68,11 @@ class User extends Authenticatable
         ];
     }
 
+    public function isAdmin()
+    {
+        return boolval($this->is_admin);
+    }
+
     public function posts()
     {
         return $this->hasMany(Post::class);
@@ -86,5 +91,10 @@ class User extends Authenticatable
     public function commentLikes()
     {
         return $this->hasMany(PostCommentLike::class);
+    }
+
+    public function institutions()
+    {
+        return $this->belongsToMany(Institution::class, 'user_institution')->withPivot('is_admin');
     }
 }

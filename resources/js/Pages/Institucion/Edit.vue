@@ -18,6 +18,10 @@ const props = defineProps({
     users : {
         type : Object,
         required : true
+    },
+    amIAdmin: {
+        type: Boolean,
+        required: true
     }
 });
 const cities = ref([])
@@ -102,9 +106,9 @@ const updateIntitutionForm = useForm({
                 Editar Institución
             </template>
         </SectionTitle>
-
+        <!-- <i class="fas fa-landmark" v-if=""></i>  -->
         <!-- Modal create user - institution -->
-        <form @submit.prevent="agregarUsuario">
+        <form @submit.prevent="agregarUsuario" v-if="props.amIAdmin">
             <div class="modal fade" id="mdlCreateUserInstitution" ref="modalCreate" tabindex="-1" aria-labelledby="mdlCreateUserInstitutionLabel" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
@@ -145,20 +149,20 @@ const updateIntitutionForm = useForm({
                 <div class="row">
                     <div class="col-12 col-md-6 mb-3">
                         <label for="name" class="form-label"><b>Nombre de la institución</b></label>
-                        <input type="text" class="form-control" id="name" v-model="updateIntitutionForm.name">
+                        <input type="text" :disabled="!props.amIAdmin" class="form-control" id="name" v-model="updateIntitutionForm.name">
                     </div>
                     <div class="col-12 col-md-6 mb-3">
                         <label for="mail" class="form-label"><b>Correo electrónico</b></label>
-                        <input type="email" class="form-control" id="mail" v-model="updateIntitutionForm.mail">
+                        <input type="email" :disabled="!props.amIAdmin" class="form-control" id="mail" v-model="updateIntitutionForm.mail">
                     </div>
                     <div class="col-12 col-md-6 mb-3">
                         <label for="address" class="form-label"><b>Dirección</b></label>
-                        <input type="text" class="form-control" id="address" v-model="updateIntitutionForm.address">
+                        <input type="text" :disabled="!props.amIAdmin" class="form-control" id="address" v-model="updateIntitutionForm.address">
                     </div>
                     <div class="col-12 col-md-6 mb-3">
                         <label for="city_id" class="form-label"><b>Ciudad</b></label>
-                        <input type="hidden" v-model="updateIntitutionForm.city_id" /> <!-- Campo oculto para el city_id -->
-                        <input
+                        <input type="hidden"  v-model="updateIntitutionForm.city_id" /> <!-- Campo oculto para el city_id -->
+                        <input :disabled="!props.amIAdmin"
                         type="text"
                         class="form-control"
                         autocomplete="nope"
@@ -181,7 +185,7 @@ const updateIntitutionForm = useForm({
                 </div>
             </div>
 
-            <div class="text-end">
+            <div class="text-end" v-if="props.amIAdmin">
                 <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Guardar</button>
             </div>
         </form>
@@ -190,13 +194,13 @@ const updateIntitutionForm = useForm({
 
     <hr>
  <h3>Regiones definidas
-    <a class="btn btn-success float-end" :href="route('region.create', institucion)" title="Crear región">
+    <a class="btn btn-success float-end" :href="route('region.create', institucion)" title="Crear región" v-if="props.amIAdmin">
         <i class="fas fa-plus"></i>
     </a>
 </h3>
 <br>
-<div class="row mb-4">
-    <div class="col-12 col-md-4" v-for="region in regiones" :key="region.id" v-if="regiones.length > 0">
+<div class="row">
+    <div class="col-12 col-md-4 mb-1" v-for="region in regiones" :key="region.id" v-if="regiones.length > 0">
         <div class="card text-center h-100">
             <div class="card-body">
                 <h4 class="mb-3">{{ region.name }}</h4>
@@ -204,7 +208,7 @@ const updateIntitutionForm = useForm({
                     <a :href="route('region.edit', {'institution' : institucion, 'region' : region})" class="btn btn-primary mr-1">
                         <i class="fas fa-edit"></i>
                     </a>
-                    <button @click="eliminarRegion(region)" class="btn btn-danger">
+                    <button @click="eliminarRegion(region)" class="btn btn-danger" v-if="props.amIAdmin">
                         <i class="fas fa-trash-alt"></i>
                     </button>
                 </div>
@@ -218,7 +222,7 @@ const updateIntitutionForm = useForm({
     <hr>
     <h3>
         Lista de usuarios asociados a  esta institución
-        <span class="float-end">
+        <span class="float-end" v-if="props.amIAdmin">
             <button data-bs-target="#mdlCreateUserInstitution" data-bs-toggle="modal" href="#" class="btn btn-success" title="Agregar usuario"><i class="fas fa-plus"></i> </button>
         </span>
     </h3>
@@ -245,7 +249,7 @@ const updateIntitutionForm = useForm({
                     </div>
                 </td>
                 <td class="text-end">
-                    <a href="#" class="btn btn-danger" @click="eliminarUsuario(user)"><i class="fas fa-trash-alt"></i></a>
+                    <a href="#" class="btn btn-danger" @click="eliminarUsuario(user)" v-if="props.amIAdmin"><i class="fas fa-trash-alt"></i></a>
                 </td>
             </tr>
         </tbody>

@@ -14,7 +14,7 @@ class StoreSubcategoryRequest extends FormRequest
     */
     public function authorize(): bool
     {
-        return true;
+        return auth()->user()->is_admin;
     }
     
     /**

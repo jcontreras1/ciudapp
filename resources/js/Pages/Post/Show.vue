@@ -22,15 +22,16 @@ const emit = defineEmits(['showPostOnModal', 'deletePost']);
 </script>
 
 <template>
-
+    
     <div class="card">
         <div class="card-body">
             <div class="d-flex justify-content-between">
                 <div>
-                    <i class="fas fa-calendar-alt"></i> {{ new Date(post.created_at).toLocaleDateString() }} {{ post.valid_until ? ' - ' + post.valid_until : '' }}
+                    <i class="fas fa-calendar-alt"></i> 
+                    {{ new Date(post.created_at).toLocaleDateString() }} 
+                    <!-- {{ post.valid_until ? ' - ' + post.valid_until : '' }} -->
                 </div>
                
-
                 <div v-if="post.user_id == $page.props.auth?.user?.id">
                     <i role="button" title="Borrar" class="fas fa-trash-alt text-danger" @click="emit('deletePost', post)"></i>
                 </div>
@@ -54,11 +55,9 @@ const emit = defineEmits(['showPostOnModal', 'deletePost']);
                     <img :src="image.file" alt="Imagen" class="img-fluid w-30"/>
                 </a>
             </div>
-            <Like :post="post" />
 
-            <div>
-                <Create :post="post"></Create>
-            </div>
+            <Like :post="post" v-if="$page.props.auth?.user" />
+            <Create :post="post" v-if="$page.props.auth?.user"></Create>
         </div>
     </div>
     <!-- <hr> -->

@@ -36,7 +36,7 @@ const destroy = (institution) => {
                 Instituciones
             </template>
             <template #aside>
-                <Link :href="route('institution.create')" class="btn btn-primary" title="Crear institución"><i class="fas fa-plus"></i> </Link>
+                <Link v-if="$page.props.isAdmin" :href="route('institution.create')" class="btn btn-primary" title="Crear institución"><i class="fas fa-plus"></i> </Link>
             </template>
         </SectionTitle>
         
@@ -63,7 +63,7 @@ const destroy = (institution) => {
                             <td>
                                 <div class="float-end">
                                     <a :href="route('institution.edit', institucion)" class="btn btn-sm btn-primary mr-1"><i class="fas fa-edit"></i></a>
-                                    <button @click="destroy(institucion)" class="btn btn-sm btn-danger"><i class="fas fa-trash-alt"></i></button>
+                                    <button v-if="$page.props.isAdmin" @click="destroy(institucion)" class="btn btn-sm btn-danger"><i class="fas fa-trash-alt"></i></button>
                                 </div>
                             </td>
                             

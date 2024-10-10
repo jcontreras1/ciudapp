@@ -39,6 +39,9 @@ class HandleInertiaRequests extends Middleware
             'flash' => [
                 'message' => session('message'),
             ],
+            'userInstitutions' => auth()->user() ? auth()->user()->institutions : [],
+            'isAdmin' => auth()->user() ? boolval(auth()->user()->is_admin) : false,
+
         ]);
     }
 }

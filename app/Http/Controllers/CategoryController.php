@@ -9,6 +9,16 @@ use Inertia\Inertia;
 
 class CategoryController extends Controller
 {
+
+    public function __construct()
+{
+    $this->middleware(\App\Http\Middleware\isAdmin::class);
+        // ->only([
+        //     'destroy',
+        //     'store',
+        //     'update',
+        // ]);
+}
     
     public function index(){
         $categories = Category::with('subcategories')->get();

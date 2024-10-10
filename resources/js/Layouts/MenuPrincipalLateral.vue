@@ -32,14 +32,13 @@ const logout = () => {
         <!-- <del><NavLink :href="'#'" icon='<i class="fas fa-map"></i>' title="Mapa" ></NavLink></del> -->
 
 
-        <!-- <del><NavLink :href="'#'" icon='<i class="fas fa-user"></i>' title="Perfil" v-if="$page.props.auth.user"></NavLink></del> -->
 
         <!-- INSTITUCION -->
-        <NavLink :href="route('institution.index')" icon='<i class="fas fa-landmark"></i>' title="Instituciones" v-if="$page.props.auth.user"></NavLink>
+        <NavLink :href="route('institution.index')" icon='<i class="fas fa-landmark"></i>' title="Instituciones" v-if="$page.props.auth.user && ($page.props.isAdmin || $page.props.userInstitutions.length)"></NavLink>
 
 
 
-        <NavLink :href="route('category.index')" icon='<i class="fas fa-th-large"></i>' title="Categorías" v-if="$page.props.auth.user"></NavLink>
+        <NavLink :href="route('category.index')" icon='<i class="fas fa-th-large"></i>' title="Categorías" v-if="$page.props.isAdmin"></NavLink>
 
         <!-- Editar Perfil -->
         <NavLink :href="route('profile')" icon='<i class="fas fa-user-edit"></i>' title="Perfil" v-if="$page.props.auth.user"></NavLink>
@@ -52,7 +51,7 @@ const logout = () => {
 
         
         <NavLink :href="route('register')" icon='<i class="fas fa-user-plus"></i>' title="Registrarse" v-if="!$page.props.auth.user"></NavLink>
-        
+
 
     </div>
     <div class="d-block d-md-none py-1"></div>
