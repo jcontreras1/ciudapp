@@ -141,9 +141,9 @@ const updateIntitutionForm = useForm({
                 </div>
             </div>
         </form>
-
+        
         <hr>
-
+        
         <div>
             <form @submit.prevent="updateIntitutionForm.put(route('institution.update', institucion), {preserveScroll: true})">
                 <div class="row">
@@ -184,41 +184,41 @@ const updateIntitutionForm = useForm({
                     </ul>
                 </div>
             </div>
-
+            
             <div class="text-end" v-if="props.amIAdmin">
                 <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Guardar</button>
             </div>
         </form>
     </div>
-
-
-    <hr>
- <h3>Regiones definidas
-    <a class="btn btn-success float-end" :href="route('region.create', institucion)" title="Crear región" v-if="props.amIAdmin">
-        <i class="fas fa-plus"></i>
-    </a>
-</h3>
-<br>
-<div class="row">
-    <div class="col-12 col-md-4 mb-1" v-for="region in regiones" :key="region.id" v-if="regiones.length > 0">
-        <div class="card text-center h-100">
-            <div class="card-body">
-                <h4 class="mb-3">{{ region.name }}</h4>
-                <div class="">
-                    <a :href="route('region.edit', {'institution' : institucion, 'region' : region})" class="btn btn-primary mr-1">
-                        <i class="fas fa-edit"></i>
-                    </a>
-                    <button @click="eliminarRegion(region)" class="btn btn-danger" v-if="props.amIAdmin">
-                        <i class="fas fa-trash-alt"></i>
-                    </button>
+    
+    
+    <hr>    
+    <h3>Regiones definidas
+        <a class="btn btn-success float-end" :href="route('region.create', institucion)" title="Crear región" v-if="props.amIAdmin">
+            <i class="fas fa-plus"></i>
+        </a>
+    </h3>
+    <br>
+    <div class="row">
+        <div class="col-12 col-md-4 mb-1" v-for="region in regiones" :key="region.id" v-if="regiones.length > 0">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <h4 class="mb-3">{{ region.name }}</h4>
+                    <div class="">
+                        <a :href="route('region.edit', {'institution' : institucion, 'region' : region})" class="btn btn-primary mr-1">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <button @click="eliminarRegion(region)" class="btn btn-danger" v-if="props.amIAdmin">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
+        <div class="col-12 col-md-12" v-if="regiones.length == 0">
+            <p class="fst-italic text-muted">No hay regiones definidas a esta institución.</p>
+        </div>
     </div>
-    <div class="col-12 col-md-12" v-if="regiones.length == 0">
-        <p class="fst-italic text-muted">No hay regiones definidas a esta institución.</p>
-    </div>
-</div>
     <hr>
     <h3>
         Lista de usuarios asociados a  esta institución
@@ -228,8 +228,8 @@ const updateIntitutionForm = useForm({
     </h3>
     <br>
     <div class="col-12 col-md-12" v-if="users.length == 0">
-         <p class="fst-italic text-muted">No hay usuarios asociados a esta institución.</p>
-
+        <p class="fst-italic text-muted">No hay usuarios asociados a esta institución.</p>
+        
     </div>
     <table class="table table-sm" v-if="users.length > 0">
         <thead>
