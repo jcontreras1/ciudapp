@@ -30,4 +30,7 @@ Route::middleware('auth:sanctum')->group(function () {
         $response = Http::get($url);
         return $response->json();
     });
+
+
 });
+Route::resource('region/{region}/region_subcategory', App\Http\Controllers\api\ApiRegionSubcategoryController::class)->only(['store', 'destroy']);
