@@ -6,28 +6,65 @@ import SectionTitle from '@/Components/SectionTitle.vue';
 import EditPolygon from '@/Pages/Mapa/EditPolygon.vue';
 
 const props = defineProps({
-    institucion : {
+    institucion: {
         type: Object,
         required: true
     },
-    region : {
-        type : Object,
-        required : true,
+    region: {
+        type: Object,
+        required: true,
     },
-    categories : {
-        type : Object,
-        required : true,
+    categories: {
+        type: Object,
+        required: true,
     },
-    
 });
+
+const myRegion = ref(props.region);
+
+const form = useForm({
+    subcategory_ids: [], // Cambiar a un arreglo para permitir múltiples selecciones
+});
+
+const activeCategory = ref(null);
+
+
+const unsetSubcategory = (id) => {
+    axios.delete(`/api/region/${myRegion.value.id}/region_subcategory/${id}`)
+    .then(response => {
+        myRegion.value = response.data;
+    }).catch(error => {
+        console.error(error);
+    });
+};
+
+const setSubcategory = (id) => {
+    //region/{region}/region_subcategory
+    axios.post(`/api/region/${myRegion.value.id}/region_subcategory`, {
+        subcategory_id: id
+    }).then(response => {
+        //location.reload();
+        myRegion.value = response.data;
+    }).catch(error => {
+        console.error(error);
+    });
+};
+
+const toggleSubcategory = (id) => {
+    const index = form.subcategory_ids.indexOf(id);
+    if (index > -1) {
+        form.subcategory_ids.splice(index, 1); // Quitar la subcategoría si ya está seleccionada
+    } else {
+        form.subcategory_ids.push(id); // Agregar la subcategoría si no está seleccionada
+        setSubcategory(id);
+    }
+};
 
 const fomrulario = useForm({
-    'name' : props.region.name,
-    'institution' : props.institucion.id,
-    'puntos' : [], //Este es el arreglo de todas las coordenadas que hacen el polígono. Tienen que estar en formato array así como lo dejo abajo:
+    'name': myRegion.value.name,
+    'institution': props.institucion.id,
+    'puntos': [], // Este es el arreglo de todas las coordenadas que hacen el polígono.
 });
-
-
 </script>
 
 <template>
@@ -40,10 +77,10 @@ const fomrulario = useForm({
         </SectionTitle>
         <hr>
         <form @submit.prevent="fomrulario.put(route('region.update', {
-            'region' : props.region.id,
-            'institution' : props.institucion.id
+            'region': myRegion.id,
+            'institution': props.institucion.id
         }))">
-        
+
         <div class="mb-3">
             <div class="form-group">
                 <label for="institution" class="mb-2"><b>Región</b></label>
@@ -52,36 +89,63 @@ const fomrulario = useForm({
         </div>
         <div class="mb-2">
             <div class="form-group">
-                <EditPolygon :puntos="region.points"  v-on:puntos="(puntos) => fomrulario.puntos = puntos" />
+                <!-- {{ myRegion }} -->
+                <EditPolygon :puntos="myRegion.points" v-on:puntos="(puntos) => fomrulario.puntos = puntos" />
                 </div>
             </div>
-            <button type="submit" class="btn btn-primary">Guardar</button>
+            <div class="text-end">
+                <button type="submit" class="btn btn-primary">Guardar</button>
+            </div>
         </form>
         <hr>
-        
-        <h3 class="mb-3">Subcategorías a notificar <span><button class="btn btn-success float-end"><i class="fas fa-plus"></i> Agregar</button></span></h3>
-        <div class="blockquote-footer mb-3">Para agregar subcategorías a esta región seleccione una Categoría y a continuación una subcategoría</div>
-        
 
-        <!-- {{ region.subcategories }} -->
-        <table class="table table-striped" v-if="region.subcategories.length">
-            <thead>
-                <tr>
-                    <!-- <th>Categoría</th> -->
-                    <th>Subcategoría</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="subcategory in region.subcategories" :key="subcategory.id">
-                    <!-- <td>{{ subcategory.category.name }}</td> -->
-                    <td>{{ subcategory.name }}</td>
-                    <td>
-                        <!-- KAREN ELIMINAR LA subcategory.pivot.id -->
-                        <button class="btn btn-danger" @click="eliminarSubcategoria(subcategory)">Eliminar</button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </AppLayout>
+        <h3 class="mb-3">Subcategorías a notificar</h3>
+        <div class="blockquote-footer mb-3">Para agregar subcategorías a esta región seleccione una Categoría y a continuación varias subcategorías</div>
+
+        <div class="row mb-4">
+            <div v-for="category in categories" :key="category.id" class="col-12 col-md-4 mb-3">
+                <span v-html="category.icon" class="fs-3"></span>
+                <p class="fs-4">{{ category.name }}</p>
+
+                <!-- Subcategorías -->
+                <div class="mt-1">
+                    <!-- Mensaje si no hay subcategorías -->
+                    <div v-if="category.subcategories.length === 0" class="alert alert-warning">
+                        <div class="alert-body">
+                            No tiene subcategorías
+                        </div>
+                    </div>
+                    <ul class="list-group" v-else>
+                        <li v-for="subcategory in category.subcategories" :key="subcategory.id"
+                        class="list-group-item rounded-4"
+                        role="button"
+                        @click=" toggleSubcategory(subcategory.id)">
+                        <span v-html="subcategory.icon"></span>
+                        {{ subcategory.name }}
+                        <span class="float-end">
+                            <i class="fas fa-check fs-6 text-success" v-if="form.subcategory_ids.includes(subcategory.id)"></i>
+                        </span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <table class="table table-striped" v-if="myRegion.subcategories.length">
+        <thead>
+            <tr>
+                <th>Subcategoría</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="subcategory in myRegion.subcategories" :key="subcategory.id">
+                <td>{{ subcategory.name }}</td>
+                <td>
+                    {{ subcategory.pivot }}
+                    <button class="btn btn-danger" @click="unsetSubcategory(subcategory.pivot.id)">Eliminar</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</AppLayout>
 </template>
