@@ -120,7 +120,7 @@ onMounted(() => {
 <template>
     <div id="map"></div>
     <div class="calculation-box">
-        <p>Haga clic en la zona y muévalo para editar</p>
+        <i class="fas fa-lightbulb"></i> <em>Haga click en la zona para comenzar a editarla</em>
         <!-- <div id="calculated-area"></div> -->
     </div>
 </template>

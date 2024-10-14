@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreRegionRequest;
+use App\Models\Category;
 use App\Models\Institution;
 use App\Models\Point;
 use App\Models\Region;
+use App\Models\Subcategory;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -16,7 +18,8 @@ class RegionController extends Controller
     }
 
     public function create(Institution $institution){
-        return Inertia::render('Region/Create', ['institution' => $institution]);
+        $categories = Category::with('subcategories')->get();
+        return Inertia::render('Region/Create', ['institution' => $institution, 'categories' => $categories]);
     }
 
     public function store(Institution $institution, StoreRegionRequest $request){
@@ -42,7 +45,12 @@ class RegionController extends Controller
     }
 
     public function edit(Institution $institution, Region $region){
-        return Inertia::render('Region/Edit', ['region' => $region->loadMissing('points'), 'institucion' => $institution]);
+        
+
+        return Inertia::render('Region/Edit', [
+            'categories' => Category::with('subcategories')->get(), 
+            'region' => $region->loadMissing(['points', 'subcategories.category']),
+            'institucion' => $institution]);
     }
 
 

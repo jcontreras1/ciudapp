@@ -192,7 +192,8 @@ const updateIntitutionForm = useForm({
     </div>
     
     
-    <hr>    
+    <hr>
+    
     <h3>Regiones definidas
         <a class="btn btn-success float-end" :href="route('region.create', institucion)" title="Crear región" v-if="props.amIAdmin">
             <i class="fas fa-plus"></i>
