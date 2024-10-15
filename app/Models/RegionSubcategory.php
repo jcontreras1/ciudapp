@@ -22,5 +22,9 @@ class RegionSubcategory extends Model
     public function subcategory(){
         return $this->belongsTo(Subcategory::class);
     }
-    
+
+    public function usersToNotify(){
+        return $this->belongsToMany(User::class, 'user_region_subcategory')->withPivot('id');
+    }
+
 }
