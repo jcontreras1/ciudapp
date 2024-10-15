@@ -37,3 +37,4 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::post('/region/{region}/region_subcategory/all', [App\Http\Controllers\api\ApiRegionSubcategoryController::class, 'all'])->name('subcategory.all');
 Route::delete('/region/{region}/region_subcategory/allDestroy', [App\Http\Controllers\api\ApiRegionSubcategoryController::class, 'destroyAll'])->name('subcategory.destroyAll');
 Route::resource('region/{region}/region_subcategory', App\Http\Controllers\api\ApiRegionSubcategoryController::class)->only(['store', 'destroy']);
+Route::resource('regionSubcategory/{regionSubcategory}/userRegionSubcategory', App\Http\Controllers\api\ApiUserRegionSubcategoryController::class)->only(['index', 'store', 'destroy']);
