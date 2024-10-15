@@ -47,6 +47,25 @@ const setSubcategory = (id) => {
     });
 };
 
+
+const setAllSubcategories = () => {
+    axios.post(`/api/region/${myRegion.value.id}/region_subcategory/all`).then(response => {
+        myRegion.value = response.data;
+        form.subcategory_ids = myRegion.value.subcategories.map(subcategory => subcategory.id);
+    }).catch(error => {
+        console.error(error);
+    });
+};
+
+const destroyAll = () => {
+    axios.delete(`/api/region/${myRegion.value.id}/region_subcategory/allDestroy`).then(response => {
+        myRegion.value = response.data;
+        form.subcategory_ids = myRegion.value.subcategories.map(subcategory => subcategory.id);
+    }).catch(error => {
+        console.error(error);
+    });
+};
+
 const toggleSubcategory = (id) => {
     const index = form.subcategory_ids.indexOf(id);
     if (index > -1) {
@@ -96,15 +115,22 @@ onMounted(() => {
                 </div>
             </div>
             <div class="text-end">
-                <button type="submit" class="btn btn-primary">Guardar</button>
+                <button type="submit" class="btn btn-success">Guardar</button>
             </div>
         </form>
         <hr>
         
-        <h3 class="mb-3">Subcategorías a notificar</h3>
-        <div class="blockquote-footer mb-3">Seleccione todas las subcategorías necesarias</div>
-        
-        <div class="row">
+        <h3 class="mb-3">Subcategorías a notificar
+            <!--Boton  Suscribir a todo -->
+            <span class="float-end"> 
+                
+                <button type="submit" @click="setAllSubcategories()" class="btn btn-primary mr-1" title="Seleccionar todo"><i class="fas fa-check-double"></i></button>    
+                <button type="submit" @click="destroyAll()" class="btn btn-secondary" title="Desmarcar todo"><i class="fas fa-minus"></i></button>         
+                
+            </span>
+        </h3>
+        <div class="blockquote-footer mb-3">Seleccione todas las subcategorías necesarias</div>        
+        <div class="row mb-3">
             <div class="col-4" v-for="category in categories.filter(cat => cat.subcategories.length > 0)" :key="category.id">
                 <div class="card h-100">
                     <div class="card-header text-center">
@@ -114,7 +140,7 @@ onMounted(() => {
                         
                     </div>
                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item" v-for="subcategory in category.subcategories" :key="subcategory.id" role="button" 
+                        <li class="list-group-item" v-for="subcategory in category.subcategories" :key="subcategory.id" role="button"
                         @click="toggleSubcategory(subcategory.id)"
                         >
                         {{ subcategory.name }}
@@ -122,12 +148,10 @@ onMounted(() => {
                             <i class="fas fa-check fs-5 text-success" v-if="form.subcategory_ids.includes(subcategory.id)"></i>
                         </span>
                     </li>
-                </ul>                
+                </ul>
             </div>
         </div>
     </div>
-    
-    
     
     <table class="table table-striped" v-if="myRegion.subcategories.length">
         <thead>
@@ -140,7 +164,7 @@ onMounted(() => {
             <tr v-for="subcategory in myRegion.subcategories" :key="subcategory.id">
                 <td>{{ subcategory.name }}</td>
                 <td>
-                    {{ subcategory.pivot }}
+                    <!-- {{ subcategory.pivot }} -->
                     <button class="btn btn-info">Suscribir</button>
                 </td>
             </tr>
