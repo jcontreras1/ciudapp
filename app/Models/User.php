@@ -101,4 +101,8 @@ class User extends Authenticatable
     public function regionSubcategory(){
         return $this->belongsToMany(RegionSubcategory::class, 'user_region_subcategory')->withPivot('id');
     }
+
+    public function userRegionSubcategory(){
+        return $this->hasMany(UserRegionSubcategory::class);
+    }
 }

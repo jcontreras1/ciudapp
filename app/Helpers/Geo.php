@@ -1,4 +1,7 @@
 <?php
+use App\Models\Region;
+use App\Models\User;
+use App\Models\UserRegionSubcategory;
 function pointInPolygon($point, $vertices, $pointOnVertex = false) {
     
     // Check if the point is inside the polygon or on the boundary
@@ -37,4 +40,8 @@ function pointInPolygon($point, $vertices, $pointOnVertex = false) {
     return ($intersections % 2 != 0);
 }
 
-?>
+function interseccionUserRegion(User $user, Region $region) {
+    $regionSubcategories = $region->regionSubcategories->pluck('id')->toArray();
+    $userRegionSubcategories = UserRegionSubcategory::where('user_id', $user->id)->whereIn('region_subcategory_id', $regionSubcategories)->with('user')->get();
+    return $userRegionSubcategories;
+}

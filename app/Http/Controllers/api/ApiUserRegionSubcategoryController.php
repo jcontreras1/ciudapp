@@ -22,15 +22,15 @@ class ApiUserRegionSubcategoryController extends Controller
      */
     public function store(RegionSubcategory $regionSubcategory, Request $request)
     {
-        // $user = auth()->id();
-        $user = 1;
+        $user = auth()->id();
+        // $user = 1;
 
         UserRegionSubcategory::firstOrCreate([
             'user_id' => $user,
             'region_subcategory_id' => $regionSubcategory->id
         ]);
 
-        return response([], 201);
+        return response(interseccionUserRegion(auth()->user(), $regionSubcategory->region), 201);
     }
 
     /**
@@ -39,6 +39,6 @@ class ApiUserRegionSubcategoryController extends Controller
     public function destroy(RegionSubcategory $regionSubcategory, UserRegionSubcategory $userRegionSubcategory)
     {
         $userRegionSubcategory->delete();
-        return response([], 200);
+        return response(interseccionUserRegion(auth()->user(), $regionSubcategory->region), 200);
     }
 }

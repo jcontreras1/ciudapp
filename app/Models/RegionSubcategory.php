@@ -27,4 +27,8 @@ class RegionSubcategory extends Model
         return $this->belongsToMany(User::class, 'user_region_subcategory')->withPivot('id');
     }
 
+    public function userRegionSubcategories(){
+        return $this->hasMany(UserRegionSubcategory::class);
+    }
+
 }
