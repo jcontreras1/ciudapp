@@ -40,4 +40,5 @@ class Region extends Model
     {
         return $this->belongsToMany(Subcategory::class, 'region_subcategory')->withPivot('id');
     }
+    //experimental
 }

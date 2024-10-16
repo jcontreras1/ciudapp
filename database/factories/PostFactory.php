@@ -21,8 +21,8 @@ class PostFactory extends Factory
     {
         return [
             'user_id' => 1,
-            'lat' => fake()->latitude(),
-            'lng' => fake()->longitude(),
+            'lat' => fake()->latitude(-42.8, -42.6),
+            'lng' => fake()->longitude(-65.1, -64.9),
             'comment' => fake()->sentence(),
             'private' => false,
             'subcategory_id' => Subcategory::inRandomOrder()->first()->id,

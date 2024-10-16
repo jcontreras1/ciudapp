@@ -50,6 +50,7 @@ class RegionController extends Controller
         return Inertia::render('Region/Edit', [
             'categories' => Category::with('subcategories')->get(), 
             'region' => $region->loadMissing(['points', 'subcategories.category']),
+            'notifications' => interseccionUserRegion(auth()->user(), $region),
             'institucion' => $institution]);
     }
 

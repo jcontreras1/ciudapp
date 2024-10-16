@@ -4,6 +4,7 @@ import { ref, defineProps, onMounted } from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import SectionTitle from '@/Components/SectionTitle.vue';
 import EditPolygon from '@/Pages/Mapa/EditPolygon.vue';
+import axios from 'axios';
 
 const props = defineProps({
     institucion: {
@@ -18,13 +19,36 @@ const props = defineProps({
         type: Object,
         required: true,
     },
+    notifications: {
+        type: Object,
+        required: true,
+    },
 });
 
 const myRegion = ref(props.region);
+const myNotifications = ref(props.notifications);
 
 const form = useForm({
     subcategory_ids: [], // Cambiar a un arreglo para permitir múltiples selecciones
 });
+
+const setNotify = (id) => {
+    axios.post(`/api/regionSubcategory/${id}/userRegionSubcategory`)
+    .then(response => {
+        myNotifications.value = response.data;
+    }).catch(error => {
+        console.error(error);
+    });
+}
+
+const unsetNotify = (id, urc) => {
+    axios.delete(`/api/regionSubcategory/${id}/userRegionSubcategory/${urc}`)
+    .then(response => {
+        myNotifications.value = response.data;
+    }).catch(error => {
+        console.error(error);
+    });
+}
 
 const unsetSubcategory = (id) => {
     axios.delete(`/api/region/${myRegion.value.id}/region_subcategory/${id}`)
@@ -108,6 +132,9 @@ onMounted(() => {
                 <input type="text" class="form-control" id="institution" v-model="fomrulario.name">
             </div>
         </div>
+      asd
+      {{ notifications }}
+      
         <div class="mb-2">
             <div class="form-group">
                 <!-- {{ myRegion }} -->
@@ -120,7 +147,7 @@ onMounted(() => {
         </form>
         <hr>
         
-        <h3 class="mb-3">Subcategorías a notificar
+        <h3 class="mb-3">Subcategorías de la región
             <!--Boton  Suscribir a todo -->
             <span class="float-end"> 
                 
@@ -129,7 +156,7 @@ onMounted(() => {
                 
             </span>
         </h3>
-        <div class="blockquote-footer mb-3">Seleccione todas las subcategorías necesarias</div>        
+        <div class="blockquote-footer mb-3">Seleccione todas las subcategorías acordes a la región</div>        
         <div class="row mb-3">
             <div class="col-4" v-for="category in categories.filter(cat => cat.subcategories.length > 0)" :key="category.id">
                 <div class="card h-100">
@@ -152,7 +179,19 @@ onMounted(() => {
             </div>
         </div>
     </div>
-    
+    <hr>
+    <h3 class="mb-3">Notificaciones
+            <!--Boton  Suscribir a todo -->
+            <span class="float-end"> 
+                
+                <button type="submit" @click="setAllSubcategories()" class="btn btn-primary mr-1" title="Seleccionar todo"><i class="fas fa-tasks"></i></button>    
+                <button type="submit" @click="destroyAll()" class="btn btn-secondary" title="Desmarcar todo"><i class="fas fa-times"></i></button>         
+                
+            </span>
+        </h3>
+        <div class="blockquote-footer mb-3">Seleccione todas las notificaciones que quiere recibir para esta región</div>        
+
+    {{ myNotifications }}
     <table class="table table-striped" v-if="myRegion.subcategories.length">
         <thead>
             <tr>
@@ -164,8 +203,14 @@ onMounted(() => {
             <tr v-for="subcategory in myRegion.subcategories" :key="subcategory.id">
                 <td>{{ subcategory.name }}</td>
                 <td>
-                    <!-- {{ subcategory.pivot }} -->
-                    <button class="btn btn-info">Suscribir</button>
+                    {{ subcategory.pivot }}
+                    <button 
+                    v-if="myNotifications.filter(notification => notification.region_subcategory_id == subcategory.pivot.id).length"
+                    class="btn btn-secondary"
+                    @click="unsetNotify(subcategory.pivot.id, myNotifications.filter(notification => notification.region_subcategory_id == subcategory.pivot.id)[0].id)"
+                    >Desuscribir</button>
+
+                    <button class="btn btn-primary" @click="setNotify(subcategory.pivot.id)" v-else>Suscribir</button>
                 </td>
             </tr>
         </tbody>

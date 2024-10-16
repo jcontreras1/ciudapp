@@ -23,18 +23,11 @@ class ApiRegionSubcategoryController extends Controller
 
         return response($region->loadMissing(['subcategories', 'points']), 201);
     }
-
-    public function destroy(Region $region, RegionSubcategory $regionSubcategory)
-    {
-        $regionSubcategory->delete();
-        return response($region->loadMissing(['subcategories', 'points']), 200);
-    }
-
     public function all(Region $region, Request $request)	{
-        $subcategories = Subcategory::all();
-
-        foreach ($subcategories as $subcategory) {
-            
+        $subcategories = Subcategory::whereHas('category', function($q) {
+            $q->whereNull('deleted_at');
+        })->get();
+        foreach ($subcategories as $subcategory) {            
             
             $regionSubcategory = RegionSubcategory::firstOrCreate([
                 'region_id' => $region->id,
@@ -44,14 +37,22 @@ class ApiRegionSubcategoryController extends Controller
         return response($region->loadMissing(['subcategories', 'points']), 201);
     }
 
-    public function destroyAll(Region $region, Request $request)	{
-        $subcategories = Subcategory::all();
+    public function destroy(Region $region, RegionSubcategory $regionSubcategory)
+    {
+        $regionSubcategory->userRegionSubcategories()->delete();
+        $regionSubcategory->delete();
+        return response($region->loadMissing(['subcategories', 'points']), 200);
+    }
 
-        foreach ($subcategories as $subcategory) {
-            $regionSubcategory = RegionSubcategory::where('region_id', $region->id)->where('subcategory_id', $subcategory->id)->first();
-            if ($regionSubcategory) {
-                $regionSubcategory->delete();
-            }
+
+    public function destroyAll(Region $region, Request $request)	{
+        
+        foreach($region->regionSubcategories as $subcategory) {
+            //elimino todos los user_region_subcategory asociados a la subcategoria
+            // foreach($subcategory->userRegionSubcategories as $userRegionSub){
+                $subcategory->userRegionSubcategories()->delete();
+            // }
+            $subcategory->delete();
         }
         return response($region->loadMissing(['subcategories', 'points']), 200);
     }

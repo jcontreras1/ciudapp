@@ -97,4 +97,12 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Institution::class, 'user_institution')->withPivot('is_admin');
     }
+
+    public function regionSubcategory(){
+        return $this->belongsToMany(RegionSubcategory::class, 'user_region_subcategory')->withPivot('id');
+    }
+
+    public function userRegionSubcategory(){
+        return $this->hasMany(UserRegionSubcategory::class);
+    }
 }
