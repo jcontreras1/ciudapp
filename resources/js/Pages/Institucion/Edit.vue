@@ -1,10 +1,11 @@
 <script setup>
 import { useForm } from '@inertiajs/vue3';
 import { Modal } from 'bootstrap';
-import { ref, defineProps } from 'vue'
+import { ref, defineProps, computed } from 'vue'
 import { Head, Link, router } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue'
 import SectionTitle from '@/Components/SectionTitle.vue';
+import ShowPolygon from '../Mapa/ShowPolygon.vue';
 
 const props = defineProps({
     institucion : {
@@ -24,6 +25,7 @@ const props = defineProps({
         required: true
     }
 });
+
 const cities = ref([])
 const searchCity = async (query) => {
     if (query.length > 2) {
@@ -100,14 +102,7 @@ const updateIntitutionForm = useForm({
 
 <template>
     <AppLayout>
-        <Head title="Editar Institución" />
-        <SectionTitle>
-            <template #title>
-                Editar Institución
-            </template>
-        </SectionTitle>
-        <!-- <i class="fas fa-landmark" v-if=""></i>  -->
-        <!-- Modal create user - institution -->
+        <Head title="Institución" />
         <form @submit.prevent="agregarUsuario" v-if="props.amIAdmin">
             <div class="modal fade" id="mdlCreateUserInstitution" ref="modalCreate" tabindex="-1" aria-labelledby="mdlCreateUserInstitutionLabel" aria-hidden="true">
                 <div class="modal-dialog">
@@ -142,119 +137,161 @@ const updateIntitutionForm = useForm({
             </div>
         </form>
         
-        <hr>
-        
-        <div>
-            <form @submit.prevent="updateIntitutionForm.put(route('institution.update', institucion), {preserveScroll: true})">
-                <div class="row">
-                    <div class="col-12 col-md-6 mb-3">
-                        <label for="name" class="form-label"><b>Nombre de la institución</b></label>
-                        <input type="text" :disabled="!props.amIAdmin" class="form-control" id="name" v-model="updateIntitutionForm.name">
-                    </div>
-                    <div class="col-12 col-md-6 mb-3">
-                        <label for="mail" class="form-label"><b>Correo electrónico</b></label>
-                        <input type="email" :disabled="!props.amIAdmin" class="form-control" id="mail" v-model="updateIntitutionForm.mail">
-                    </div>
-                    <div class="col-12 col-md-6 mb-3">
-                        <label for="address" class="form-label"><b>Dirección</b></label>
-                        <input type="text" :disabled="!props.amIAdmin" class="form-control" id="address" v-model="updateIntitutionForm.address">
-                    </div>
-                    <div class="col-12 col-md-6 mb-3">
-                        <label for="city_id" class="form-label"><b>Ciudad</b></label>
-                        <input type="hidden"  v-model="updateIntitutionForm.city_id" /> <!-- Campo oculto para el city_id -->
-                        <input :disabled="!props.amIAdmin"
-                        type="text"
-                        class="form-control"
-                        autocomplete="nope"
-                        id="city_id"
-                        @input="searchCity($event.target.value)"
-                        required
-                        v-model="updateIntitutionForm.city_name"
-                        >
-                        <ul v-if="cities.length" class="list-group">
-                            <li
-                            role="button"
-                            v-for="city in cities"
-                            :key="city.id"
-                            class="list-group-item"
-                            @click="selectCity(city)"
-                            >
-                            {{ city.name }} - {{ city.province.name }}
-                        </li>
-                    </ul>
-                </div>
-            </div>
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#pepito" type="button" role="tab" aria-controls="home" aria-selected="true">REGIONES</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">LISTA DE USUARIOS</button>
+            </li>
             
-            <div class="text-end" v-if="props.amIAdmin">
-                <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Guardar</button>
-            </div>
-        </form>
-    </div>
-    
-    
-    <hr>
-    
-    <h3>Regiones definidas
-        <a class="btn btn-success float-end" :href="route('region.create', institucion)" title="Crear región" v-if="props.amIAdmin">
-            <i class="fas fa-plus"></i>
-        </a>
-    </h3>
-    <br>
-    <div class="row">
-        <div class="col-12 col-md-4 mb-1" v-for="region in regiones" :key="region.id" v-if="regiones.length > 0">
-            <div class="card text-center h-100">
-                <div class="card-body">
-                    <h4 class="mb-3">{{ region.name }}</h4>
-                    <div class="">
-                        <a :href="route('region.edit', {'institution' : institucion, 'region' : region})" class="btn btn-primary mr-1">
-                            <i class="fas fa-edit"></i>
-                        </a>
-                        <button @click="eliminarRegion(region)" class="btn btn-danger" v-if="props.amIAdmin">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="settings-tab" data-bs-toggle="tab" data-bs-target="#settings" type="button" role="tab" aria-controls="settings" aria-selected="false">EDITAR INSTITUCIÓN</button>
+            </li>
+        </ul>
+        
+        
+        
+        <div class="tab-content">
+            <div class="py-2"></div>
+            <div class="tab-pane active" id="pepito" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+                <!-- REGIONES -->
+                <h3>Regiones definidas
+                    <a class="btn btn-success float-end" :href="route('region.create', institucion)" title="Crear región" v-if="props.amIAdmin">
+                        <i class="fas fa-plus"></i>
+                    </a>
+                </h3>
+                <br>
+                <div class="row">
+                    <div class="col-12 col-md-4 mb-3" v-for="region in regiones" :key="region.id" v-if="regiones.length > 0">
+                        <div class="card text-center h-100">
+                            <!-- Línea superior de color -->
+                            <div class="border-top border-3 border-primary"></div>
+                            
+                            <div class="card-body">
+                                <h4 class="mb-3">{{ computed(() => region.name.toUpperCase()) }}</h4>
+                                <div>
+                                    <ShowPolygon :puntos="region.points" :id="'map_' + region.id" />
+                                    <!-- <p><b>Área:</b> {{ region.area }} m<sup>2</sup></p> -->
+                                    <div class="row">
+                                        <div class="d-grid">
+                                            <div class="btn-group">
+                                                
+                                                <a :href="route('region.edit', {'institution' : institucion, 'region' : region})" class="btn btn-primary">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <button @click="eliminarRegion(region)" class="btn btn-danger" v-if="props.amIAdmin">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+                    
+                    <div class="col-12 col-md-12" v-if="regiones.length == 0">
+                        <p class="fst-italic text-muted">No hay regiones definidas a esta institución.</p>
+                    </div>
+                </div>             
+                
+            </div>
+            <div class="tab-pane" id="profile" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
+                <div v-if="true">
+                    <!-- LISTA DE USUARIOS ASOCIADOS -->
+                    <h3>
+                        Lista de usuarios asociados a  esta institución
+                        <span class="float-end" v-if="props.amIAdmin">
+                            <button data-bs-target="#mdlCreateUserInstitution" data-bs-toggle="modal" href="#" class="btn btn-success" title="Agregar usuario"><i class="fas fa-plus"></i> </button>
+                        </span>
+                    </h3>
+                    <br>
+                    <div class="col-12 col-md-12" v-if="users.length == 0">
+                        <p class="fst-italic text-muted">No hay usuarios asociados a esta institución.</p>
+                        
+                    </div>
+                    <table class="table table-sm" v-if="users.length > 0">
+                        <thead>
+                            <tr>
+                                <th>Usuario</th>
+                                <th>Puede administrar</th>
+                                <th>Opciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="user in users" :key="user.id">
+                                <td>{{ user.name }} - {{ user.email }}</td>
+                                <td>
+                                    <div class="form-check form-switch">
+                                        <input @change="toggleAdmin(user)" class="form-check-input" :checked="user.pivot.is_admin" type="checkbox" role="switch" :id="'check' + user.pivot.id ">
+                                        <label class="form-check-label" :for="'check' + user.pivot.id">{{ user.pivot.is_admin ? 'Si' : 'No' }}</label>
+                                    </div>
+                                </td>
+                                <td class="text-end">
+                                    <a href="#" class="btn btn-danger" @click="eliminarUsuario(user)" v-if="props.amIAdmin"><i class="fas fa-trash-alt"></i></a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
                 </div>
             </div>
-        </div>
-        <div class="col-12 col-md-12" v-if="regiones.length == 0">
-            <p class="fst-italic text-muted">No hay regiones definidas a esta institución.</p>
+            <div class="tab-pane" id="settings" role="tabpanel" aria-labelledby="settings-tab" tabindex="0">
+                <template v-if="true">
+                    <!-- EDITAR INSTITUCIÓN -->
+                    <div>
+                        <form @submit.prevent="updateIntitutionForm.put(route('institution.update', institucion), {preserveScroll: true})">
+                            <div class="row">
+                                <div class="col-12 col-md-6 mb-3">
+                                    <label for="name" class="form-label"><b>Nombre de la institución</b></label>
+                                    <input type="text" :disabled="!props.amIAdmin" class="form-control" id="name" v-model="updateIntitutionForm.name">
+                                </div>
+                                <div class="col-12 col-md-6 mb-3">
+                                    <label for="mail" class="form-label"><b>Correo electrónico</b></label>
+                                    <input type="email" :disabled="!props.amIAdmin" class="form-control" id="mail" v-model="updateIntitutionForm.mail">
+                                </div>
+                                <div class="col-12 col-md-6 mb-3">
+                                    <label for="address" class="form-label"><b>Dirección</b></label>
+                                    <input type="text" :disabled="!props.amIAdmin" class="form-control" id="address" v-model="updateIntitutionForm.address">
+                                </div>
+                                <div class="col-12 col-md-6 mb-3">
+                                    <label for="city_id" class="form-label"><b>Ciudad</b></label>
+                                    <input type="hidden"  v-model="updateIntitutionForm.city_id" /> <!-- Campo oculto para el city_id -->
+                                    <input :disabled="!props.amIAdmin"
+                                    type="text"
+                                    class="form-control"
+                                    autocomplete="nope"
+                                    id="city_id"
+                                    @input="searchCity($event.target.value)"
+                                    required
+                                    v-model="updateIntitutionForm.city_name"
+                                    >
+                                    <ul v-if="cities.length" class="list-group">
+                                        <li
+                                        role="button"
+                                        v-for="city in cities"
+                                        :key="city.id"
+                                        class="list-group-item"
+                                        @click="selectCity(city)"
+                                        >
+                                        {{ city.name }} - {{ city.province.name }}
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="text-end" v-if="props.amIAdmin">
+                            <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Guardar</button>
+                        </div>
+                    </form>
+                </div>
+                
+            </template>
         </div>
     </div>
-    <hr>
-    <h3>
-        Lista de usuarios asociados a  esta institución
-        <span class="float-end" v-if="props.amIAdmin">
-            <button data-bs-target="#mdlCreateUserInstitution" data-bs-toggle="modal" href="#" class="btn btn-success" title="Agregar usuario"><i class="fas fa-plus"></i> </button>
-        </span>
-    </h3>
-    <br>
-    <div class="col-12 col-md-12" v-if="users.length == 0">
-        <p class="fst-italic text-muted">No hay usuarios asociados a esta institución.</p>
-        
-    </div>
-    <table class="table table-sm" v-if="users.length > 0">
-        <thead>
-            <tr>
-                <th>Usuario</th>
-                <th>Puede administrar</th>
-                <th>Opciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr v-for="user in users" :key="user.id">
-                <td>{{ user.name }} - {{ user.email }}</td>
-                <td>
-                    <div class="form-check form-switch">
-                        <input @change="toggleAdmin(user)" class="form-check-input" :checked="user.pivot.is_admin" type="checkbox" role="switch" :id="'check' + user.pivot.id ">
-                        <label class="form-check-label" :for="'check' + user.pivot.id">{{ user.pivot.is_admin ? 'Si' : 'No' }}</label>
-                    </div>
-                </td>
-                <td class="text-end">
-                    <a href="#" class="btn btn-danger" @click="eliminarUsuario(user)" v-if="props.amIAdmin"><i class="fas fa-trash-alt"></i></a>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+    
 </AppLayout>
 
 </template>

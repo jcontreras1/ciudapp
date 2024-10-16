@@ -58,26 +58,25 @@ defineProps({
                     </div>
                 </div>
                 <!-- <div class="tab-pane" id="messages" role="tabpanel" aria-labelledby="messages-tab" tabindex="0">
-                        <div v-if="$page.props.jetstream.canManageTwoFactorAuthentication">
-                            <TwoFactorAuthenticationForm
-                            :requires-confirmation="confirmsTwoFactorAuthentication"
-                            />
-                            
+                    <div v-if="$page.props.jetstream.canManageTwoFactorAuthentication">
+                        <TwoFactorAuthenticationForm
+                        :requires-confirmation="confirmsTwoFactorAuthentication"
+                        />
+                        
+                        <SectionBorder />
+                    </div>
+                </div> -->
+                
+                <!-- <LogoutOtherBrowserSessionsForm :sessions="sessions" class="mt-10 sm:mt-0" /> -->
+                <div class="tab-pane" id="settings" role="tabpanel" aria-labelledby="settings-tab" tabindex="0">
+                    <template v-if="true">
+                        <!-- <template v-if="$page.props.jetstream.hasAccountDeletionFeatures"> -->
+                            <DeleteUserForm />
                             <SectionBorder />
-                        </div>
-                    </div> -->
-                    
-                    <!-- <LogoutOtherBrowserSessionsForm :sessions="sessions" class="mt-10 sm:mt-0" /> -->
-                    <div class="tab-pane" id="settings" role="tabpanel" aria-labelledby="settings-tab" tabindex="0">
-                        <template v-if="true">
-                            <!-- <template v-if="$page.props.jetstream.hasAccountDeletionFeatures"> -->
-                                <DeleteUserForm />
-                                <SectionBorder />
-                            </template>
-                        </div>
-                    <!-- </div> -->
-                </div>
-            <!-- </div> -->
-        </AppLayout>
-    </template>
-    
+                        </template>
+                    </div>
+                <!-- </div> -->
+            </div>
+        <!-- </div> -->
+    </AppLayout>
+</template>

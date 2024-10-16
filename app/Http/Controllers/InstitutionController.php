@@ -46,6 +46,7 @@ class InstitutionController extends Controller
             $ui = UserInstitution::where('institution_id', $institution->id)->where('user_id', auth()->id())->firstOrFail();
             $amIAdmin = boolval($ui->is_admin);
         }
+        $regions = $institution->loadMissing('regions.points');
         return Inertia::render('Institucion/Edit',
         [
             'institucion' => $institution->loadMissing('city.province'),
