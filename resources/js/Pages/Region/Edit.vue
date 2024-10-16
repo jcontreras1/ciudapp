@@ -133,8 +133,6 @@ onMounted(() => {
             </div>
         </div>
         
-        <!-- {{ notifications }} -->
-        
         <div class="mb-2">
             <div class="form-group">
                 <!-- {{ myRegion }} -->
@@ -190,8 +188,7 @@ onMounted(() => {
         </span>
     </h3>
     <div class="blockquote-footer mb-3">Seleccione todas las notificaciones que quiere recibir para esta región</div>        
-    
-    <!-- {{ myNotifications }} -->
+
     <table class="table table-striped" v-if="myRegion.subcategories.length">
         <thead>
             <tr>
@@ -203,7 +200,6 @@ onMounted(() => {
             <tr v-for="subcategory in myRegion.subcategories" :key="subcategory.id">
                 <td>{{ subcategory.name }}</td>
                 <td>
-                    {{ subcategory.pivot }}
                     <button 
                     v-if="myNotifications.filter(notification => notification.region_subcategory_id == subcategory.pivot.id).length"
                     class="btn btn-secondary"

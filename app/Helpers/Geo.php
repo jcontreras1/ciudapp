@@ -1,4 +1,5 @@
 <?php
+use App\Models\Post;
 use App\Models\Region;
 use App\Models\User;
 use App\Models\UserRegionSubcategory;
@@ -44,4 +45,10 @@ function interseccionUserRegion(User $user, Region $region) {
     $regionSubcategories = $region->regionSubcategories->pluck('id')->toArray();
     $userRegionSubcategories = UserRegionSubcategory::where('user_id', $user->id)->whereIn('region_subcategory_id', $regionSubcategories)->with('user')->get();
     return $userRegionSubcategories;
+}
+
+function postInRegion(Post $post, Region $region) {
+    $point = ['lat' => $post->lat, 'lng' => $post->lng];
+    $vertices = $region->points->toArray();
+    return pointInPolygon($point, $vertices);
 }
