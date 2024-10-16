@@ -38,3 +38,9 @@ Route::middleware([
 //Auth::routes();
 
 include('auth.php');
+
+
+Route::get('/testing', function () {
+    $institution = App\Models\Institution::with('regions')->find(2);    
+    return Inertia::render('Institucion/Reports', ['institution' => $institution]);
+});
