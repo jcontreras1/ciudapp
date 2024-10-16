@@ -1,8 +1,8 @@
 <?php
 
 use App\Http\Controllers\api\ApiCommentLikeController;
-use App\Http\Controllers\api\ApiPostController;
 use App\Http\Controllers\api\CityController;
+use App\Http\Controllers\PostController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
@@ -37,3 +37,5 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::post('/region/{region}/region_subcategory/all', [App\Http\Controllers\api\ApiRegionSubcategoryController::class, 'all'])->name('subcategory.all');
 Route::delete('/region/{region}/region_subcategory/allDestroy', [App\Http\Controllers\api\ApiRegionSubcategoryController::class, 'destroyAll'])->name('subcategory.destroyAll');
 Route::resource('region/{region}/region_subcategory', App\Http\Controllers\api\ApiRegionSubcategoryController::class)->only(['store', 'destroy']);
+
+Route::get('/heatmap-data', [PostController::class, 'pruebaMapaCalor'])->name('mapacalor');

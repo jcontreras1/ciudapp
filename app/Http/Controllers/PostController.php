@@ -10,10 +10,38 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
 
 
 class PostController extends Controller
 {
+    public function pruebaMapaCalor(){
+        // Aquí puedes obtener los datos de tu base de datos
+        // y transformarlos en formato GeoJSON
+        $data = [
+            "type" => "FeatureCollection",
+            "features" => [
+                [
+                    "type" => "Feature",
+                    "geometry" => [
+                        "type" => "Point",
+                        "coordinates" => [-99.1332, 19.4326],
+                    ],
+                    "properties" => [
+                        "intensity" => 5,
+                    ],
+                ],
+                // Añade más puntos aquí
+            ],
+        ];
+
+        return Inertia::render('Mapa/MapaCalor', ['data' => $data]);
+
+      
+    }
+
+
+
 
     public function store(Request $request){
         DB::beginTransaction();
