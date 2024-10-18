@@ -3,9 +3,13 @@
 namespace App\Listeners;
 
 use App\Events\NewPostEvent;
+use App\Mail\NuevoReporte;
 use App\Models\Region;
+use App\Models\User;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Support\Facades\Mail;
+
 
 class PolygonSearchListener
 {
@@ -37,11 +41,11 @@ class PolygonSearchListener
             foreach ($regionSubcategories as $regionSubcategory) {
                 if ($regionSubcategory->subcategory_id == $post->subcategory_id) {
                     foreach ($regionSubcategory->userRegionSubcategories as $userRegionSubcategory) {
-                        $email = $userRegionSubcategory->user->email;
+                        $user = $userRegionSubcategory->user->id;
                         
                         // Append
-                        $match[$email][$region->name . ' - ' . $region->institution->name] = $regionSubcategory->subcategory->name;
-                        info("El post {$post->id} está en la región {$region->name} y se notificará a {$email}");
+                        $match[$user][$region->institution->name . ' - ' . $region->name] = $regionSubcategory->subcategory->name;
+                        // info("El post {$post->id} está en la región {$region->name} y se notificará a {$user}");
                     }
                 }
             }
@@ -49,10 +53,15 @@ class PolygonSearchListener
 
         if (!empty($match)) {
             // info(json_encode($match));
-            foreach($match as $clave => $valor){
-                $user = User::find($clave);
-                $user->notify(new PostInRegion($post, $valor));
-                 info("Se notifica a $clave que el post $valor está en la región");
+            foreach($match as $userId => $regionData){
+                //Debería revisar si el usuario quiere ser notificado
+                $user = User::find($userId);
+                $regionInfo = collect($regionData)->map(function($subcategory, $region) {
+                    return "$region"; //, Subcategoría: $subcategory";
+                });
+
+                Mail::to($user->email)->send(new NuevoReporte($post, $regionInfo));
+
             }
         }
     }
