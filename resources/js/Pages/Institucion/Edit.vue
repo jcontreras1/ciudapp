@@ -6,6 +6,7 @@ import { Head, Link, router } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue'
 import SectionTitle from '@/Components/SectionTitle.vue';
 import ShowPolygon from '../Mapa/ShowPolygon.vue';
+import Reports from './Reports.vue';
 
 const props = defineProps({
     institucion : {
@@ -140,12 +141,14 @@ const updateIntitutionForm = useForm({
         <!-- Nav tabs -->
         <ul class="nav nav-tabs" id="myTab" role="tablist">
             <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#pepito" type="button" role="tab" aria-controls="home" aria-selected="true">REGIONES</button>
+                <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#pepito" type="button" role="tab" aria-controls="home" aria-selected="true">REPORTES</button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">LISTA DE USUARIOS</button>
+                <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">REGIONES</button>
             </li>
-            
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="messages-tab" data-bs-toggle="tab" data-bs-target="#messages" type="button" role="tab" aria-controls="messages" aria-selected="false">LISTA DE USUARIOS</button>
+            </li> 
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="settings-tab" data-bs-toggle="tab" data-bs-target="#settings" type="button" role="tab" aria-controls="settings" aria-selected="false">EDITAR INSTITUCIÓN</button>
             </li>
@@ -153,54 +156,60 @@ const updateIntitutionForm = useForm({
         
         
         
+        
         <div class="tab-content">
             <div class="py-2"></div>
             <div class="tab-pane active" id="pepito" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
-                <!-- REGIONES -->
-                <h3>Regiones definidas
-                    <a class="btn btn-success float-end" :href="route('region.create', institucion)" title="Crear región" v-if="props.amIAdmin">
-                        <i class="fas fa-plus"></i>
-                    </a>
-                </h3>
-                <br>
-                <div class="row">
-                    <div class="col-12 col-md-4 mb-3" v-for="region in regiones" :key="region.id" v-if="regiones.length > 0">
-                        <div class="card text-center h-100">
-                            <!-- Línea superior de color -->
-                            <div class="border-top border-3 border-primary"></div>
-                            
-                            <div class="card-body">
-                                <h4 class="mb-3">{{ computed(() => region.name.toUpperCase()) }}</h4>
-                                <div>
-                                    <ShowPolygon :puntos="region.points" :id="'map_' + region.id" />
-                                    <!-- <p><b>Área:</b> {{ region.area }} m<sup>2</sup></p> -->
-                                    <div class="row">
-                                        <div class="d-grid">
-                                            <div class="btn-group">
-                                                
-                                                <a :href="route('region.edit', {'institution' : institucion, 'region' : region})" class="btn btn-primary">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
-                                                <button @click="eliminarRegion(region)" class="btn btn-danger" v-if="props.amIAdmin">
-                                                    <i class="fas fa-trash-alt"></i>
-                                                </button>
+                <div v-if="true">
+                    <Reports :institution="institucion"  />
+                </div>
+            </div>
+            <div class="tab-pane" id="profile" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
+                <div v-if="true">
+                    <!-- REGIONES -->
+                    <h3>Regiones definidas
+                        <a class="btn btn-success float-end" :href="route('region.create', institucion)" title="Crear región" v-if="props.amIAdmin">
+                            <i class="fas fa-plus"></i>
+                        </a>
+                    </h3>
+                    <br>
+                    <div class="row">
+                        <div class="col-12 col-md-4 mb-4" v-for="region in regiones" :key="region.id" v-if="regiones.length > 0">
+                            <div class="card text-center h-100">
+                                <!-- Línea superior de color -->
+                                <div class="border-top border-3 border-primary"></div>
+                                
+                                <div class="card-body">
+                                    <h4 class="mb-3">{{ computed(() => region.name.toUpperCase()) }}</h4>
+                                    <div>
+                                        <ShowPolygon :puntos="region.points" :id="'map_' + region.id" />
+                                        
+                                        <div class="row">
+                                            <div class="d-grid">
+                                                <div class="btn-group">
+                                                    
+                                                    <a :href="route('region.edit', {'institution' : institucion, 'region' : region})" class="btn btn-primary">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                    <button @click="eliminarRegion(region)" class="btn btn-danger" v-if="props.amIAdmin">
+                                                        <i class="fas fa-trash-alt"></i>
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                        </div>                    
+                        <div class="col-12 col-md-12" v-if="regiones.length == 0">
+                            <p class="fst-italic text-muted">No hay regiones definidas a esta institución.</p>
                         </div>
                     </div>
-                    
-                    <div class="col-12 col-md-12" v-if="regiones.length == 0">
-                        <p class="fst-italic text-muted">No hay regiones definidas a esta institución.</p>
-                    </div>
-                </div>             
-                
+                </div>
             </div>
-            <div class="tab-pane" id="profile" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
+            <div class="tab-pane" id="messages" role="tabpanel" aria-labelledby="messages-tab" tabindex="0">
                 <div v-if="true">
-                    <!-- LISTA DE USUARIOS ASOCIADOS -->
+                    <!-- LISTA DE USUARIOS -->
                     <h3>
                         Lista de usuarios asociados a  esta institución
                         <span class="float-end" v-if="props.amIAdmin">
@@ -235,12 +244,12 @@ const updateIntitutionForm = useForm({
                             </tr>
                         </tbody>
                     </table>
-                    
                 </div>
             </div>
+            
             <div class="tab-pane" id="settings" role="tabpanel" aria-labelledby="settings-tab" tabindex="0">
                 <template v-if="true">
-                    <!-- EDITAR INSTITUCIÓN -->
+                    <!--EDITAR INSTITUCIÓN  -->
                     <div>
                         <form @submit.prevent="updateIntitutionForm.put(route('institution.update', institucion), {preserveScroll: true})">
                             <div class="row">
@@ -269,29 +278,21 @@ const updateIntitutionForm = useForm({
                                     v-model="updateIntitutionForm.city_name"
                                     >
                                     <ul v-if="cities.length" class="list-group">
-                                        <li
-                                        role="button"
-                                        v-for="city in cities"
-                                        :key="city.id"
-                                        class="list-group-item"
-                                        @click="selectCity(city)"
-                                        >
-                                        {{ city.name }} - {{ city.province.name }}
-                                    </li>
-                                </ul>
+                                        <li role="button" v-for="city in cities" :key="city.id" class="list-group-item" @click="selectCity(city)">
+                                            {{ city.name }} - {{ city.province.name }}
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>                            
+                            <div class="text-end" v-if="props.amIAdmin">
+                                <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Guardar</button>
                             </div>
-                        </div>
-                        
-                        <div class="text-end" v-if="props.amIAdmin">
-                            <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Guardar</button>
-                        </div>
-                    </form>
-                </div>
-                
-            </template>
+                        </form>
+                    </div>                    
+                </template>
+            </div>            
         </div>
-    </div>
+        
+    </AppLayout>
     
-</AppLayout>
-
 </template>

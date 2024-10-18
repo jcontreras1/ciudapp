@@ -70,13 +70,14 @@ defineProps({
                 <!-- <LogoutOtherBrowserSessionsForm :sessions="sessions" class="mt-10 sm:mt-0" /> -->
                 <div class="tab-pane" id="settings" role="tabpanel" aria-labelledby="settings-tab" tabindex="0">
                     <template v-if="true">
-                        <!-- <template v-if="$page.props.jetstream.hasAccountDeletionFeatures"> -->
-                            <DeleteUserForm />
-                            <SectionBorder />
-                        </template>
-                    </div>
-                <!-- </div> -->
+                        
+                        <DeleteUserForm />
+                        <SectionBorder />
+                    </template>
+                </div>
+                
             </div>
-        <!-- </div> -->
-    </AppLayout>
-</template>
+            
+        </AppLayout>
+    </template>
+    
