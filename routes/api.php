@@ -44,3 +44,11 @@ Route::delete('/region/{region}/region_subcategory/allDestroy', [App\Http\Contro
 Route::resource('region/{region}/region_subcategory', App\Http\Controllers\api\ApiRegionSubcategoryController::class)->only(['store', 'destroy']);
 Route::get('/heatmap-data', [PostController::class, 'pruebaMapaCalor'])->name('mapacalor');
 Route::resource('regionSubcategory/{regionSubcategory}/userRegionSubcategory', App\Http\Controllers\api\ApiUserRegionSubcategoryController::class)->only(['index', 'store', 'destroy']);
+
+
+Route::get('test', function(){
+    
+    $user = \App\Models\User::find(1);
+
+    return $user->quiere('NOTIFICATION_COMMENTS');
+});
