@@ -2,6 +2,7 @@
 import { reactive, ref } from 'vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { Head, Link, router, useForm } from '@inertiajs/vue3';
+import Tooltip from '@/Components/Tooltip.vue';
 
 const props = defineProps({
     post: Object,
@@ -18,22 +19,42 @@ const visibleCommentsCount = ref(3); // Muestra 3 comentarios inicialmente
 const comentar = () => {
     sending.value = true;
     axios.post(`/api/post/${props.post.id}/comment`, commentForm)
-        .then((response) => {
-            sending.value = false;
-            myPost.value = response.data;
-            commentForm.comment = "";
-        })
-        .catch(error => {
-            sending.value = false;
-            console.error(error);
-            Swal.fire({
-                title: '¡Error!',
-                text: 'Ocurrió un error al comentar el post: ' + error.message,
-                icon: 'error',
-                confirmButtonText: 'Ok'
-            });
+    .then((response) => {
+        sending.value = false;
+        myPost.value = response.data;
+        commentForm.comment = "";
+    })
+    .catch(error => {
+        sending.value = false;
+        console.error(error);
+        Swal.fire({
+            title: '¡Error!',
+            text: 'Ocurrió un error al comentar el post: ' + error.message,
+            icon: 'error',
+            confirmButtonText: 'Ok'
         });
+    });
 };
+const likeComent = (id) => {
+    sending.value = true;
+    axios.post(`/api/comment/${id}/like`)
+    .then((response) => {
+        sending.value = false;
+        console.log(response.data);
+        myPost.value = response.data;
+    })
+    .catch(error => {
+        sending.value = false;
+        Swal.fire({
+            title: '¡Error!',
+            text: 'Ocurrió un error al sumarse al post: ' + error.message,
+            icon: 'error',
+            confirmButtonText: 'Ok'
+        });
+    });
+}
+
+
 
 // Función para mostrar todos los comentarios
 const mostrarTodosComentarios = () => {
@@ -50,15 +71,23 @@ const mostrarTodosComentarios = () => {
     <div class="card m-1" v-for="(comentario, index) in myPost.comments.slice(0, visibleCommentsCount)" :key="comentario.id">
         <div class="card-body">
             <b>{{ comentario.user?.name }}</b> {{ comentario.created_at }}:
-            <h5 class="card-text">{{ comentario.comment }}</h5>
+            <h5 class="card-text">{{ comentario.comment }}</h5><span>
+                <span class="float-end">
+                    <Tooltip :list="comentario.likes">
+                        <a class="link-underline link-underline-opacity-0" href="#" @click.prevent="likeComent(comentario.id)">
+                            <i class="fas fa-heart" :class="{'text-danger' : comentario.likes?.map(like => like.user_id).includes($page.props.auth?.user?.id)}"></i> {{ comentario.likes?.length }}
+                        </a>
+                    </Tooltip>
+                </span>
+            </span>
         </div>
     </div>
-
+    
     <!-- Botón "Cargar más" si hay más comentarios -->
     <div v-if="myPost.comments.length > visibleCommentsCount" class="text-left ml-2">
         <a href="#" @click="mostrarTodosComentarios">Cargar {{ myPost.comments.length - visibleCommentsCount}} comentarios más</a>
     </div>
-
+    
     <div class="py-1"></div>
     <!-- Crea un comentario -->
     <form @submit.prevent="comentar">
