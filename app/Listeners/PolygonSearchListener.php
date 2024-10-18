@@ -25,25 +25,35 @@ class PolygonSearchListener
         /** Busco las zonas que tengan un polígono que contenga a este post */
         $post = $event->post;
         $putoABuscar = ['lat' => $post->lat, 'lng' => $post->lng];
-        $foundRegions = [];
-        foreach (Region::all() as $region){
-            $poli = $region->points->map(function ($point) {
-                return [
-                    'lat' => $point->lat,
-                    'lng' =>$point->lng,
-                ];
-            });
+        $match = [];
+        $regions = Region::all()->filter(function ($region) use ($putoABuscar) {
+            $poli = $region->points->map(fn($point) => ['lat' => $point->lat, 'lng' => $point->lng])->toArray();
+            return pointInPolygon($putoABuscar, $poli);
+        });
+        
+        foreach ($regions as $region) {
+            $regionSubcategories = $region->regionSubcategories;
             
-            if (pointInPolygon($putoABuscar, $poli->toArray())){
-                $foundRegions[] = $region->name . ' - ' . $region->institution->name; 
-            }else{
-                info("El post {$post->id} NO está en la región {$region->name}");
+            foreach ($regionSubcategories as $regionSubcategory) {
+                if ($regionSubcategory->subcategory_id == $post->subcategory_id) {
+                    foreach ($regionSubcategory->userRegionSubcategories as $userRegionSubcategory) {
+                        $email = $userRegionSubcategory->user->email;
+                        
+                        // Append
+                        $match[$email][$region->name . ' - ' . $region->institution->name] = $regionSubcategory->subcategory->name;
+                        info("El post {$post->id} está en la región {$region->name} y se notificará a {$email}");
+                    }
+                }
             }
         }
 
-        if (!empty($foundRegions)) {
-            $newComment = implode("<br>", $foundRegions);
-            $post->update(['comment' => $newComment]);
+        if (!empty($match)) {
+            // info(json_encode($match));
+            foreach($match as $clave => $valor){
+                $user = User::find($clave);
+                $user->notify(new PostInRegion($post, $valor));
+                 info("Se notifica a $clave que el post $valor está en la región");
+            }
         }
     }
 }

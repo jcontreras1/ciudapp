@@ -24,7 +24,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Event::listen('App\Events\NewPostEvent', 'App\Listeners\PolygonSearchListener');
-        Event::listen('App\Events\NewPostEvent', 'App\Listeners\GetGeocodingFromPostListener');
+        // Event::listen('App\Events\NewPostEvent', 'App\Listeners\PolygonSearchListener');
+        // Event::listen('App\Events\NewPostEvent', 'App\Listeners\GetGeocodingFromPostListener');
     }
 }
