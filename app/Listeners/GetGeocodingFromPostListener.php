@@ -27,7 +27,7 @@ class GetGeocodingFromPostListener
         $url = "https://api.mapbox.com/search/geocode/v6/reverse?longitude=$post->lng&latitude=$post->lat&access_token=" . config('app.mapbox_api_key');
 
         $response = Http::get($url);
-        info($response);
+        //info($response);
         $response = $response->object();
         $post->update([
             'location_short' => $response->features[0]?->properties?->place_formatted,
