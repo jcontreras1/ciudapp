@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\HomeController;
+use App\Models\Preference;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -16,7 +17,12 @@ Route::middleware([
     ])->group(function () {
 
         Route::get('profile', function () {
-            return Inertia::render('Profile/Show');
+            $userPreferences = auth()->user()->preferences;
+            $preferences = Preference::all();
+            return Inertia::render('Profile/Show', [
+                'preferences' => $preferences,
+                'userPreferences' => $userPreferences ?? []
+            ]);
         })->name('profile');
 
         Route::get('profile/updatePassword', function () {
@@ -25,7 +31,7 @@ Route::middleware([
 
 
         Route::get('/dashboard', function () {
-            return Inertia::render('Dashboard');
+            return redirect()->route('home');
         })->name('dashboard');
         Route::resource('category', App\Http\Controllers\CategoryController::class)->except('show');
         Route::resource('category/{category}/subcategory', App\Http\Controllers\SubcategoryController::class)->except('show');

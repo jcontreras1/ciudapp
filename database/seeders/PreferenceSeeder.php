@@ -14,33 +14,28 @@ class PreferenceSeeder extends Seeder
     public function run(): void
     {
         Preference::firstOrCreate([
-            'code' => 'DARK_MODE',
-            'description' => 'Enable dark mode',
-        ]);
-
-        Preference::firstOrCreate([
             'code' => 'NOTIFICATION_COMMENTS',
-            'description' => 'Receive notifications for comments',
+            'description' => 'Recibir notificaciones de comentarios sobre mis publicaciones',
         ]);
 
         Preference::firstOrCreate([
             'code' => 'NOTIFICATION_LIKES',
-            'description' => 'Receive notifications for likes',
+            'description' => 'Recibir notificaciones por gente que se suma a mis publicaciones',
         ]);
 
         Preference::firstOrCreate([
             'code' => 'NOTIFICATION_COMMENT_LIKES',
-            'description' => 'Receive notifications for comment likes',
+            'description' => 'Recibir notiricaciones por gente que le da like a mis comentarios',
         ]);
         
         Preference::firstOrCreate([
             'code' => 'PUBLIC_POSTS_BY_DEFAULT',
-            'description' => 'Set posts to public by default',
+            'description' => 'Todos mis posteos son públicos por defecto',
         ]);
         
         Preference::firstOrCreate([
             'code' => 'NOTIFICATION_ON_REGIONS',
-            'description' => 'Receive notifications from posts on regions',
+            'description' => 'Recibir notificaciones acerca de nuevos posts en alguna de mis regiones',
         ]);
         
     }

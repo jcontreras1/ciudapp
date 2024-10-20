@@ -121,7 +121,7 @@ class User extends Authenticatable
         return $this->hasMany(UserRegionSubcategory::class);
     }
 
-    public function preferecnes(){
+    public function preferences(){
         return $this->belongsToMany(Preference::class,'user_preference')->withPivot(['id', 'value']);
     }
 }
