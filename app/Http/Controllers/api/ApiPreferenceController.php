@@ -19,10 +19,17 @@ class ApiPreferenceController extends Controller
                 'value' => !$preference->value
             ]);
         }else{
-            UserPreference::create([
+            $preference = UserPreference::create([
                 'preference_id' => $request->preference_id,
                 'user_id' => $user->id,
                 'value' => false,
+            ]);
+        }
+
+        //si se referia a los posteos, debo actualizar sus posts
+        if($preference->preference->code == 'PUBLIC_POSTS_BY_DEFAULT'){
+            $user->posts()->update([
+                'private' => !$preference->value
             ]);
         }
         return response(

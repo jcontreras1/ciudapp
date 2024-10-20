@@ -30,7 +30,7 @@ class PreferenceSeeder extends Seeder
         
         Preference::firstOrCreate([
             'code' => 'PUBLIC_POSTS_BY_DEFAULT',
-            'description' => 'Todos mis posteos son públicos por defecto',
+            'description' => 'Todos mis posteos son públicos',
         ]);
         
         Preference::firstOrCreate([
