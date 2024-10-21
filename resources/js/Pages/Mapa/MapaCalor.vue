@@ -8,15 +8,26 @@ import * as turf from '@turf/turf';
 const props = defineProps({
   reportes: {
     type: Array,
-    required: true
+    required: false
   },
   regiones: {
     type: Object,
-    required: true
+    required: false
+  },
+  redibujar: {
+    type: Number,
+    required: false
   }
 });
 const geoJsonReports = ref(null);
 const map = ref(null); 
+
+watch(
+  () => props.redibujar,
+  () => {
+    map.value.resize();
+  }
+)
 
 
 // Función para convertir las regiones a formato GeoJSON
@@ -73,7 +84,7 @@ onMounted(() => {
   map.value.on('load', () => {
     // Convertir las regiones a GeoJSON
     const geojsonRegions = convertToGeoJSON(props.regiones);
-    geoJsonReports.value = convertReportsToGeoJSON(props.reportes);
+    geoJsonReports.value = convertReportsToGeoJSON(props.reportes) ;
     
     // Agregar la fuente para las regiones
     map.value.addSource('regiones', {
@@ -92,47 +103,7 @@ onMounted(() => {
       'type': 'heatmap',
       'source': 'reportes',
       'minzoom': 7,
-      'paint': {
-        'circle-radius': [
-        'interpolate',
-        ['linear'],
-        ['zoom'],
-        7,
-        ['interpolate', ['linear'], ['get', 'mag'], 1, 1, 6, 4],
-        16,
-        ['interpolate', ['linear'], ['get', 'mag'], 1, 5, 6, 50]
-        ],
-        // Color circle by earthquake magnitude
-        'circle-color': [
-        'interpolate',
-        ['linear'],
-        ['get', 'mag'],
-        1,
-        'rgba(33,102,172,0)',
-        2,
-        'rgb(103,169,207)',
-        3,
-        'rgb(209,229,240)',
-        4,
-        'rgb(253,219,199)',
-        5,
-        'rgb(239,138,98)',
-        6,
-        'rgb(178,24,43)'
-        ],
-        'circle-stroke-color': 'white',
-        'circle-stroke-width': 1,
-        // Transition from heatmap to circle layer by zoom level
-        'circle-opacity': [
-        'interpolate',
-        ['linear'],
-        ['zoom'],
-        7,
-        0,
-        8,
-        1
-        ]
-      }
+
     },
     'waterway-label'
     );
@@ -185,7 +156,6 @@ onMounted(() => {
 watch(() => props.reportes, (newValue) => {
   // Convertir los reportes a GeoJSON
   geoJsonReports.value = convertReportsToGeoJSON(newValue);
-  console.log(geoJsonReports.value);
   // Actualizar la fuente del mapa si existe
   const source = map.value.getSource('reportes');
   if (source) {

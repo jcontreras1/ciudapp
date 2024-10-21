@@ -16,12 +16,8 @@ const props = defineProps({
     }
 });
 
-
-
-
-
 onMounted(() => {
-    const arrayBidimensional = props.puntos.map(item => [item.lng, item.lat]);
+    const arrayBidimensional = props.puntos?.map(item => [item.lng, item.lat]);
     const center = turf.center(turf.polygon([arrayBidimensional]));
     mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
     
@@ -35,17 +31,13 @@ onMounted(() => {
            // Deshabilitar el arrastre del mapa
     });
     
-    
     const draw = new MapboxDraw({
        displayControlsDefault: false, // Desactiva todos los controles
         controls: {}, // No permite editar ni borrar
     });
 
-    
     map.addControl(draw);
 
-    
-    
     map.on('load', () => {
         // Cargar el polígono inicial
         if (arrayBidimensional.length > 0) {

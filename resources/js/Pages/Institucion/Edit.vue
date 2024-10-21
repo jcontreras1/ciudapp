@@ -1,13 +1,21 @@
 <script setup>
 import { useForm } from '@inertiajs/vue3';
 import { Modal } from 'bootstrap';
-import { ref, defineProps, computed } from 'vue'
+import { ref, defineProps, computed, onMounted } from 'vue'
 import { Head, Link, router } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue'
 import SectionTitle from '@/Components/SectionTitle.vue';
 import ShowPolygon from '../Mapa/ShowPolygon.vue';
 import Reports from './Reports.vue';
 
+
+onMounted(() => {
+    const tabEl = document.querySelector('#home-tab')
+    tabEl.addEventListener('shown.bs.tab', event => {
+        variableDeIntercambio.value++;
+    })
+});
+const variableDeIntercambio = ref(0);
 const props = defineProps({
     institucion : {
         type: Object,
@@ -141,10 +149,15 @@ const updateIntitutionForm = useForm({
         <!-- Nav tabs -->
         <ul class="nav nav-tabs" id="myTab" role="tablist">
             <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#pepito" type="button" role="tab" aria-controls="home" aria-selected="true">REPORTES</button>
+                <button class="nav-link active" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">
+                    REGIONES
+                    
+                </button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">REGIONES</button>
+                <button class="nav-link" id="home-tab" data-bs-toggle="tab" data-bs-target="#pepito" type="button" role="tab" aria-controls="home" aria-selected="true">
+                    REPORTES
+                </button>
             </li>
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="messages-tab" data-bs-toggle="tab" data-bs-target="#messages" type="button" role="tab" aria-controls="messages" aria-selected="false">LISTA DE USUARIOS</button>
@@ -152,19 +165,17 @@ const updateIntitutionForm = useForm({
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="settings-tab" data-bs-toggle="tab" data-bs-target="#settings" type="button" role="tab" aria-controls="settings" aria-selected="false">EDITAR INSTITUCIÓN</button>
             </li>
-        </ul>
+        </ul> 
         
         
         
         
         <div class="tab-content">
             <div class="py-2"></div>
-            <div class="tab-pane active" id="pepito" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
-                <div v-if="true">
-                    <Reports :institution="institucion"  />
-                </div>
+            <div class="tab-pane" id="pepito" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+                <Reports :institution="institucion" :redibujar="variableDeIntercambio" />
             </div>
-            <div class="tab-pane" id="profile" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
+            <div class="tab-pane active" id="profile" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
                 <div v-if="true">
                     <!-- REGIONES -->
                     <h3>Regiones definidas

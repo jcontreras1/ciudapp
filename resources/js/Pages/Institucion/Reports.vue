@@ -8,7 +8,12 @@ const props = defineProps({
         type: Object,
         required: true
     },
+    redibujar : {
+        type : Number,
+        required : false
+    }
 });
+
 
 //Para agregarle independencia al módulo va y busca las subcategorías por sí solo, de modo que solo necesita la institución
 const allSubcategories = ref();
@@ -73,7 +78,7 @@ onMounted(() => {
 </div>
 <hr>
 <div>
-    <MapaCalor :reportes="reportes.reportes" :regiones="reportes.regiones" />   
+    <MapaCalor :redibujar="redibujar" :reportes="reportes.reportes" :regiones="reportes.regiones" />   
     
 </div>
 
