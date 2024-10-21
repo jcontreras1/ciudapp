@@ -29,7 +29,7 @@ const logout = () => {
         <!-- <del><NavLink :href="'#'" icon='<i class="far fa-plus-square"></i>' title="Nuevo Post" v-if="$page.props.auth.user"></NavLink></del> -->
 
         <!-- Mapa de calor-->
-        <NavLink :href="route('mapacalor')" icon='<i class="fas fa-map"></i>' title="Mapa de calor" ></NavLink>
+        <!-- <NavLink :href="route('mapacalor')" icon='<i class="fas fa-map"></i>' title="Mapa de calor" ></NavLink> -->
 
 
 

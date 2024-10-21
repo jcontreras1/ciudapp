@@ -70,15 +70,17 @@ const mostrarTodosComentarios = () => {
     </div>
     <div class="card m-1" v-for="(comentario, index) in myPost.comments.slice(0, visibleCommentsCount)" :key="comentario.id">
         <div class="card-body">
-            <b>{{ comentario.user?.name }}</b> {{ comentario.created_at }}:
-            <h5 class="card-text">{{ comentario.comment }}</h5><span>
-                <span class="float-end">
+            <div>
+                <strong>{{ comentario.user?.name }}</strong> {{ comentario.created_at }}:
+                <span clas="float-end">
                     <Tooltip :list="comentario.likes">
                         <a class="link-underline link-underline-opacity-0" href="#" @click.prevent="likeComent(comentario.id)">
                             <i class="fas fa-heart" :class="{'text-danger' : comentario.likes?.map(like => like.user_id).includes($page.props.auth?.user?.id)}"></i> {{ comentario.likes?.length }}
                         </a>
                     </Tooltip>
                 </span>
+            </div>
+            <h5 class="card-text">{{ comentario.comment }}</h5><span>
             </span>
         </div>
     </div>
