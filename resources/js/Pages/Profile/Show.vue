@@ -6,20 +6,18 @@ import SectionBorder from '@/Components/SectionBorder.vue';
 import TwoFactorAuthenticationForm from '@/Pages/Profile/Partials/TwoFactorAuthenticationForm.vue';
 import UpdatePasswordForm from '@/Pages/Profile/Partials/UpdatePasswordForm.vue';
 import UpdateProfileInformationForm from '@/Pages/Profile/Partials/UpdateProfileInformationForm.vue';
-
+import PreferenceSettings from '@/Pages/Profile/Partials/PreferenceSettings.vue';
 
 defineProps({
     confirmsTwoFactorAuthentication: Boolean,
     sessions: Array,
+    preferences: Object,
+    userPreferences: Object,
 });
 </script>
 
 <template>
-    
-    
-    
-    
-    
+
     <AppLayout title="Perfil">
         <!-- Nav tabs -->
         <ul class="nav nav-tabs" id="myTab" role="tablist">
@@ -35,10 +33,11 @@ defineProps({
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="settings-tab" data-bs-toggle="tab" data-bs-target="#settings" type="button" role="tab" aria-controls="settings" aria-selected="false">Eliminar cuenta</button>
             </li>
+            <li class="nav-item" role="presentation">
+                <!-- <button class="nav-link" id="settings-tab" data-bs-toggle="tab" data-bs-target="#settings" type="button" role="tab" aria-controls="settings" aria-selected="false">Eliminar cuenta</button> -->
+                 <button class="nav-link" id="preference-tab" data-bs-toggle="tab" data-bs-target="#preference" type="button" role="tab" aria-controls="preference" aria-selected="false">Preferencias</button>
+            </li>
         </ul>
-        
-        
-        
         
         <div class="tab-content">
             <div class="py-2"></div>
@@ -76,6 +75,7 @@ defineProps({
                     </template>
                 </div>
                 
+                <PreferenceSettings :preferences="preferences" :userPreferences="userPreferences" />
             </div>
             
         </AppLayout>

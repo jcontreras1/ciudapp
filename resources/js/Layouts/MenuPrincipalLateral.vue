@@ -29,7 +29,7 @@ const logout = () => {
         <!-- <del><NavLink :href="'#'" icon='<i class="far fa-plus-square"></i>' title="Nuevo Post" v-if="$page.props.auth.user"></NavLink></del> -->
 
         <!-- Mapa de calor-->
-        <NavLink :href="route('mapacalor')" icon='<i class="fas fa-map"></i>' title="Mapa de calor" ></NavLink>
+        <!-- <NavLink :href="route('mapacalor')" icon='<i class="fas fa-map"></i>' title="Mapa de calor" ></NavLink> -->
 
 
 
@@ -47,8 +47,10 @@ const logout = () => {
         
         <NavLink :href="'#'" icon='<i class="fas fa-sign-out-alt"></i>' @click.prevent="logout" title="Salir" v-if="$page.props.auth.user"></NavLink>
 
-        <NavLink :href="route('login')" icon='<i class="fas fa-sign-in-alt"></i>' title="Iniciar Sesión" v-if="!$page.props.auth.user"></NavLink>
+        <!-- Google -->
+        <NavLink :href="'/google-auth/redirect'" icon='<i class="fab fa-google"></i>' title="Iniciar con Google" v-if="!$page.props.auth.user"></NavLink>
 
+        <NavLink :href="route('login')" icon='<i class="fas fa-sign-in-alt"></i>' title="Iniciar Sesión" v-if="!$page.props.auth.user"></NavLink>
         
         <NavLink :href="route('register')" icon='<i class="fas fa-user-plus"></i>' title="Registrarse" v-if="!$page.props.auth.user"></NavLink>
 

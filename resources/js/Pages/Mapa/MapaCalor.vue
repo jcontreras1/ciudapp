@@ -197,7 +197,6 @@ watch(() => props.reportes, (newValue) => {
 </script>
 
 <template>
-  {{ props.reportes }}
   <div id="map"></div>
   
 </template>

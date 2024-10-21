@@ -96,20 +96,26 @@ const mostrarTodosComentarios = () => {
     </div>
     <div class="card m-1" v-for="(comentario, index) in myPost.comments.slice(0, visibleCommentsCount)" :key="comentario.id">
         <div class="card-body">
-            <b>{{ comentario.user?.name }}</b> {{ comentario.created_at }}:
-            <h5 class="card-text">{{ comentario.comment }}
-                {{ comentario.id }}
-                <span class="float-end">
-                    <Tooltip :list="comentario.likes">                         
-                        <a class="link-underline link-underline-opacity-0" href="#" @click.prevent="toggleLike(comentario, $page.props.auth?.user?.id)">
-                            <i class="fas fa-heart" 
-                            :class="{'text-danger' : comentario.likes.map(element => element.id).includes($page.props.auth?.user?.id)}">
-                        </i> 
-                        {{ comentario.likes?.length }}
-                    </a>
+
+
+            <div class="mb-2 d-flex justify-content-between">
+                <div class="">
+
+                    <strong>{{ comentario.user?.name }}</strong> {{ comentario.created_at }}:
+                </div>
+                    <div class="">
+            <Tooltip :list="comentario.likes">                         
+                    <a class="link-underline link-underline-opacity-0 float-end" href="#" @click.prevent="toggleLike(comentario, $page.props.auth?.user?.id)">
+                        <i class="fas fa-heart" 
+                        :class="{'text-danger' : comentario.likes.map(element => element.id).includes($page.props.auth?.user?.id)}">
+                    </i> &nbsp;{{ comentario.likes?.length }}
+                </a>
                 </Tooltip>
-            </span>
-        </h5>
+            </div>
+            </div>
+            <h5 class="card-text">{{ comentario.comment }}
+            </h5>
+           
         
     </div>
 </div>

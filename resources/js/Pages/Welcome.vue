@@ -111,7 +111,7 @@ const { stop } = useIntersectionObserver(veryBottomTarget, ([{ isIntersecting }]
         </div>
         <!-- Post -->
         <div class="mb-2" v-for="post in props.posts.data" :key="post.id">
-            <PostShow :post="post" v-on:deletePost="deletePost(post)" v-on:showPostOnModal="selectedPostToModal = post"></PostShow>
+            <PostShow v-if="!post.private || (post.private && post.user_id == $page.props.auth.user?.id)" :post="post" v-on:deletePost="deletePost(post)" v-on:showPostOnModal="selectedPostToModal = post"></PostShow>
         </div>
         <div ref="veryBottomTarget" class="-translate-y-72 h-20 text-center">
             <i class="fas fa-spinner fa-spin fa-2x"></i>&nbsp;Cargando más publicaciones...

@@ -78,6 +78,21 @@ class User extends Authenticatable
         return $this->hasMany(Post::class);
     }
 
+    public function quiere($ability){
+        //Escanear entre las preferencias del usuario
+        $preferecnes = $this->preferecnes;
+        if(count($preferecnes) == 0){
+            return true;
+        }
+
+        $res= in_array($ability, $preferecnes->map(function($item){
+            return $item->code;
+        })->toArray());
+
+        return "hol:" . boolval($res);
+
+    }
+
     public function likes()
     {
         return $this->hasMany(PostLike::class);
@@ -104,5 +119,9 @@ class User extends Authenticatable
 
     public function userRegionSubcategory(){
         return $this->hasMany(UserRegionSubcategory::class);
+    }
+
+    public function preferences(){
+        return $this->belongsToMany(Preference::class,'user_preference')->withPivot(['id', 'value']);
     }
 }

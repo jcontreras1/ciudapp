@@ -60,7 +60,8 @@ class PostController extends Controller
                 'comment' => "",
                 'private' => false,
                 'subcategory_id' => $request->subcategory_id,
-                'location_long' => $request->fullAddress ?? null
+                'location_long' => $request->fullAddress ?? null,
+                'private' => auth()->user()->quiere('PUBLIC_POSTS_BY_DEFAULT') ? false : true,
             ]);
 
             //Ver hasta cuando sería considerado valido el post

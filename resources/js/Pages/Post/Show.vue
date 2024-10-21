@@ -25,13 +25,15 @@ const emit = defineEmits(['showPostOnModal', 'deletePost']);
     
     <div class="card">
         <div class="card-body">
+            <div class="text-muted" v-if="post.private">
+                <i class="fas fa-eye-slash"></i> Este post es privado
+            </div>
             <div class="d-flex justify-content-between">
                 <div>
                     <i class="fas fa-calendar-alt"></i> 
                     {{ new Date(post.created_at).toLocaleDateString() }} 
                     <!-- {{ post.valid_until ? ' - ' + post.valid_until : '' }} -->
-                </div>
-               
+                </div>               
                 <div v-if="post.user_id == $page.props.auth?.user?.id">
                     <i role="button" title="Borrar" class="fas fa-trash-alt text-danger" @click="emit('deletePost', post)"></i>
                 </div>

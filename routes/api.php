@@ -38,9 +38,20 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('institution/{institution}/reports', [App\Http\Controllers\api\ApiInstitutionController::class, 'reports' ]);
     Route::get('institution/{institution}/subcategories', [App\Http\Controllers\api\ApiInstitutionController::class, 'subcategories' ]);
 
+    //alternar alguna preferencia del usuario
+    Route::post('/user/preference/toggle', [App\Http\Controllers\api\ApiPreferenceController::class, 'toggle']);
+
+    Route::post('/region/{region}/region_subcategory/all', [App\Http\Controllers\api\ApiRegionSubcategoryController::class, 'all'])->name('subcategory.all');
+    Route::delete('/region/{region}/region_subcategory/allDestroy', [App\Http\Controllers\api\ApiRegionSubcategoryController::class, 'destroyAll'])->name('subcategory.destroyAll');
+    Route::resource('region/{region}/region_subcategory', App\Http\Controllers\api\ApiRegionSubcategoryController::class)->only(['store', 'destroy']);
+    Route::get('/heatmap-data', [PostController::class, 'pruebaMapaCalor'])->name('mapacalor');
+    Route::resource('regionSubcategory/{regionSubcategory}/userRegionSubcategory', App\Http\Controllers\api\ApiUserRegionSubcategoryController::class)->only(['index', 'store', 'destroy']);
 });
-Route::post('/region/{region}/region_subcategory/all', [App\Http\Controllers\api\ApiRegionSubcategoryController::class, 'all'])->name('subcategory.all');
-Route::delete('/region/{region}/region_subcategory/allDestroy', [App\Http\Controllers\api\ApiRegionSubcategoryController::class, 'destroyAll'])->name('subcategory.destroyAll');
-Route::resource('region/{region}/region_subcategory', App\Http\Controllers\api\ApiRegionSubcategoryController::class)->only(['store', 'destroy']);
-Route::get('/heatmap-data', [PostController::class, 'pruebaMapaCalor'])->name('mapacalor');
-Route::resource('regionSubcategory/{regionSubcategory}/userRegionSubcategory', App\Http\Controllers\api\ApiUserRegionSubcategoryController::class)->only(['index', 'store', 'destroy']);
+
+
+Route::get('test', function(){
+    
+    $user = \App\Models\User::find(1);
+
+    return $user->quiere('NOTIFICATION_COMMENTS');
+});

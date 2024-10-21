@@ -1,14 +1,35 @@
 <?php
 
 use App\Http\Controllers\HomeController;
+use App\Models\Preference;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-
+use Laravel\Socialite\Facades\Socialite;
+use App\Models\User;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::resource('posts', App\Http\Controllers\PostController::class);
-
+Route::get('/google-auth/redirect', function () {
+    return Socialite::driver('google')->redirect();
+});
+ 
+Route::get('/google-auth/callback', function () {
+    $userGoogle = Socialite::driver('google')->stateless()->user();
+    $user = User::updateOrCreate(
+        [
+            // Aquí verificamos primero por el email (que debería ser único), y luego actualizamos o creamos el google_id
+            'email' => $userGoogle->email
+        ],
+        [
+            'google_id' => $userGoogle->id,
+            'name' => $userGoogle->name,
+        ]
+    );
+    Auth::login($user);
+    return redirect()->route('home');
+    // $user->token
+});
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
@@ -16,7 +37,12 @@ Route::middleware([
     ])->group(function () {
 
         Route::get('profile', function () {
-            return Inertia::render('Profile/Show');
+            $userPreferences = auth()->user()->preferences;
+            $preferences = Preference::all();
+            return Inertia::render('Profile/Show', [
+                'preferences' => $preferences,
+                'userPreferences' => $userPreferences ?? []
+            ]);
         })->name('profile');
 
         Route::get('profile/updatePassword', function () {
@@ -25,7 +51,7 @@ Route::middleware([
 
 
         Route::get('/dashboard', function () {
-            return Inertia::render('Dashboard');
+            return redirect()->route('home');
         })->name('dashboard');
         Route::resource('category', App\Http\Controllers\CategoryController::class)->except('show');
         Route::resource('category/{category}/subcategory', App\Http\Controllers\SubcategoryController::class)->except('show');
