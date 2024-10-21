@@ -26,9 +26,9 @@ class ApiCommentLikeController extends Controller
         return response(new PostResource($postComment->post), 201);
     }
 
-    public function destroy(PostComment $postComment, PostCommentLike $postCommentLike, Request $request)
+    public function destroy(PostComment $postComment, PostCommentLike $like, Request $request)
     {
-        $postCommentLike->delete();
-        return response($postComment, 200);
+        $like->delete();
+        return response(new PostResource($postComment->post), 200);
     }
 }
