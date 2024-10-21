@@ -5,11 +5,31 @@ use App\Models\Preference;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-
+use Laravel\Socialite\Facades\Socialite;
+use App\Models\User;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::resource('posts', App\Http\Controllers\PostController::class);
-
+Route::get('/google-auth/redirect', function () {
+    return Socialite::driver('google')->redirect();
+});
+ 
+Route::get('/google-auth/callback', function () {
+    $userGoogle = Socialite::driver('google')->stateless()->user();
+    $user = User::updateOrCreate(
+        [
+            // Aquí verificamos primero por el email (que debería ser único), y luego actualizamos o creamos el google_id
+            'email' => $userGoogle->email
+        ],
+        [
+            'google_id' => $userGoogle->id,
+            'name' => $userGoogle->name,
+        ]
+    );
+    Auth::login($user);
+    return redirect()->route('home');
+    // $user->token
+});
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
