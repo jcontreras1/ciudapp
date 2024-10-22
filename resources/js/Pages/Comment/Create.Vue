@@ -21,6 +21,7 @@ const comentar = () => {
     .then((response) => {
         sending.value = false;
         myPost.value = response.data;
+        console.log(myPost.value);
         commentForm.comment = "";
     })
     .catch(error => {
@@ -72,7 +73,7 @@ const dislikeComment = (id, like) => {
 }
 
 const toggleLike = (comment, yo) => {
-
+    
     if (comment.likes.map(element => element.id).includes(yo)) {
         dislikeComment(comment.id, comment.likes.filter(elem => elem.id === yo)[0]?.pivot.id);
     } else {
@@ -90,32 +91,32 @@ const mostrarTodosComentarios = () => {
 
 <template>
     <!-- Muestra los comentarios -->
-    <div class="fs-5 mb-1">
-        <i class="fas fa-comments"></i> Comentarios
-        <span class="badge rounded-pill text-bg-primary">{{ myPost.comments.length }}</span>
-    </div>
+    <span class="fs-5 mx-3">
+        <i class="fas fa-comments mr-2"></i> 
+        <a class="link-underline link-underline-opacity-0">{{ myPost.comments.length }}</a>
+    </span>
     <div class="card m-1" v-for="(comentario, index) in myPost.comments.slice(0, visibleCommentsCount)" :key="comentario.id">
         <div class="card-body">
-
-
+            
+            
             <div class="mb-2 d-flex justify-content-between">
                 <div class="">
-
+                    
                     <strong>{{ comentario.user?.name }}</strong> {{ comentario.created_at }}:
                 </div>
-                    <div class="">
-            <Tooltip :list="comentario.likes">                         
-                    <a class="link-underline link-underline-opacity-0 float-end" href="#" @click.prevent="toggleLike(comentario, $page.props.auth?.user?.id)">
-                        <i class="fas fa-heart" 
-                        :class="{'text-danger' : comentario.likes.map(element => element.id).includes($page.props.auth?.user?.id)}">
-                    </i> &nbsp;{{ comentario.likes?.length }}
-                </a>
+                <div class="">
+                    <Tooltip :list="comentario.likes">                         
+                        <a class="link-underline link-underline-opacity-0 float-end" href="#" @click.prevent="toggleLike(comentario, $page.props.auth?.user?.id)">
+                            <i class="fas fa-heart" 
+                            :class="{'text-danger' : comentario.likes.map(element => element.id).includes($page.props.auth?.user?.id)}">
+                        </i> &nbsp;{{ comentario.likes?.length }}
+                    </a>
                 </Tooltip>
             </div>
-            </div>
-            <h5 class="card-text">{{ comentario.comment }}
-            </h5>
-           
+        </div>
+        <h5 class="card-text">{{ comentario.comment }}
+        </h5>
+        
         
     </div>
 </div>

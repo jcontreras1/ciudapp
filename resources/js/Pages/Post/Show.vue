@@ -59,6 +59,7 @@ const emit = defineEmits(['showPostOnModal', 'deletePost']);
             </div>
 
             <Like :post="post" v-if="$page.props.auth?.user" />
+           
             <Create :post="post" v-if="$page.props.auth?.user"></Create>
         </div>
     </div>

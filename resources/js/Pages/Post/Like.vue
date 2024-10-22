@@ -30,10 +30,12 @@ const likePost = () => {
 </script>
 
 <template>
-    <span class="float-end">
-        <Tooltip :list="myPost.likes">
+    <!-- {{ myPost.likes[0].user.name }} -->
+    <span class="mb-1 fs-5">
+        <Tooltip :list="myPost.likes?.map(item=> ({'name' : item.user.name}))">
             <a class="link-underline link-underline-opacity-0" href="#" @click.prevent="likePost">
-                <i class="fas fa-heart" :class="{'text-danger' : myPost.likes?.map(like => like.user_id).includes($page.props.auth?.user?.id)}"></i> {{ myPost.likes?.length }}
+                <i class="fas fa-heart" :class="{'text-danger' : myPost.likes?.map(like => like.user_id).includes($page.props.auth?.user?.id)}"></i> 
+                {{ myPost.likes?.length }}
             </a>
         </Tooltip>
     </span>
