@@ -22,6 +22,7 @@ const comentar = async () => {
     sending.value = false;
     myPost.value = response.data;
     commentForm.comment = "";
+
 };
 
 const likeComent = async(id) => {
@@ -56,10 +57,10 @@ const mostrarTodosComentarios = () => {
 
 <template>
     <!-- Muestra los comentarios -->
-    <div class="fs-5 mb-1">
-        <i class="fas fa-comments"></i> Comentarios
-        <span class="badge rounded-pill text-bg-primary">{{ myPost.comments.length }}</span>
-    </div>
+    <span class="fs-5 mx-3">
+        <i class="fas fa-comments mr-2"></i> 
+        <a class="link-underline link-underline-opacity-0">{{ myPost.comments.length }}</a>
+    </span>
     <div class="card m-1" v-for="(comentario, index) in myPost.comments.slice(0, visibleCommentsCount)" :key="comentario.id">
         <div class="card-body">
             
@@ -80,7 +81,6 @@ const mostrarTodosComentarios = () => {
             </div>
         </div>
         <h5 class="card-text">{{ comentario.comment }}</h5>
-        
     </div>
 </div>
 

@@ -16,11 +16,11 @@ const props = defineProps({
         </div>
     </div>
 </template>
-
 <style>
 .tooltip-container {
     position: relative;
     display: inline-block;
+    z-index: 999; /* Asegura que el contenedor no interfiera */
 }
 .tooltip-content {
     display: none;
@@ -31,9 +31,10 @@ const props = defineProps({
     background-color: rgba(0, 0, 0, 0.9); /* Fondo negro con opacidad */
     border-radius: 6px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
+    z-index: 10000; /* Aumentar z-index para asegurar que se muestre por encima de todo */
     padding: 10px;
     width: auto; /* Permite que el tooltip se ajuste al contenido */
+    font-size: 12px;
 }
 .tooltip-content ul {
     list-style-type: none;

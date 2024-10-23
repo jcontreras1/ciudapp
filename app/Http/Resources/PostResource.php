@@ -35,7 +35,7 @@ class PostResource extends JsonResource
             'comments' => CommentResource::collection($this->comments->sortByDesc('id')->loadMissing('user')->values()),
             'created_at' => $this->created_at,
             'location' => $this->location_short,
-            'likes' => $this->likes,
+            'likes' => $this->likes->loadMissing('user'),
             'valid_until' => $this->valid_until ? date('d/m/Y H:i', strtotime($this->valid_until)) : null, // Carbon::parse($this->valid_until)->diffForHumans() : null,
             'private' => boolval($this->private),
         ];
