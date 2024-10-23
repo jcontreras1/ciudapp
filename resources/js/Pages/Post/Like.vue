@@ -2,6 +2,7 @@
 
 import { defineProps, ref } from 'vue';
 import Tooltip from '@/Components/Tooltip.vue';
+import PostService from '@/Services/PostService';
 const props = defineProps({
     post: Object,
 });
@@ -9,22 +10,12 @@ const props = defineProps({
 const myPost = ref(props.post);
 const sending = ref(false)
 
-const likePost = () => {
+const likePost = async() => {
     sending.value = true;
-    axios.post(`/api/post/${props.post.id}/like`)
-    .then((response) => {
-        sending.value = false;
-        myPost.value = response.data;
-    })
-    .catch(error => {
-        sending.value = false;
-        Swal.fire({
-            title: '¡Error!',
-            text: 'Ocurrió un error al sumarse al post: ' + error.message,
-            icon: 'error',
-            confirmButtonText: 'Ok'
-        });
-    });
+    const response = await PostService.likePost(`/post/${props.post.id}/like`);
+    sending.value = false;
+    myPost.value = response.data;
+    
 }
 
 </script>

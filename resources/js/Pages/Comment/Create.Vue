@@ -2,6 +2,7 @@
 import { defineProps, ref } from 'vue';
 import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import Tooltip from '@/Components/Tooltip.vue';
+import CommentService from '@/Services/CommentService';
 
 const props = defineProps({
     post: Object,
@@ -15,64 +16,30 @@ const commentForm = useForm({
 // Variable para controlar cuántos comentarios se muestran
 const visibleCommentsCount = ref(3); // Muestra 3 comentarios inicialmente
 
-const comentar = () => {
+const comentar = async () => {
     sending.value = true;
-    axios.post(`/api/post/${props.post.id}/comment`, commentForm)
-    .then((response) => {
-        sending.value = false;
-        myPost.value = response.data;
-        commentForm.comment = "";
-    })
-    .catch(error => {
-        sending.value = false;
-        console.error(error);
-        Swal.fire({
-            title: '¡Error!',
-            text: 'Ocurrió un error al comentar el post: ' + error.message,
-            icon: 'error',
-            confirmButtonText: 'Ok'
-        });
-    });
+    const response = await CommentService.createComment(`/post/${props.post.id}/comment`, commentForm);
+    sending.value = false;
+    myPost.value = response.data;
+    commentForm.comment = "";
 };
-const likeComent = (id) => {
+
+const likeComent = async(id) => {
     sending.value = true;
-    axios.post(`/api/comment/${id}/like`)
-    .then((response) => {
-        sending.value = false;
-        myPost.value = response.data;
-        
-    })
-    .catch(error => {
-        sending.value = false;
-        Swal.fire({
-            title: '¡Error!',
-            text: 'Ocurrió un error al sumarse al comentario: ' + error.message,
-            icon: 'error',
-            confirmButtonText: 'Ok'
-        });
-    });
+    const response = await CommentService.createLink(`/comment/${id}/like`);
+    sending.value = false;
+    myPost.value = response.data;
 }
-const dislikeComment = (id, like) => {
+
+const dislikeComment = async (id, like) => {
     sending.value = true;
-    axios.delete(`/api/comment/${id}/like/${like}`)
-    .then((response) => {
-        sending.value = false;
+    const response = await CommentService.destroyLikeComment(`/comment/${id}/like/${like}`);
+    sending.value = false;
         myPost.value = response.data;
-        
-    })
-    .catch(error => {
-        sending.value = false;
-        Swal.fire({
-            title: '¡Error!',
-            text: 'Ocurrió un error al sumarse al comentario: ' + error.message,
-            icon: 'error',
-            confirmButtonText: 'Ok'
-        });
-    });
 }
 
 const toggleLike = (comment, yo) => {
-
+    
     if (comment.likes.map(element => element.id).includes(yo)) {
         dislikeComment(comment.id, comment.likes.filter(elem => elem.id === yo)[0]?.pivot.id);
     } else {
@@ -80,12 +47,11 @@ const toggleLike = (comment, yo) => {
     }
 };
 
-
-
 // Función para mostrar todos los comentarios
 const mostrarTodosComentarios = () => {
     visibleCommentsCount.value = myPost.value.comments.length; // Muestra todos los comentarios
 };
+
 </script>
 
 <template>
@@ -96,26 +62,24 @@ const mostrarTodosComentarios = () => {
     </div>
     <div class="card m-1" v-for="(comentario, index) in myPost.comments.slice(0, visibleCommentsCount)" :key="comentario.id">
         <div class="card-body">
-
-
+            
+            
             <div class="mb-2 d-flex justify-content-between">
                 <div class="">
-
+                    
                     <strong>{{ comentario.user?.name }}</strong> {{ comentario.created_at }}:
                 </div>
-                    <div class="">
-            <Tooltip :list="comentario.likes">                         
-                    <a class="link-underline link-underline-opacity-0 float-end" href="#" @click.prevent="toggleLike(comentario, $page.props.auth?.user?.id)">
-                        <i class="fas fa-heart" 
-                        :class="{'text-danger' : comentario.likes.map(element => element.id).includes($page.props.auth?.user?.id)}">
-                    </i> &nbsp;{{ comentario.likes?.length }}
-                </a>
+                <div class="">
+                    <Tooltip :list="comentario.likes">                         
+                        <a class="link-underline link-underline-opacity-0 float-end" href="#" @click.prevent="toggleLike(comentario, $page.props.auth?.user?.id)">
+                            <i class="fas fa-heart" 
+                            :class="{'text-danger' : comentario.likes.map(element => element.id).includes($page.props.auth?.user?.id)}">
+                        </i> &nbsp;{{ comentario.likes?.length }}
+                    </a>
                 </Tooltip>
             </div>
-            </div>
-            <h5 class="card-text">{{ comentario.comment }}
-            </h5>
-           
+        </div>
+        <h5 class="card-text">{{ comentario.comment }}</h5>
         
     </div>
 </div>

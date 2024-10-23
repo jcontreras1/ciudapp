@@ -2,6 +2,7 @@
 
 import { defineProps, ref, onMounted } from 'vue';
 import MapaCalor from '../Mapa/MapaCalor.vue';
+import ReportService from '@/Services/ReportService';
 
 const props = defineProps({
     institution: {
@@ -33,23 +34,14 @@ const toggleCat = (id) => {
     getReports();
     
 }
-const getReports = () => {
-    axios.get(`/api/institution/${props.institution.id}/reports`, { params :  options.value})
-    .then(response => {
-        reportes.value = response.data;
-    }).catch(error => {
-        console.error(error);
-    });
-    
+const getReports = async () => {
+    const response = await ReportService.getReport(`/institution/${props.institution.id}/reports`, { params :  options.value});
+    reportes.value = response.data;    
 }
 
-const getSubcategories = () => {
-    axios.get(`/api/institution/${props.institution.id}/subcategories`)
-    .then(response => {
-        allSubcategories.value = response.data;
-    }).catch(error => {
-        console.error(error);
-    });
+const getSubcategories = async () => {
+    const response = await ReportService.getSubCategory(`/institution/${props.institution.id}/subcategories`);
+    allSubcategories.value = response.data;
 }
 onMounted(() => {
     getSubcategories();
