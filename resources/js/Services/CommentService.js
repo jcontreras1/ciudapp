@@ -9,5 +9,8 @@ export default {
     },
     destroyLikeComment(ruta,options){
         return Api.delete(ruta);
+    },
+    deleteComment(ruta){
+        return Api.delete(ruta);
     }
 }

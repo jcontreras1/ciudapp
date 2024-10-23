@@ -22,7 +22,7 @@ const comentar = async () => {
     sending.value = false;
     myPost.value = response.data;
     commentForm.comment = "";
-
+    
 };
 
 const likeComent = async(id) => {
@@ -36,7 +36,7 @@ const dislikeComment = async (id, like) => {
     sending.value = true;
     const response = await CommentService.destroyLikeComment(`/comment/${id}/like/${like}`);
     sending.value = false;
-        myPost.value = response.data;
+    myPost.value = response.data;
 }
 
 const toggleLike = (comment, yo) => {
@@ -53,6 +53,11 @@ const mostrarTodosComentarios = () => {
     visibleCommentsCount.value = myPost.value.comments.length; // Muestra todos los comentarios
 };
 
+const eliminarComentario = async (comment) => {
+    const response = await CommentService.deleteComment(`/comment/${comment.id}/delete`);
+    myPost.value = response.data;
+}
+
 </script>
 
 <template>
@@ -63,24 +68,25 @@ const mostrarTodosComentarios = () => {
     </span>
     <div class="card m-1" v-for="(comentario, index) in myPost.comments.slice(0, visibleCommentsCount)" :key="comentario.id">
         <div class="card-body">
-            
-            
-            <div class="mb-2 d-flex justify-content-between">
-                <div class="">
-                    
+            <div class="mb-2 ">
+                <div class="">                    
                     <strong>{{ comentario.user?.name }}</strong> {{ comentario.created_at }}:
-                </div>
-                <div class="">
-                    <Tooltip :list="comentario.likes">                         
-                        <a class="link-underline link-underline-opacity-0 float-end" href="#" @click.prevent="toggleLike(comentario, $page.props.auth?.user?.id)">
-                            <i class="fas fa-heart" 
-                            :class="{'text-danger' : comentario.likes.map(element => element.id).includes($page.props.auth?.user?.id)}">
-                        </i> &nbsp;{{ comentario.likes?.length }}
-                    </a>
-                </Tooltip>
+                </div>               
             </div>
+            <h5 class="card-text">{{ comentario.comment }}</h5>
+            <div class="">
+                <Tooltip :list="comentario.likes">                         
+                    <a class="link-underline link-underline-opacity-0 mr-2" href="#" @click.prevent="toggleLike(comentario, $page.props.auth?.user?.id)">
+                        <i class="fas fa-heart" 
+                        :class="{'text-danger' : comentario.likes.map(element => element.id).includes($page.props.auth?.user?.id)}">
+                    </i> &nbsp;{{ comentario.likes?.length }}                    
+                </a>
+                {{  }}
+                <span v-if="comentario.user.id == $page.props.auth?.user?.id ">
+                    <a href="#" class="link-underline link-underline-opacity-0" @click="eliminarComentario(comentario)"><i class="fas fa-trash-alt text-danger"></i></a>
+                </span>
+            </Tooltip>
         </div>
-        <h5 class="card-text">{{ comentario.comment }}</h5>
     </div>
 </div>
 
