@@ -235,7 +235,16 @@ const funcionDeSubmit = () => {
         });
     });
 };
-
+const testearPusher = () => {
+axios.get('/api/t3st')
+    .then((response) => {
+        console.log(response.data)
+    })
+    .catch(error => {
+        console.error(error)
+    });
+    
+}
 function toggleCategory(id){
     reposicionarTemporal();
     activeCategory.value = activeCategory.value === id ? null : id;
@@ -311,8 +320,13 @@ function toggleCategory(id){
         
         <!-- Boton para postear -->
         <button class="btn btn-primary rounded-4" :disabled="(form.subcategory_id == null && form.image == null) || sending">
-            {{ sending ? 'Guardando...' : 'Guardar' }}
+            <span>
+                <i v-if="sending" class="fas fa-circle-notch fa-spin"></i>
+                <span v-else>Guardar</span>
+            </span>
         </button>
+
+        <button type="button" @click="testearPusher">TEST PUSHER</button>
     </form>
 </div>
 </div>

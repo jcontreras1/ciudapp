@@ -1,5 +1,6 @@
 <?php
 
+use App\Events\NewPostEvent;
 use App\Http\Controllers\api\ApiCommentLikeController;
 use App\Http\Controllers\api\CityController;
 use App\Http\Controllers\PostController;
@@ -48,6 +49,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('regionSubcategory/{regionSubcategory}/userRegionSubcategory', App\Http\Controllers\api\ApiUserRegionSubcategoryController::class)->only(['index', 'store', 'destroy']);
 });
 
+
+Route::get('/t3st', function(){
+   $post = \App\Models\Post::orderBy('id', 'desc')->first();
+   NewPostEvent::dispatch($post);
+
+});
 
 Route::get('test', function(){
     

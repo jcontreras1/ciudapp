@@ -3,7 +3,7 @@ import { Head, router, Link } from '@inertiajs/vue3';
 import AppLayoutHome from '@/Layouts/AppLayoutHome.vue';
 import PostShow from '@/Pages/Post/Show.vue';
 import CreatePost from '@/Pages/Post/Create.vue';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import axios from 'axios';
 import { useIntersectionObserver } from '@vueuse/core'
 import BootstrapModal from '@/Components/BootstrapModal.vue';
@@ -31,7 +31,7 @@ const props = defineProps({
     user : {
         type: Object,
         // required: true,
-
+        
     }
 });
 
@@ -48,20 +48,22 @@ const deletePost = (post) => {
     }).then((result) => {
         if (result.isConfirmed) {
             axios.delete(`/api/post/${post.id}`)
-                .then(() => {
-                    props.posts.data = props.posts.data.filter(p => p.id !== post.id);
-                })
-                .catch(error => {
-                    Swal.fire({
-                        title: 'Error!',
-                        text: 'Ocurrió un error al eliminar la publicación:' + error.message,
-                        icon: 'error',
-                        confirmButtonText: 'Ok'
-                    });
+            .then(() => {
+                props.posts.data = props.posts.data.filter(p => p.id !== post.id);
+            })
+            .catch(error => {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Ocurrió un error al eliminar la publicación:' + error.message,
+                    icon: 'error',
+                    confirmButtonText: 'Ok'
                 });
+            });
         }
     });
 }
+
+
 
 const { stop } = useIntersectionObserver(veryBottomTarget, ([{ isIntersecting }]) => {
     if (!isIntersecting) {
@@ -83,7 +85,12 @@ const { stop } = useIntersectionObserver(veryBottomTarget, ([{ isIntersecting }]
             confirmButtonText: 'Ok'
         });
     });
+    
+});
 
+Echo.channel('post').listen('.created', (response) => {
+    //Acá hace lo que quieras, podés mostrar un mensaje, actualizar la lista de posts, etc.
+    props.posts.data = [response.post, ...props.posts.data];
 });
 
 </script>
@@ -101,20 +108,21 @@ const { stop } = useIntersectionObserver(veryBottomTarget, ([{ isIntersecting }]
                 <del><a class="nav-link" href="#">Reportes</a></del>
             </li>
         </ul> -->
-
+        
         <!-- CENTRO -Cuadro para crear un post -->
         <div class="mt-0" v-if="$page.props.auth.user">
             <div class="d-flex align-items-start">
                 <CreatePost :categorias="categorias" v-on:newPost="(post) => {props.posts.data = [post, ...props.posts.data]}" />
+                </div>
+                <hr>
             </div>
-            <hr>
-        </div>
-        <!-- Post -->
-        <div class="mb-2" v-for="post in props.posts.data" :key="post.id">
-            <PostShow v-if="!post.private || (post.private && post.user_id == $page.props.auth.user?.id)" :post="post" v-on:deletePost="deletePost(post)" v-on:showPostOnModal="selectedPostToModal = post"></PostShow>
-        </div>
-        <div ref="veryBottomTarget" class="-translate-y-72 h-20 text-center">
-            <i class="fas fa-spinner fa-spin fa-2x"></i>&nbsp;Cargando más publicaciones...
-        </div>
-    </AppLayoutHome>
-</template>
+            <!-- Post -->
+            <div class="mb-2" v-for="post in props.posts.data" :key="post.id">
+                <PostShow v-if="!post.private || (post.private && post.user_id == $page.props.auth.user?.id)" :post="post" v-on:deletePost="deletePost(post)" v-on:showPostOnModal="selectedPostToModal = post"></PostShow>
+            </div>
+            <div ref="veryBottomTarget" class="-translate-y-72 h-20 text-center">
+                <i class="fas fa-spinner fa-spin fa-2x"></i>&nbsp;Cargando más publicaciones...
+            </div>
+        </AppLayoutHome>
+    </template>
+    

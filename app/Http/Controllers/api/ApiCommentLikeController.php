@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\api;
 
+use App\Events\PostUpdatedEvent;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PostResource;
 use App\Models\PostComment;
@@ -12,23 +13,20 @@ class ApiCommentLikeController extends Controller
 {
     public function store(PostComment $postComment, Request $request)
     {
-        // $request->validate([
-        //     'post_comment_id' => 'required|exists:post_comments,id',
-        // ]);
         PostCommentLike::firstOrCreate([
             'user_id' => auth()->id(),
             'post_comment_id' => $postComment->id,
         ]);
-        // $like = $postComment->likes()->create([
-            // 'user_id' => auth()->id(),
-        // ]);
 
+        PostUpdatedEvent::dispatch($postComment->post);
+        
         return response(new PostResource($postComment->post), 201);
     }
-
+    
     public function destroy(PostComment $postComment, PostCommentLike $like, Request $request)
     {
         $like->delete();
+        PostUpdatedEvent::dispatch($postComment->post);
         return response(new PostResource($postComment->post), 200);
     }
 }

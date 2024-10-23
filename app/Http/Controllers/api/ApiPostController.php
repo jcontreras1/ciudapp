@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\api;
 
+use App\Events\PostUpdatedEvent;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCommentRequest;
 use App\Http\Resources\PostResource;
@@ -27,6 +28,7 @@ class ApiPostController extends Controller
        PostComment::create(
            array_merge($request->validated(), ['post_id' => $post->id, 'user_id' => auth()->id() ?? 1, ])
         );
+        PostUpdatedEvent::dispatch($post);
         return response(
             new PostResource($post),
             201
@@ -92,21 +94,10 @@ class ApiPostController extends Controller
         } else {
             $post->likes()->create(['user_id' => $user->id]);
         }
-
+        PostUpdatedEvent::dispatch($post);
         return response(new PostResource($post) ,201);
     }
 
-    /**
-    * Update the specified resource in storage.
-    */
-    public function update(Request $request, Post $post)
-    {
-        //
-    }
-
-    /**
-    * Remove the specified resource from storage.
-    */
     public function destroy(Post $post)
     {
         //eliminar imagenes del disco
