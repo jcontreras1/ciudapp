@@ -21,6 +21,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/post/{post}/comment', [ApiPostController::class, 'storeComment']);
     Route::post('/post/{post}/like', [ApiPostController::class, 'like']);
     Route::resource('/comment/{post_comment}/like', ApiCommentLikeController::class)->only(['store', 'destroy']);
+    Route::delete('/comment/{comment}/delete', [ApiPostController::class, 'dropComment']);
     //App
     Route::delete('/post/{post}', [ApiPostController::class, 'destroy']);
     Route::get('/cities', [CityController::class, 'search']);

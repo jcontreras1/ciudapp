@@ -35,6 +35,13 @@ class ApiPostController extends Controller
         );
     }
 
+    public function dropComment(PostComment $comment){
+        $post = $comment->post;
+        $comment->delete();
+        PostUpdatedEvent::dispatch($post);
+        return response(new PostResource($post), 201);
+    }
+
     public function store(Request $request){
         $post = null;
         DB::beginTransaction();
