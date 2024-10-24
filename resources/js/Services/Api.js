@@ -11,8 +11,8 @@ import axios from 'axios'
 // }
 
 export default {
-    get(url) {
-        return axios.get('/api' + url)
+    get(url, options = null) {
+        return axios.get('/api' + url, options)
             .catch(error => {
                 let errors = null;
                 if (error.response.data.errors) {
@@ -33,7 +33,7 @@ export default {
             });
     },
 
-    post(url, options) {
+    post(url, options = null) {
         return axios.post('/api' + url, options)
             .catch(error => {
                 let errors = null;
@@ -55,7 +55,7 @@ export default {
             });
     },
 
-    put(url, options) {
+    put(url, options = null) {
         return axios.put('/api' + url, options)
             .catch(error => {
                 let errors = null;
@@ -77,8 +77,8 @@ export default {
             });
     },
 
-    delete(url) {
-        return axios.delete('/api' + url)
+    delete(url, options = null) {
+        return axios.delete('/api' + url, options)
             .catch(error => {
                 let errors = null;
                 if (error.response.data.errors) {
