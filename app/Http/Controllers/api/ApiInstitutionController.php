@@ -10,39 +10,52 @@ use Illuminate\Http\Request;
 
 class ApiInstitutionController extends Controller
 {
-    public function reports(Institution $institution, Request $request){
-        
-        
-        //necesito las regiones, y los reportes
+    public function reports(Institution $institution, Request $request) {
+        // Necesito las regiones, y los reportes
         $regiones = [];
-        foreach($institution->regions as $region){
-            $regiones[] = ["name" => $region->name, "points" => array_map(function($item){return [$item['lng'], $item['lat']];},$region->points->toArray())];
+        foreach ($institution->regions as $region) {
+            $regiones[] = [
+                "name" => $region->name,
+                "points" => array_map(function($item) {
+                    return [$item['lng'], $item['lat']];
+                }, $region->points->toArray())
+            ];
         }
         
-        if($request->subcategories == null){
+        if ($request->subcategories == null) {
             return response([
                 'reportes' => [],
                 'regiones' => $regiones,
-            ],
-            200);
+            ], 200);
         }
         
         $reportes = [];
-        $posts = Post::whereIn('subcategory_id', $request->subcategories)->orderBy('id', 'desc')->take(1000)->get();
-        foreach($posts as $post){
-            foreach($institution->regions as $region){
-                if(postInRegion($post, $region)){  
-                    $reportes[] = ['lat' => $post->lat, 'lng' => $post->lng];
+        $posts = Post::whereIn('subcategory_id', $request->subcategories)
+                     ->orderBy('id', 'desc')
+                     ->take(1000)
+                     ->get();
+                     
+        foreach ($posts as $post) {
+            foreach ($institution->regions as $region) {
+                if (postInRegion($post, $region)) {
+                    // Utiliza las coordenadas como clave para evitar duplicados
+                    $key = "{$post->lat},{$post->lng}";
+                    if (!isset($reportes[$key])) {
+                        $reportes[$key] = ['lat' => $post->lat, 'lng' => $post->lng];
+                    }
                 }
             }
         }
         
+        // Convierte el array asociativo a un array simple
+        $reportes = array_values($reportes);
+        
         return response([
             'reportes' => $reportes,
             'regiones' => $regiones,
-        ],
-        200);
+        ], 200);
     }
+    
     
     public function subcategories(Institution $institution){
         $subcategories = [];
