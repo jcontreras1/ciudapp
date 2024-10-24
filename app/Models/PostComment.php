@@ -28,6 +28,10 @@ class PostComment extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function commentLikes(){
+        return $this->hasMany(PostCommentLike::class);
+    }
+
     public function likes(){
         return $this->belongsToMany(User::class, 'post_comment_like', 'post_comment_id', 'user_id')->withPivot('id');
     }

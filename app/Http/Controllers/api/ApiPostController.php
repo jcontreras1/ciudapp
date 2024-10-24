@@ -37,6 +37,7 @@ class ApiPostController extends Controller
 
     public function dropComment(PostComment $comment){
         $post = $comment->post;
+        $comment->commentLikes()->delete();
         $comment->delete();
         PostUpdatedEvent::dispatch($post);
         return response(new PostResource($post), 201);

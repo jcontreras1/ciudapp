@@ -1,7 +1,9 @@
 <script setup>
+
 import { defineProps, ref } from 'vue';
 import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import Tooltip from '@/Components/Tooltip.vue';
+import Swal from 'sweetalert2';
 import CommentService from '@/Services/CommentService';
 
 const props = defineProps({
@@ -54,8 +56,18 @@ const mostrarTodosComentarios = () => {
 };
 
 const eliminarComentario = async (comment) => {
-    const response = await CommentService.deleteComment(`/comment/${comment.id}/delete`);
-    myPost.value = response.data;
+    const result = await Swal.fire({
+        title: '¿Eliminar Comentario?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Eliminar',
+        cancelButtonText: 'Cancelar'
+    });
+
+    if (result.isConfirmed) {
+        const response = await CommentService.deleteComment(`/comment/${comment.id}/delete`);
+        myPost.value = response.data;
+    }
 }
 
 </script>
