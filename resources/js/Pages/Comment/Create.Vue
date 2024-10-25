@@ -69,7 +69,6 @@ const eliminarComentario = async (comment) => {
         myPost.value = response.data;
     }
 }
-
 </script>
 
 <template>

@@ -3,41 +3,33 @@ import { Head, router, Link } from '@inertiajs/vue3';
 import AppLayoutHome from '@/Layouts/AppLayoutHome.vue';
 import PostShow from '@/Pages/Post/Show.vue';
 import CreatePost from '@/Pages/Post/Create.vue';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import axios from 'axios';
 import { useIntersectionObserver } from '@vueuse/core'
 import BootstrapModal from '@/Components/BootstrapModal.vue';
 
-
 const props = defineProps({
-    canLogin: {
-        type: Boolean,
-    },
+    canLogin: Boolean,
     canLogout: {
         type: Boolean,
         required: true,
     },
-    canRegister: {
-        type: Boolean,
-    },
-    posts:{
+    canRegister: Boolean,
+    posts: {
         type: Object,
-        // required: true,
     },
-    categorias:{
-        type: Array,
-        // required: true,
-    },
-    user : {
-        type: Object,
-        // required: true,
-        
-    }
+    categorias: Array,
+    user: Object,
 });
+const updateKey = ref(0); // Crear un contador de clave
+const veryBottomTarget = ref(null);
+const selectedPostToModal = ref(null);
+const temporalPost = ref([]);
 
-const veryBottomTarget = ref(null) // Elemento para detectar el final de la página
-const selectedPostToModal = ref(null) // Elemento para detectar el final de la página
+// Crea la variable reactiva myPosts a partir de props.posts
+const myPosts = ref({ ...props.posts });
 
+// Función para eliminar un post
 const deletePost = (post) => {
     Swal.fire({
         title: '¿Eliminar Post?',
@@ -49,7 +41,7 @@ const deletePost = (post) => {
         if (result.isConfirmed) {
             axios.delete(`/api/post/${post.id}`)
             .then(() => {
-                props.posts.data = props.posts.data.filter(p => p.id !== post.id);
+                myPosts.value.data = myPosts.value.data.filter(p => p.id !== post.id);
             })
             .catch(error => {
                 Swal.fire({
@@ -63,19 +55,15 @@ const deletePost = (post) => {
     });
 }
 
-
-
+// Función para detectar el final de la página y cargar más posts
 const { stop } = useIntersectionObserver(veryBottomTarget, ([{ isIntersecting }]) => {
-    if (!isIntersecting) {
-        return;
-    }
-    axios.get(`${props.posts.meta.path}?cursor=${props.posts.meta.next_cursor}`)
+    if (!isIntersecting) return;
+
+    axios.get(`${myPosts.value.meta.path}?cursor=${myPosts.value.meta.next_cursor}`)
     .then((response) => {
-        props.posts.data = [...props.posts.data, ...response.data.data];
-        props.posts.meta = response.data.meta;
-        if(!response.data.meta.next_cursor){
-            stop();
-        }
+        myPosts.value.data = [...myPosts.value.data, ...response.data.data];
+        myPosts.value.meta = response.data.meta;
+        if (!response.data.meta.next_cursor) stop();
     })
     .catch(error => {
         Swal.fire({
@@ -85,44 +73,58 @@ const { stop } = useIntersectionObserver(veryBottomTarget, ([{ isIntersecting }]
             confirmButtonText: 'Ok'
         });
     });
-    
 });
 
+// Función para mostrar los posts nuevos al hacer clic en "Actualizar"
+const mostrarMas = () => {
+    myPosts.value.data = [...temporalPost.value, ...myPosts.value.data];
+    temporalPost.value = [];
+}
+
+// Escuchar nuevos posts creados y almacenarlos temporalmente
 Echo.channel('post').listen('.created', (response) => {
-    //Acá hace lo que quieras, podés mostrar un mensaje, actualizar la lista de posts, etc.
-    props.posts.data = [response.post, ...props.posts.data];
+    temporalPost.value = [response.post, ...temporalPost.value];
+    console.log(temporalPost.value);
 });
 
+Echo.channel('post').listen('.updated', (response) => {
+    let idSearch = response.post.id;
+    let index = myPosts.value.data.findIndex(post => post.id == idSearch);
+
+    if (index !== -1) {
+        Object.assign(myPosts.value.data[index], response.post);
+        updateKey.value++; // Incrementar la clave para forzar la actualización
+    }
+});
 </script>
 
 <template>
-    <AppLayoutHome >
+    <AppLayoutHome>
         <BootstrapModal :post="selectedPostToModal"></BootstrapModal>
         <Head title="Inicio"></Head>
-        <!--LATERAL IZQUIERDO - Barra de navegación -->
-        <!-- <ul class="nav nav-tabs">
-            <li class="nav-item">
-                <a class="nav-link active" href="#">Para ti</a>
-            </li>
-            <li class="nav-item">
-                <del><a class="nav-link" href="#">Reportes</a></del>
-            </li>
-        </ul> -->
-        
-        <!-- CENTRO -Cuadro para crear un post -->
+
         <div class="mt-0" v-if="$page.props.auth.user">
             <div class="d-flex align-items-start">
-                <CreatePost :categorias="categorias" v-on:newPost="(post) => {props.posts.data = [post, ...props.posts.data]}" />
-                </div>
-                <hr>
+                <CreatePost :categorias="categorias" v-on:newPost="(post) => { myPosts.data = [post, ...myPosts.data] }" />
             </div>
-            <!-- Post -->
-            <div class="mb-2" v-for="post in props.posts.data" :key="post.id">
-                <PostShow v-if="!post.private || (post.private && post.user_id == $page.props.auth.user?.id)" :post="post" v-on:deletePost="deletePost(post)" v-on:showPostOnModal="selectedPostToModal = post"></PostShow>
-            </div>
-            <div ref="veryBottomTarget" class="-translate-y-72 h-20 text-center">
-                <i class="fas fa-spinner fa-spin fa-2x"></i>&nbsp;Cargando más publicaciones...
-            </div>
-        </AppLayoutHome>
-    </template>
-    
+            <hr>
+        </div>
+
+        <div class="mb-3 col-12" v-if="temporalPost.length">
+            <a class="float-center link-underline link-underline-opacity-0" href="#" @click.prevent="mostrarMas" v-if="temporalPost.length == 1">
+                Actualizar {{ temporalPost.length }} reporte Nuevo ...
+            </a>
+            <a class="float-center link-underline link-underline-opacity-0" href="#" @click.prevent="mostrarMas" v-if="temporalPost.length > 1">
+                Actualizar {{ temporalPost.length }} reportes Nuevos...
+            </a>
+        </div>
+
+        <div class="mb-2" v-for="post in myPosts.data" :key="updateKey.value">
+            <PostShow v-if="!post.private || (post.private && post.user_id == $page.props.auth.user?.id)" :post="post" v-on:deletePost="deletePost(post)" v-on:showPostOnModal="selectedPostToModal = post"></PostShow>
+        </div>
+
+        <div ref="veryBottomTarget" class="-translate-y-72 h-20 text-center">
+            <i class="fas fa-spinner fa-spin fa-2x"></i>&nbsp;Cargando más publicaciones...
+        </div>
+    </AppLayoutHome>
+</template>

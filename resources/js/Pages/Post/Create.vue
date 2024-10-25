@@ -236,7 +236,7 @@ const funcionDeSubmit = () => {
     });
 };
 const testearPusher = () => {
-axios.get('/api/t3st')
+    axios.get('/api/t3st')
     .then((response) => {
         console.log(response.data)
     })
@@ -245,6 +245,7 @@ axios.get('/api/t3st')
     });
     
 }
+
 function toggleCategory(id){
     reposicionarTemporal();
     activeCategory.value = activeCategory.value === id ? null : id;
@@ -253,8 +254,7 @@ function toggleCategory(id){
 </script>
 
 <template>
-    <!-- Crear un Post -->
-    
+    <!-- Crear un Post -->    
     <div id="c"></div>
     <div class=" card w-100">
         <div class="card-body">
@@ -325,8 +325,10 @@ function toggleCategory(id){
                 <span v-else>Guardar</span>
             </span>
         </button>
-
-        <button type="button" @click="testearPusher">TEST PUSHER</button>
+        
+        <!-- <button type="button" @click="testearPusher">TEST PUSHER</button> -->
+        
+        
     </form>
 </div>
 </div>
