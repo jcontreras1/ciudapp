@@ -26,7 +26,7 @@ Route::get('/google-auth/callback', function () {
             'name' => $userGoogle->name,
         ]
     );
-    Auth::login($user);
+    Auth::login($user, true);
     return redirect()->route('home');
     // $user->token
 });
