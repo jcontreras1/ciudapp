@@ -41,7 +41,12 @@ class ApiInstitutionController extends Controller
                     // Utiliza las coordenadas como clave para evitar duplicados
                     $key = "{$post->lat},{$post->lng}";
                     if (!isset($reportes[$key])) {
-                        $reportes[$key] = ['lat' => $post->lat, 'lng' => $post->lng, 'likes' => $post->likes->count()+1];
+                        $reportes[$key] = [
+                            'lat' => $post->lat,
+                            'lng' => $post->lng,
+                            'likes' => $post->likes->count() + 1,
+                            'post' => $post,
+                        ];
                     }
                 }
             }

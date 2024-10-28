@@ -56,7 +56,8 @@ function convertReportsToGeoJSON(reportes) {
 				'coordinates': [report.lng, report.lat]
 			},
 			'properties': {
-				'likes': report.likes || 1 // Si tienes otras propiedades que usar
+				'likes': report.likes || 1, // Si tienes otras propiedades que usar
+				'comment' : report.post.comment || ''
 			}
 		}))
 	};
@@ -94,7 +95,7 @@ onMounted(() => {
 		/**
 		* 
 		* _____          _      ____  _____  
-		 / ____|   /\   | |    / __ \|  __ \ 
+		/ ____|   /\   | |    / __ \|  __ \ 
 		| |       /  \  | |   | |  | | |__) |
 		| |      / /\ \ | |   | |  | |  _  / 
 		| |____ / ____ \| |___| |__| | | \ \ 
@@ -266,25 +267,51 @@ onMounted(() => {
 			}
 		});
 		
-		// Agregar capa de heatmap para reportes   
+		map.value.on('click', 'reportes', (e) => {
+			const coordinates = e.features[0].geometry.coordinates.slice();
+			const likes = e.features[0].properties.likes;
+			const textoCorto = e.features[0].properties.comment;
+			
+			// Ensure that if the map is zoomed out such that
+			// multiple copies of the feature are visible, the
+			// popup appears over the copy being pointed to.
+			if (['mercator', 'equirectangular'].includes(map.value.getProjection().name)) {
+				while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+					coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+				}
+			}
+			
+			new mapboxgl.Popup()
+			.setLngLat(coordinates)
+			.setHTML(
+			`<div class="custom-popup">
+           	Visivilización: ${likes}<br>
+            ${textoCorto}
+       		 </div>`
+				)
+				.addTo(map.value);
+			});
+		});
 	});
-});
-
-watch(() => props.reportes, (newValue) => {
-	// Convertir los reportes a GeoJSON
-	geoJsonReports.value = convertReportsToGeoJSON(newValue);
-	// Actualizar la fuente del mapa si existe
-	const source = map.value.getSource('reportes');
-	if (source) {
-		source.setData(geoJsonReports.value);  // Actualiza los datos en la fuente del mapa
-	}
-}, { deep: true });
-
-
+	
+	watch(() => props.reportes, (newValue) => {
+		// Convertir los reportes a GeoJSON
+		geoJsonReports.value = convertReportsToGeoJSON(newValue);
+		// Actualizar la fuente del mapa si existe
+		const source = map.value.getSource('reportes');
+		if (source) {
+			source.setData(geoJsonReports.value);  // Actualiza los datos en la fuente del mapa
+		}
+	}, { deep: true });
+	
+	
 </script>
 
 <template>
 	<div id="map"></div>
+	
+	
+	
 	<pre>{{ reportes }}</pre>
 </template>
 
@@ -294,5 +321,11 @@ watch(() => props.reportes, (newValue) => {
 	width: 1000px;
 	height: 500px;
 	margin: 20px auto;
+}
+.mapboxgl-popup-close-button {
+	color: black; /* Cambia el color del texto a negro */
+}
+.custom-popup {
+	color: black; /* Cambia el color del texto a negro */
 }
 </style>
