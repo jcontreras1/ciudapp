@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\PostResource;
 use App\Models\Institution;
 use App\Models\Post;
 use App\Models\Subcategory;
@@ -45,7 +46,7 @@ class ApiInstitutionController extends Controller
                             'lat' => $post->lat,
                             'lng' => $post->lng,
                             'likes' => $post->likes->count() + 1,
-                            'post' => $post,
+                            'post' => new PostResource($post),
                         ];
                     }
                 }

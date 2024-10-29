@@ -36,7 +36,7 @@ const toggleCat = (id) => {
 }
 const getReports = async () => {
     const response = await ReportService.getReport(`/institution/${props.institution.id}/reports`, { params :  options.value});
-    reportes.value = response.data;    
+    reportes.value = response.data;   
 }
 
 const getSubcategories = async () => {

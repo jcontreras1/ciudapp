@@ -56,14 +56,20 @@ function convertReportsToGeoJSON(reportes) {
 				'coordinates': [report.lng, report.lat]
 			},
 			'properties': {
-				'likes': report.likes || 1, // Si tienes otras propiedades que usar
-				'comment' : report.post.comment || ''
+				'likes': report.likes, // Si tienes otras propiedades que usar
+				'comment' : report.post.comment || '',
+				'fecha' : report.post.created_at,
+				'direccion' : report.post.location_long || 'No definido',
+				'subcategoria' : report.post.subcategory.name,
+				'imagen': report.post.images[0]?.file || 'ruta/default.jpg',
+
 			}
 		}))
 	};
 }
 
 onMounted(() => {
+	
 	mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
 	
 	map.value = new mapboxgl.Map({
@@ -270,11 +276,17 @@ onMounted(() => {
 		map.value.on('click', 'reportes', (e) => {
 			const coordinates = e.features[0].geometry.coordinates.slice();
 			const likes = e.features[0].properties.likes;
-			const textoCorto = e.features[0].properties.comment;
+			// const textoCorto = e.features[0].properties.comment;
+			const fecha = new Date(e.features[0].properties.fecha).toLocaleDateString();
+			const direccion = e.features[0].properties.direccion;
+			const subcategoria = e.features[0].properties.subcategoria;
+			const imagen = e.features[0].properties.imagen;
+			console.log(imagen);
 			
-			// Ensure that if the map is zoomed out such that
-			// multiple copies of the feature are visible, the
-			// popup appears over the copy being pointed to.
+			/*Asegúrese de que si el mapa se aleja de manera que 
+			sean visibles varias copias de la característica, 
+			la ventana emergente aparece sobre la copia a la que se apunta.
+			*/
 			if (['mercator', 'equirectangular'].includes(map.value.getProjection().name)) {
 				while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
 					coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
@@ -285,8 +297,11 @@ onMounted(() => {
 			.setLngLat(coordinates)
 			.setHTML(
 			`<div class="custom-popup">
-           	Visivilización: ${likes}<br>
-            ${textoCorto}
+			<b><u>${subcategoria}</u></b><br>
+			<i class="fas fa-calendar-day"></i> ${fecha} <br>
+           	<i class="far fa-eye"></i> Visivilización: ${likes}<br>
+			<i class="fas fa-map-marked-alt"></i> ${direccion}<br>
+            
        		 </div>`
 				)
 				.addTo(map.value);
@@ -309,10 +324,34 @@ onMounted(() => {
 
 <template>
 	<div id="map"></div>
+	<!-- <div>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th># Post</th>
+                            <th>Comentario</th>
+                            <th>Subcategoria</th>
+                            <th>Direccion</th>
+                            <th>Like</th>                            
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(reporte) in reportes">
+                            <td>{{ reporte.post.id }}</td>
+                            <td>{{ reporte.post.comment }}</td>
+                            <td>{{ reporte.post.subcategory_id }}</td>
+                            <td>{{ reporte.post.location_long }}</td>
+                            <td>{{ reporte.likes }}</td>                    
+                            
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>	 -->
+	 
 	
-	
-	
-	<pre>{{ reportes }}</pre>
+	<pre>{{ reportes}}</pre>
 </template>
 
 <style>
