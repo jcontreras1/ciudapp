@@ -5,19 +5,19 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class IncidenceComment extends Model
+class IncidentComment extends Model
 {
     use HasFactory;
 
-    protected $table = "incidence_comment";
+    protected $table = "incident_comment";
     protected $fillable = [
         'comment',
         'user_id',
-        'incidence_id'
+        'incident_id'
     ];
 
-    public function incidence(){
-        return $this->belongsTo(Incidence::class);
+    public function incident(){
+        return $this->belongsTo(Incident::class);
     }
 
     public function user(){

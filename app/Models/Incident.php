@@ -5,10 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Incidence extends Model
+class Incident extends Model
 {
     use HasFactory;
-    protected $table = "incidence";
+    protected $table = "incident";
     protected $fillable = [
         'description',
         'user_id',
@@ -18,15 +18,15 @@ class Incidence extends Model
 
     public function status()
     {
-        return $this->belongsToMany(IncidenceStatus::class, 'evolution_incidence')->withPivot('description', 'created_at', 'user_id');
+        return $this->belongsTo(IncidentStatus::class);
     }
 
-    public function post(){
-        return $this->belongsTo(Post::class);
+    public function posts(){
+        return $this->hasMany(Post::class);
     }
 
     public function comments(){
-        return $this->hasMany(IncidenceComment::class);
+        return $this->hasMany(IncidentComment::class);
     }
 
     public function institution(){
@@ -37,8 +37,8 @@ class Incidence extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function evoIncidence(){
-        return $this->hasMany(EvolutionIncidence::class);
+    public function history(){
+        return $this->hasMany(IncidentHistory::class);
     }
 
 }

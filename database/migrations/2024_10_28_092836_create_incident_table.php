@@ -11,14 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('incidence', function (Blueprint $table) {
+        Schema::create('incident', function (Blueprint $table) {
             $table->id();
             $table->text('description');
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
             $table->unsignedBigInteger('institution_id');
             $table->foreign('institution_id')->references('id')->on('institution');
-            $table->boolean('resolved')->default(false);
+            //$table->boolean('resolved')->default(false);
+            $table->unsignedBigInteger('status_id');
+            $table->foreign('status_id')->references('id')->on('incident_status');
             $table->timestamps();
         });
     }
@@ -28,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('incidence');
+        Schema::dropIfExists('incident');
     }
 };

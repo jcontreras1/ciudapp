@@ -11,15 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('evolution_incidence', function (Blueprint $table) {
+        Schema::create('incident_history', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('incidence_id');
-            $table->foreign('incidence_id')->references('id')->on('incidence');
-            $table->unsignedBigInteger('incidence_status_id');
-            $table->foreign('incidence_status_id')->references('id')->on('incidence_status');
+            $table->unsignedBigInteger('incident_id');
+            $table->foreign('incident_id')->references('id')->on('incident');
+            $table->unsignedBigInteger('status_id');
+            $table->foreign('status_id')->references('id')->on('incident_status');
+            $table->text('description');
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
-            $table->text('description');
             $table->timestamps();
         });
     }
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('evolution_incidence');
+        Schema::dropIfExists('incident_history');
     }
 };

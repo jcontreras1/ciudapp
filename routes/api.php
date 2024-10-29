@@ -4,6 +4,7 @@ use App\Events\NewPostEvent;
 use App\Http\Controllers\api\ApiCommentLikeController;
 use App\Http\Controllers\api\CityController;
 use App\Http\Controllers\PostController;
+use App\Http\Resources\IncidentResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
@@ -52,8 +53,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
 Route::get('/t3st', function(){
-   $post = \App\Models\Post::orderBy('id', 'desc')->first();
-   NewPostEvent::dispatch($post);
+    $incidente = new IncidentResource(\App\Models\Incident::find(1));
+    return response($incidente, 200);
 
 });
 

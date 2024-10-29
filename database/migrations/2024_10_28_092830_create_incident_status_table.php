@@ -11,9 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('incidence_status', function (Blueprint $table) {
+        Schema::create('incident_status', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('description');
+            $table->string('code');
+            $table->string('icon')->nullable();
+            $table->string('color')->nullable();
             $table->timestamps();
         });
     }
@@ -23,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('incidence_status');
+        Schema::dropIfExists('incident_status');
     }
 };
