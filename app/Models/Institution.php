@@ -45,4 +45,9 @@ class Institution extends Model
     {
         return $this->hasMany(Region::class);
     }
+
+    public function incidents()
+    {
+        return $this->hasMany(Incident::class);
+    }   
 }

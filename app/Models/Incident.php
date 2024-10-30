@@ -13,7 +13,7 @@ class Incident extends Model
         'description',
         'user_id',
         'institution_id',
-        'resolved'
+        'status_id'
     ];
 
     public function status()

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreign('incident_id')->references('id')->on('incident');
             $table->unsignedBigInteger('status_id');
             $table->foreign('status_id')->references('id')->on('incident_status');
-            $table->text('description');
+            $table->text('description')->nullable();
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
             $table->timestamps();

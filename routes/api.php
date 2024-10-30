@@ -2,6 +2,7 @@
 
 use App\Events\NewPostEvent;
 use App\Http\Controllers\api\ApiCommentLikeController;
+use App\Http\Controllers\api\ApiIncidentController;
 use App\Http\Controllers\api\CityController;
 use App\Http\Controllers\PostController;
 use App\Http\Resources\IncidentResource;
@@ -49,8 +50,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('region/{region}/region_subcategory', App\Http\Controllers\api\ApiRegionSubcategoryController::class)->only(['store', 'destroy']);
     Route::get('/heatmap-data', [PostController::class, 'pruebaMapaCalor'])->name('mapacalor');
     Route::resource('regionSubcategory/{regionSubcategory}/userRegionSubcategory', App\Http\Controllers\api\ApiUserRegionSubcategoryController::class)->only(['index', 'store', 'destroy']);
+
+
 });
 
+Route::resource('institution/{institution}/incident', ApiIncidentController::class)->only(['index', 'show', 'store', 'update', 'destroy']);
+Route::post('institution/{institution}/incident/{incident}/status', [ApiIncidentController::class, 'changeStatus']);
 
 Route::get('/t3st', function(){
     $incidente = new IncidentResource(\App\Models\Incident::find(1));
