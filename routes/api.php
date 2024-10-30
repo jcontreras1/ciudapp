@@ -2,6 +2,7 @@
 
 use App\Events\NewPostEvent;
 use App\Http\Controllers\api\ApiCommentLikeController;
+use App\Http\Controllers\api\ApiIncidentCommentController;
 use App\Http\Controllers\api\ApiIncidentController;
 use App\Http\Controllers\api\CityController;
 use App\Http\Controllers\PostController;
@@ -51,21 +52,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/heatmap-data', [PostController::class, 'pruebaMapaCalor'])->name('mapacalor');
     Route::resource('regionSubcategory/{regionSubcategory}/userRegionSubcategory', App\Http\Controllers\api\ApiUserRegionSubcategoryController::class)->only(['index', 'store', 'destroy']);
 
-
-});
-
-Route::resource('institution/{institution}/incident', ApiIncidentController::class)->only(['index', 'show', 'store', 'update', 'destroy']);
-Route::post('institution/{institution}/incident/{incident}/status', [ApiIncidentController::class, 'changeStatus']);
-
-Route::get('/t3st', function(){
-    $incidente = new IncidentResource(\App\Models\Incident::find(1));
-    return response($incidente, 200);
-
+    //Incidentes
+    Route::resource('institution/{institution}/incident', ApiIncidentController::class)->only(['index', 'show', 'store', 'update', 'destroy']);
+    Route::resource('institution/{institution}/incident/{incident}/comment', ApiIncidentCommentController::class)->only(['store', 'destroy']);
+    Route::post('institution/{institution}/incident/{incident}/status', [ApiIncidentController::class, 'changeStatus']);
 });
 
 Route::get('test', function(){
-    
     $user = \App\Models\User::find(1);
-
     return $user->quiere('NOTIFICATION_COMMENTS');
 });

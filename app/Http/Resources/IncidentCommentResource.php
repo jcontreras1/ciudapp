@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class IncidentResource extends JsonResource
+class IncidentCommentResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,12 +16,10 @@ class IncidentResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'description' => $this->description,
-            'posts' => PostResource::collection($this->posts),
-            'status' => $this->status,
-            'history' => IncidentHistoryResource::collection($this->history),
+            'comment' => $this->comment,
             'user' => new BasicUserResource($this->user),
-            'comments' => IncidentCommentResource::collection($this->comments),
+            'created_at' => $this->created_at,
+            'diff' => $this->created_at->diffForHumans(),
         ];
     }
 }

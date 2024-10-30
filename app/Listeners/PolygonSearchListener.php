@@ -57,7 +57,7 @@ class PolygonSearchListener
                 //Debería revisar si el usuario quiere ser notificado
                 $user = User::find($userId);
                 $regionInfo = collect($regionData)->map(function($subcategory, $region) {
-                    return "$region"; //, Subcategoría: $subcategory";
+                    return $region; //, Subcategoría: $subcategory";
                 });
 
                 Mail::to($user->email)->send(new NuevoReporte($post, $regionInfo));

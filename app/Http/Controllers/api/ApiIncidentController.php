@@ -33,7 +33,7 @@ class ApiIncidentController extends Controller
                 $request->validated(),
                 [
                     'institution_id' => $institution->id,
-                    'user_id' => 1, //auth()->id(),
+                    'user_id' => auth()->id(),
                     'status_id' => $status,
                 ],            
             ));

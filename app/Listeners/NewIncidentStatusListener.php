@@ -27,7 +27,7 @@ class NewIncidentStatusListener
         IncidentHistory::create([
             'incident_id' => $incident->id,
             'status_id' => $incident->status_id,
-            'user_id' => 1,
+            'user_id' => auth()->id(),
             'description' => $event->text,
         ]);
     }

@@ -13,7 +13,7 @@ class IncidentComment extends Model
     protected $fillable = [
         'comment',
         'user_id',
-        'incident_id'
+        'incident_id',
     ];
 
     public function incident(){
