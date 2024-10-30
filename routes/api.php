@@ -54,11 +54,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     //Incidentes
     Route::resource('institution/{institution}/incident', ApiIncidentController::class)->only(['index', 'show', 'store', 'update', 'destroy']);
-    Route::resource('institution/{institution}/incident/{incident}/comment', ApiIncidentCommentController::class)->only(['store', 'destroy']);
+    Route::post('institution/{institution}/incident/{incident}/comment', [ApiIncidentCommentController::class, 'store'])->name('incident.comment.store');
+    Route::delete('institution/{institution}/incident/{incident}/comment/{comment}', [ApiIncidentCommentController::class, 'destroy'])->name('incident.comment.destroy');
     Route::post('institution/{institution}/incident/{incident}/status', [ApiIncidentController::class, 'changeStatus']);
-});
-
-Route::get('test', function(){
-    $user = \App\Models\User::find(1);
-    return $user->quiere('NOTIFICATION_COMMENTS');
 });
