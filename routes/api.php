@@ -2,8 +2,11 @@
 
 use App\Events\NewPostEvent;
 use App\Http\Controllers\api\ApiCommentLikeController;
+use App\Http\Controllers\api\ApiIncidentCommentController;
+use App\Http\Controllers\api\ApiIncidentController;
 use App\Http\Controllers\api\CityController;
 use App\Http\Controllers\PostController;
+use App\Http\Resources\IncidentResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
@@ -48,18 +51,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('region/{region}/region_subcategory', App\Http\Controllers\api\ApiRegionSubcategoryController::class)->only(['store', 'destroy']);
     Route::get('/heatmap-data', [PostController::class, 'pruebaMapaCalor'])->name('mapacalor');
     Route::resource('regionSubcategory/{regionSubcategory}/userRegionSubcategory', App\Http\Controllers\api\ApiUserRegionSubcategoryController::class)->only(['index', 'store', 'destroy']);
-});
 
-
-Route::get('/t3st', function(){
-   $post = \App\Models\Post::orderBy('id', 'desc')->first();
-   NewPostEvent::dispatch($post);
-
-});
-
-Route::get('test', function(){
-    
-    $user = \App\Models\User::find(1);
-
-    return $user->quiere('NOTIFICATION_COMMENTS');
+    //Incidentes
+    Route::resource('institution/{institution}/incident', ApiIncidentController::class)->only(['index', 'show', 'store', 'update', 'destroy']);
+    Route::post('institution/{institution}/incident/{incident}/comment', [ApiIncidentCommentController::class, 'store'])->name('incident.comment.store');
+    Route::delete('institution/{institution}/incident/{incident}/comment/{comment}', [ApiIncidentCommentController::class, 'destroy'])->name('incident.comment.destroy');
+    Route::post('institution/{institution}/incident/{incident}/status', [ApiIncidentController::class, 'changeStatus']);
+    Route::post('institution/{institution}/post/{post}/makeIncident', [ApiIncidentController::class, 'makeIncidentFromPost']);
+    Route::post('institution/{institution}/incident/{incident}/addPosts', [ApiIncidentController::class, 'addPostsToIncident']);
+    Route::get('institution/{institution}/incident/{incident}/post/{post}/nearby', [ApiIncidentController::class, 'nearby']);
 });

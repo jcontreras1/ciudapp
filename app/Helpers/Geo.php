@@ -1,4 +1,5 @@
 <?php
+use App\Models\Institution;
 use App\Models\Post;
 use App\Models\Region;
 use App\Models\User;
@@ -51,4 +52,51 @@ function postInRegion(Post $post, Region $region) {
     $point = ['lat' => $post->lat, 'lng' => $post->lng];
     $vertices = $region->points->toArray();
     return pointInPolygon($point, $vertices);
+}
+
+/**
+ * Devuelve los posts cercanos a un post dado, de paso, recorre todas las regiones de la institucion.
+ * Si el post está lo suficientemente cerca, pero no está en la región, se agrega a la lista de posts cercanos, aclarando que no está en la región.
+ */
+function postCercanos(Post $post, Institution $institution, int $offset = 150): array{
+    $posts = Post::where('subcategory_id', $post->subcategory_id)
+    ->where('id', '<>', $post->id)
+    ->where('incident_id', null)
+    ->get();
+    $result = [];
+    foreach ($posts as $p) {
+        $distancia = haversineGreatCircleDistance($post->lat, $post->lng, $p->lat, $p->lng);
+        if($distancia <= $offset){
+            $enRegion = false;
+            foreach($institution->regions as $region){
+                if(postInRegion($p, $region)){
+                    $enRegion = true;
+                    break;
+                }
+            }
+            $result[] = array_merge($p->toArray(), ['distancia' => $distancia, 'enRegion' => $enRegion]);
+        }
+    }
+    return $result;
+}
+function haversineGreatCircleDistance($latitudeFrom, $longitudeFrom, $latitudeTo, $longitudeTo, $earthRadius = 6371000)
+{
+    // Convertir de grados a radianes
+    $latitudeFrom = deg2rad($latitudeFrom);
+    $longitudeFrom = deg2rad($longitudeFrom);
+    $latitudeTo = deg2rad($latitudeTo);
+    $longitudeTo = deg2rad($longitudeTo);
+
+    // Diferencias
+    $latDiff = $latitudeTo - $latitudeFrom;
+    $lonDiff = $longitudeTo - $longitudeFrom;
+
+    // Fórmula de haversine
+    $a = sin($latDiff / 2) * sin($latDiff / 2) +
+         cos($latitudeFrom) * cos($latitudeTo) *
+         sin($lonDiff / 2) * sin($lonDiff / 2);
+    $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+
+    // Distancia en metros
+    return $earthRadius * $c; // Devuelve la distancia en metros
 }
