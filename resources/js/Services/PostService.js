@@ -15,4 +15,7 @@ export default {
         
     },
     
+    createIncidentFromPost(ruta,options){
+        return Api.post(ruta,options);
+    },
 }

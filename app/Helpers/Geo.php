@@ -58,7 +58,7 @@ function postInRegion(Post $post, Region $region) {
  * Devuelve los posts cercanos a un post dado, de paso, recorre todas las regiones de la institucion.
  * Si el post está lo suficientemente cerca, pero no está en la región, se agrega a la lista de posts cercanos, aclarando que no está en la región.
  */
-function postCercanos(Post $post, Institution $institution, int $offset = 150): array{
+function postCercanos(Post $post, Institution $institution, int $offset = 350): array{
     $posts = Post::where('subcategory_id', $post->subcategory_id)
     ->where('id', '<>', $post->id)
     ->where('incident_id', null)

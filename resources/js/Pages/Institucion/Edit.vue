@@ -7,6 +7,7 @@ import AppLayoutFluid from '@/Layouts/AppLayoutFluid.vue'
 import SectionTitle from '@/Components/SectionTitle.vue';
 import ShowPolygon from '../Mapa/ShowPolygon.vue';
 import Reports from './Reports.vue';
+import Incident from './Incident.vue';
 
 
 onMounted(() => {
@@ -149,13 +150,13 @@ const updateIntitutionForm = useForm({
         <!-- Nav tabs -->
         <ul class="nav nav-tabs" id="myTab" role="tablist">
             <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">
+                <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">
                     REGIONES
                     
                 </button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="home-tab" data-bs-toggle="tab" data-bs-target="#pepito" type="button" role="tab" aria-controls="home" aria-selected="true">
+                <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#pepito" type="button" role="tab" aria-controls="home" aria-selected="true">
                     REPORTES
                 </button>
             </li>
@@ -165,6 +166,7 @@ const updateIntitutionForm = useForm({
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="settings-tab" data-bs-toggle="tab" data-bs-target="#settings" type="button" role="tab" aria-controls="settings" aria-selected="false">EDITAR INSTITUCIÓN</button>
             </li>
+           
         </ul> 
         
         
@@ -172,10 +174,10 @@ const updateIntitutionForm = useForm({
         
         <div class="tab-content">
             <div class="py-2"></div>
-            <div class="tab-pane" id="pepito" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+            <div class="tab-pane active" id="pepito" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
                 <Reports :institution="institucion" :redibujar="variableDeIntercambio" />
             </div>
-            <div class="tab-pane active" id="profile" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
+            <div class="tab-pane " id="profile" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
                 <div v-if="true">
                     <!-- REGIONES -->
                     <h3>Regiones definidas
@@ -257,6 +259,8 @@ const updateIntitutionForm = useForm({
                     </table>
                 </div>
             </div>
+            
+            
             
             <div class="tab-pane" id="settings" role="tabpanel" aria-labelledby="settings-tab" tabindex="0">
                 <template v-if="true">

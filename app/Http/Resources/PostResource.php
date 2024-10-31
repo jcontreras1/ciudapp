@@ -39,6 +39,7 @@ class PostResource extends JsonResource
             'likes' => $this->likes->loadMissing('user'),
             'valid_until' => $this->valid_until ? date('d/m/Y H:i', strtotime($this->valid_until)) : null, // Carbon::parse($this->valid_until)->diffForHumans() : null,
             'private' => boolval($this->private),
+            'incident_id' => $this->incident_id,
         ];
     }
 }

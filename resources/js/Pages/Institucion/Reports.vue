@@ -4,6 +4,7 @@ import { defineProps, ref, onMounted, computed } from 'vue';
 import MapaCalor from '../Mapa/MapaCalor.vue';
 import ReportService from '@/Services/ReportService';
 import Checkbox from '@/Components/Checkbox.vue';
+import PostService from '@/Services/PostService';
 
 const props = defineProps({
     institution: {
@@ -17,9 +18,6 @@ const props = defineProps({
 });
 
 const reporteSeleccionado = ref();
-
-
-
 
 //Para agregarle independencia al módulo va y busca las subcategorías por sí solo, de modo que solo necesita la institución
 const allSubcategories = ref();
@@ -51,6 +49,28 @@ const getReports = async () => {
 const getSubcategories = async () => {
     const response = await ReportService.getSubCategory(`/institution/${props.institution.id}/subcategories`);
     allSubcategories.value = response.data;
+}
+
+//crear incidente a partir de un post
+const createIncident = (postId) => {
+    Swal.fire({
+        title: "Descripción del incidente",
+        input: "text",
+        inputAttributes: {
+            autocapitalize: "off"
+        },
+        showCancelButton: true,
+        confirmButtonText: "Crear Incidente",
+        cancelButtonText: "Cancelar",
+        allowOutsideClick: () => !Swal.isLoading()
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            const response = await PostService.createIncidentFromPost(`/institution/${props.institution.id}/post/${postId}/makeIncident`, {'description' : result.value});
+            const res = response.data;
+            location.href = `/institution/${props.institution.id}/incidents/${res.id}`;
+        }
+    });
+    //console.log(response);
 }
 
 onMounted(() => {
@@ -106,10 +126,13 @@ onMounted(() => {
             <div class="card h-100" role="button">
                 <img :src="reporte.post.images.map(report => report.file)" class="card-img-top" alt="" >
                 <div class="card-body">
-                    <div class="card-text">
+                    <div class="card-text mb-1">
                         <h4 @click="reporteSeleccionado = reporte"><u>{{ reporte.post.subcategory.name }}</u></h4><br>                       
                         <i class="fas fa-calendar-alt"></i> {{ new Date(reporte.post.created_at).toLocaleDateString() }}<br>
                         <i class="fas fa-map-marker-alt"></i> {{reporte.post.location_long }}
+                    </div>
+                    <div v-if="!reporte.incident_id">
+                        <button class="btn btn-xs btn-success" @click="createIncident(reporte.post.id)">Crear incidente</button>
                     </div>
                 </div>
             </div>	

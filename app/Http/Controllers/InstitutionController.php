@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Institution\UpdateInstitutionRequest;
 use App\Http\Requests\StoreInstitutionRequest;
+use App\Http\Resources\IncidentResource;
 use App\Models\Institution;
 use App\Models\UserInstitution;
 use Illuminate\Http\Request;
@@ -52,7 +53,8 @@ class InstitutionController extends Controller
             'institucion' => $institution->loadMissing('city.province'),
             'regiones' => $institution->regions,
             'users' => $institution->users,
-            'amIAdmin' => $amIAdmin
+            'amIAdmin' => $amIAdmin,
+            'incidents' => IncidentResource::collection($institution->incidents),
             ]
         );
     }

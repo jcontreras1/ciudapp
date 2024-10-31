@@ -20,7 +20,7 @@ class NewTraceIncidentEvent
      */
     public function __construct(
         public Incident $incident,
-        public string $text
+        public $text
     )
     {}
 

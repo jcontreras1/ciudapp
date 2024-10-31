@@ -27,7 +27,7 @@ export default {
                         focusConfirm: true,
                         icon: 'error',
                         title: `Error ${error.response.status}`,
-                        html: errors ?? error.response.data.message,
+                        html: errors ?? error.response.data,
                     });
                 }
             });
@@ -36,6 +36,7 @@ export default {
     post(url, options = null) {
         return axios.post('/api' + url, options)
             .catch(error => {
+                console.log(error)
                 let errors = null;
                 if (error.response.data.errors) {
                     errors = '';
@@ -49,7 +50,7 @@ export default {
                         focusConfirm: true,
                         icon: 'error',
                         title: `Error ${error.response.status}`,
-                        html: errors ?? error.response.data.message,
+                        html: errors ?? error.response.data,
                     });
                 }
             });
@@ -71,7 +72,7 @@ export default {
                         focusConfirm: true,
                         icon: 'error',
                         title: `Error ${error.response.status}`,
-                        html: errors ?? error.response.data.message,
+                        html: errors ?? error.response.data,
                     });
                 }
             });
@@ -93,7 +94,7 @@ export default {
                         focusConfirm: true,
                         icon: 'error',
                         title: `Error ${error.response.status}`,
-                        html: errors ?? error.response.data.message,
+                        html: errors ?? error.response.data,
                         
                     });
                 }

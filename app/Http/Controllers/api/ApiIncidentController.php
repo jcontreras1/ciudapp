@@ -76,6 +76,7 @@ class ApiIncidentController extends Controller
         * Cambiar de estado de un incidente
         */
         public function changeStatus(Institution $institution, Incident $incident, StoreIncidentTraceRequest $request){
+
             if($incident->status_id == $request->status_id){
                 return response('El estado del incidente no puede ser igual al estado anterior', 400);
             }
@@ -88,7 +89,7 @@ class ApiIncidentController extends Controller
                 $incident->posts()->update(['incident_id' => null]);
             }
 
-            NewTraceIncidentEvent::dispatch($incident, $request->description || "");
+            NewTraceIncidentEvent::dispatch($incident, $request->description);
             return response(new IncidentResource($incident),201);
         }
         
@@ -116,7 +117,7 @@ class ApiIncidentController extends Controller
                     $request->validated(), 
                     [
                         'institution_id' => $institution->id,
-                        'user_id' => 1, //auth()->id(),
+                        'user_id' => auth()->id(),
                         'status_id' => $status,
                     ],            
                     )
@@ -126,8 +127,8 @@ class ApiIncidentController extends Controller
                 $post->save();
                 NewIncidentEvent::dispatch($incident);
                 //buscar posts cercanos para agregarlos al incidente
-                $postsCercanos = postCercanos($post, $institution);
-                return response($postsCercanos, 200);
+                // $postsCercanos = postCercanos($post, $institution);
+                return response($incident, 200);
             }
             
             public function addPostsToIncident(Institution $institution, Incident $incident, AddPostsToIncidentRequest $request){
