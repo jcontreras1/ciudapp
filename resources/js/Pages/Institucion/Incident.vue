@@ -67,9 +67,12 @@ const guardarNuevoEstado = async (event) => {
                 <div class="fs-5 mb-1">
                     Estado del incidente: <small class="text-secondary"><em>{{ incident.status.description }} <i :class="incident.status.icon"></i></em></small>
                 </div>        
-                <div class="card bg-success">
+                <div class="card" v-if="postsRelacionados.length">
                     <div class="card-body">
-                        
+                        <div class="alert alert-info">
+                            <i class="far fa-lightbulb fs-4"></i><br>
+                            La siguiente es una lista de posts sugeridos que se encuentran en un radio aceptable de distancia de su post original.
+                        </div>
                     </div>
                 </div>
             </div>
@@ -101,7 +104,7 @@ const guardarNuevoEstado = async (event) => {
                             {{ estado.description }}
                         </div>
                         <div class="mb-1 float-end text-muted">
-                            {{estado.user.name}}
+                            <em>-{{estado.user.name}}</em>
                         </div>
                     </div>
                 </div>
