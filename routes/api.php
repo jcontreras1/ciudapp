@@ -59,4 +59,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('institution/{institution}/incident/{incident}/status', [ApiIncidentController::class, 'changeStatus']);
     Route::post('institution/{institution}/post/{post}/makeIncident', [ApiIncidentController::class, 'makeIncidentFromPost']);
     Route::post('institution/{institution}/incident/{incident}/addPosts', [ApiIncidentController::class, 'addPostsToIncident']);
+    Route::get('institution/{institution}/incident/{incident}/post/{post}/nearby', [ApiIncidentController::class, 'nearby']);
 });

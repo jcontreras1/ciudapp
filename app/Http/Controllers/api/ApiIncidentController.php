@@ -27,6 +27,11 @@ class ApiIncidentController extends Controller
     {
         return response(new IncidentResource($incident),200);
     }
+
+    public function nearby(Institution $institution, Incident $incident, Post $post)
+    {
+       return response(postCercanos($post, $institution), 200);
+    }
     
     public function store(StoreIncidentRequest $request, Institution $institution)
     {
@@ -72,11 +77,17 @@ class ApiIncidentController extends Controller
         */
         public function changeStatus(Institution $institution, Incident $incident, StoreIncidentTraceRequest $request){
             if($incident->status_id == $request->status_id){
-                return response('El estado del incidente no puede ser igual al estado de la institución', 400);
+                return response('El estado del incidente no puede ser igual al estado anterior', 400);
             }
-            $status = IncidentStatus::find($request->status_id)->id;
-            $incident->status_id = $status;
+            $status = IncidentStatus::find($request->status_id);
+            $incident->status_id = $status->id;
             $incident->save();
+
+            //restaurar posts
+            if($status->code == 'canceled'){
+                $incident->posts()->update(['incident_id' => null]);
+            }
+
             NewTraceIncidentEvent::dispatch($incident, $request->description || "");
             return response(new IncidentResource($incident),201);
         }
