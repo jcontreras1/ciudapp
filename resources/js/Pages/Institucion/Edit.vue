@@ -3,7 +3,7 @@ import { useForm } from '@inertiajs/vue3';
 import { Modal } from 'bootstrap';
 import { ref, defineProps, computed, onMounted } from 'vue'
 import { Head, Link, router } from '@inertiajs/vue3';
-import AppLayout from '@/Layouts/AppLayout.vue'
+import AppLayoutFluid from '@/Layouts/AppLayoutFluid.vue'
 import SectionTitle from '@/Components/SectionTitle.vue';
 import ShowPolygon from '../Mapa/ShowPolygon.vue';
 import Reports from './Reports.vue';
@@ -110,7 +110,7 @@ const updateIntitutionForm = useForm({
 </script>
 
 <template>
-    <AppLayout>
+    <AppLayoutFluid>
         <Head title="Institución" />
         <form @submit.prevent="agregarUsuario" v-if="props.amIAdmin">
             <div class="modal fade" id="mdlCreateUserInstitution" ref="modalCreate" tabindex="-1" aria-labelledby="mdlCreateUserInstitutionLabel" aria-hidden="true">
@@ -304,6 +304,6 @@ const updateIntitutionForm = useForm({
             </div>            
         </div>
         
-    </AppLayout>
+    </AppLayoutFluid>
     
 </template>

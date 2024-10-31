@@ -1,9 +1,14 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue';
 import mapboxgl from 'mapbox-gl';
-import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import * as turf from '@turf/turf';
+
+
+
+
+
+
 
 const props = defineProps({
 	reportes: {
@@ -16,6 +21,10 @@ const props = defineProps({
 	},
 	redibujar: {
 		type: Number,
+		required: false
+	},
+	reporteSeleccionado:{
+		type: Object,
 		required: false
 	}
 });
@@ -61,14 +70,52 @@ function convertReportsToGeoJSON(reportes) {
 				'fecha' : report.post.created_at,
 				'direccion' : report.post.location_long || 'No definido',
 				'subcategoria' : report.post.subcategory.name,
-				'imagen': report.post.images[0]?.file || 'ruta/default.jpg',
-
+				'imagen': report.post.images.map(elem => elem.file) || 'ruta/default.jpg',
+				
 			}
 		}))
 	};
 }
 
+watch(
+  () => props.reporteSeleccionado,
+  (nuevoReporteSeleccionado) => {
+
+
+    if (nuevoReporteSeleccionado && map.value) {
+      // Obtener las coordenadas del reporte seleccionado
+      const { lng, lat, likes } = nuevoReporteSeleccionado;
+	  const fecha = nuevoReporteSeleccionado.post.created_at;
+	  const direccion = nuevoReporteSeleccionado.post.location_long || 'No definido';
+	  const subcategoria = nuevoReporteSeleccionado.post.subcategory.name;
+		 console.log(nuevoReporteSeleccionado);
+      // Crear el contenido del popup
+      const popupContent = `
+        <div class="custom-popup">
+          <b><u>${subcategoria}</u></b><br>
+          <i class="fas fa-calendar-day"></i> ${new Date(fecha).toLocaleDateString()} <br>
+          <i class="far fa-eye"></i> Visualización: ${likes}<br>
+          <i class="fas fa-map-marked-alt"></i> ${direccion}<br>
+        </div>
+      `;
+
+      // Asegurarse de que el mapa no esté demasiado alejado
+      while (Math.abs(lng - nuevoReporteSeleccionado.lng) > 180) {
+        nuevoReporteSeleccionado.lng += lng > nuevoReporteSeleccionado.lng ? 360 : -360;
+      }
+
+      // Crear y mostrar el popup en el mapa
+      new mapboxgl.Popup()
+        .setLngLat([lng, lat])
+        .setHTML(popupContent)
+        .addTo(map.value);
+    }
+  },
+  { deep: true }
+);
+
 onMounted(() => {
+	
 	
 	mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
 	
@@ -324,42 +371,14 @@ onMounted(() => {
 
 <template>
 	<div id="map"></div>
-	<!-- <div>
-            <div class="table-responsive">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th># Post</th>
-                            <th>Comentario</th>
-                            <th>Subcategoria</th>
-                            <th>Direccion</th>
-                            <th>Like</th>                            
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="(reporte) in reportes">
-                            <td>{{ reporte.post.id }}</td>
-                            <td>{{ reporte.post.comment }}</td>
-                            <td>{{ reporte.post.subcategory_id }}</td>
-                            <td>{{ reporte.post.location_long }}</td>
-                            <td>{{ reporte.likes }}</td>                    
-                            
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>	 -->
-	 
-	
-	<pre>{{ reportes}}</pre>
 </template>
 
 <style>
 #map {
 	position: relative;
-	width: 1000px;
-	height: 500px;
-	margin: 20px auto;
+	min-width: 700px;
+	min-height: 500px;
+	
 }
 .mapboxgl-popup-close-button {
 	color: black; /* Cambia el color del texto a negro */

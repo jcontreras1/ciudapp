@@ -1,8 +1,9 @@
 <script setup>
 
-import { defineProps, ref, onMounted } from 'vue';
+import { defineProps, ref, onMounted, computed } from 'vue';
 import MapaCalor from '../Mapa/MapaCalor.vue';
 import ReportService from '@/Services/ReportService';
+import Checkbox from '@/Components/Checkbox.vue';
 
 const props = defineProps({
     institution: {
@@ -15,11 +16,19 @@ const props = defineProps({
     }
 });
 
+const reporteSeleccionado = ref();
+
+
+
 
 //Para agregarle independencia al módulo va y busca las subcategorías por sí solo, de modo que solo necesita la institución
 const allSubcategories = ref();
 
 const reportes = ref([]);
+const estosReportes = computed(() => {
+    return reportes.reportes?.sort((a,b) => a.subcategory?.name.localeCompare(b.subcategory?.name));
+});
+
 const options = ref({
     regiones : [],
     subcategories : []
@@ -43,37 +52,78 @@ const getSubcategories = async () => {
     const response = await ReportService.getSubCategory(`/institution/${props.institution.id}/subcategories`);
     allSubcategories.value = response.data;
 }
+
 onMounted(() => {
     getSubcategories();
     getReports();
 });
 
+
+
 </script>
 
-<template>
-    <h3 class="mb-4">
-        Lista de reportes
-    </h3>
-    
-    <div class="row">
-        <div class="col-12">
-            <button v-for="subcategory in allSubcategories" class="btn mx-1" 
-            :class="{
-                'btn-outline-success' : options.subcategories.includes(subcategory.id),
-                'btn-outline-secondary' : !options.subcategories.includes(subcategory.id)
-                
-            }" 
-            @click="toggleCat(subcategory.id)">
-            {{ subcategory.name }} <i class="fas fa-check" v-if="options.subcategories.includes(subcategory.id)"></i>
-        </button>
+<template>    
+    <div class="row mb-4">        
+        <div class="col-12 col-md-9">
+            <MapaCalor :redibujar="redibujar" :reportes="reportes.reportes" :regiones="reportes.regiones" :reporteSeleccionado="reporteSeleccionado" />   
+            
+        </div>
+        <div class="col-12 col-md-3 ">
+            
+            <div class="col-12 mb-3 ">
+                <div class="card">
+                    <div class="card-body ">
+                        <Checkbox 
+                        v-for="subcategory in allSubcategories" 
+                        :key="subcategory.id" 
+                        class="fs-5 mb-2" 
+                        :name="subcategory.name"
+                        :checked="options.subcategories.includes(subcategory.id)"
+                        @click="toggleCat(subcategory.id)"
+                        />
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row" v-if="reportes.reportes && reportes.reportes.length > 0">
+                <div class="col-12">				
+                    <div class="form-floating mb-3">
+                        <input type="date" class="form-control" id="floatingInput" placeholder="Fecha desde">
+                        <label for="floatingInput">Fecha desde</label>					
+                    </div>
+                </div>
+                <div class="col-12">				
+                    <div class="form-floating mb-3">
+                        <input type="date" class="form-control" id="floatingInput" placeholder="Fecha hasta">
+                        <label for="floatingInput">Fecha hasta</label>					
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
-<hr>
-<div>
-    <MapaCalor :redibujar="redibujar" :reportes="reportes.reportes" :regiones="reportes.regiones" />   
+    <div class="row">
+        <div class="col-12 col-md-3 mb-2" v-for="reporte in reportes.reportes?.sort((a,b) => a.post.subcategory.name.localeCompare(b.post.subcategory?.name))" :key="reporte.id">
+            <div class="card h-100" role="button">
+                <img :src="reporte.post.images.map(report => report.file)" class="card-img-top" alt="" >
+                <div class="card-body">
+                    <div class="card-text">
+                        <h4 @click="reporteSeleccionado = reporte"><u>{{ reporte.post.subcategory.name }}</u></h4><br>                       
+                        <i class="fas fa-calendar-alt"></i> {{ new Date(reporte.post.created_at).toLocaleDateString() }}<br>
+                        <i class="fas fa-map-marker-alt"></i> {{reporte.post.location_long }}
+                    </div>
+                </div>
+            </div>	
+            
+        </div>		
+    </div>
     
-</div>
-
- 
-
+    
+    
 </template>
+
+<style>
+.card-img-top {
+    height: 200px;
+    object-fit: cover;
+}
+</style>
