@@ -58,4 +58,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('institution/{institution}/incident/{incident}/comment/{comment}', [ApiIncidentCommentController::class, 'destroy'])->name('incident.comment.destroy');
     Route::post('institution/{institution}/incident/{incident}/status', [ApiIncidentController::class, 'changeStatus']);
     Route::post('institution/{institution}/post/{post}/makeIncident', [ApiIncidentController::class, 'makeIncidentFromPost']);
+    Route::post('institution/{institution}/incident/{incident}/addPosts', [ApiIncidentController::class, 'addPostsToIncident']);
 });

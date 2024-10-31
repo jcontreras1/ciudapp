@@ -5,6 +5,7 @@ namespace App\Http\Controllers\api;
 use App\Events\NewIncidentEvent;
 use App\Events\NewTraceIncidentEvent;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\AddPostsToIncidentRequest;
 use App\Http\Requests\StoreIncidentRequest;
 use App\Http\Requests\StoreIncidentTraceRequest;
 use App\Http\Resources\IncidentResource;
@@ -95,7 +96,7 @@ class ApiIncidentController extends Controller
             if($post->incident_id){
                 return response(['error' => 'El post ya es parte de un incidente'], 400);
             }
-
+            
             
             $status = IncidentStatus::where('code', 'open')->firstOrFail()->id;
             
@@ -117,6 +118,20 @@ class ApiIncidentController extends Controller
                 $postsCercanos = postCercanos($post, $institution);
                 return response($postsCercanos, 200);
             }
+            
+            public function addPostsToIncident(Institution $institution, Incident $incident, AddPostsToIncidentRequest $request){
+                $request->validate([
+                    'posts' => 'required|array',
+                    'posts.*' => 'required|integer|exists:post,id',
+                ]);
+                $posts = $request->posts;
+                foreach ($posts as $post) {
+                    $post = Post::find($post);
+                    $post->incident_id = $incident->id;
+                    $post->save();
+                }
+                return response(IncidentResource::collection($institution->incidents), 200);
+            }
+            
         }
-        
         

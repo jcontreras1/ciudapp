@@ -56,8 +56,8 @@ class StatusSeeder extends Seeder
         ]);
 
         IncidentStatus::firstOrCreate([
-            'description' => 'Rechazado',
-            'code' => 'rejected',
+            'description' => 'Cancelado',
+            'code' => 'canceled',
             'icon' => 'fa fa-times-circle',
             'color' => '#FF0000'
         ]);
