@@ -142,7 +142,11 @@ class ApiIncidentController extends Controller
                     $post->incident_id = $incident->id;
                     $post->save();
                 }
-                return response(IncidentResource::collection($institution->incidents), 200);
+                return response([
+                    'incident' => new IncidentResource($incident),
+                    'postsRelacionados' => postCercanos($incident->postOriginal, $institution),
+
+                ], 200);
             }
             
         }

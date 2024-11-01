@@ -20,7 +20,7 @@ const props = defineProps({
         type: Object,
         required: true
     },
-    postsRelacionados : {
+    myPostsRelacionados : {
         type: Object,
         required: true
     },
@@ -31,15 +31,35 @@ const props = defineProps({
 });
 
 const incident = ref(props.myIncident.data);
+const postsRelacionados = ref(props.myPostsRelacionados);
 const nuevoEstado = ref(null)
 const descripcionNuevoEstado = ref(null)
+
+const agregarPostsAIncidente = (post) => {
+    Swal.fire({
+        title: `¿Agregar el post #${post.id} al incidente?`,
+        showCancelButton: true,
+        confirmButtonText: "Agregar",
+        cancelButtonText: "Cancelar",
+        allowOutsideClick: () => !Swal.isLoading()
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            let res = await IncidentService.addPosts(`/institution/${props.institution.id}/incident/${incident.value.id}/addPosts`,
+                {   'posts' : [post.id] }
+            );
+            console.log(res)
+            incident.value = res.data.incident;
+            postsRelacionados.value = res.data.postsRelacionados;
+        }
+    });
+    
+}
 const guardarNuevoEstado = async (event) => {
     const res = await IncidentService.changeStatus(`/institution/${props.institution.id}/incident/${incident.value.id}/status`, 
     {
         'status_id': nuevoEstado.value,
         'description' : descripcionNuevoEstado.value
     });
-    console.log(res.data);
     incident.value.history = res.data.history;
     nuevoEstado.value = null;
     descripcionNuevoEstado.value = null;
@@ -76,7 +96,7 @@ const toggleMostrar = () => {
                 </div>        
                 
                 <!-- Card sugerencia -->
-                <div class="card mb-3" v-if="postsRelacionados.length">
+                <div class="card mb-3" v-if="postsRelacionados?.length">
                     <div class="card-header" @click="toggleMostrar" role="button">
                         Posts relacionados
                         <span class="float-right">
@@ -92,7 +112,7 @@ const toggleMostrar = () => {
                         
                         <!-- posts sugeridos -->
                         <div class="row">
-                            <div class="col-12 col-md-6 mb-3" v-for="post in props.postsRelacionados">
+                            <div class="col-12 col-md-6 mb-3" v-for="post in postsRelacionados">
                                 <div class="card g-0 mb-3 h-100">
                                     <div class="card-header text-muted"><small>#{{post.id}}</small></div>
                                     <MapaPuntosSugeridosIncident class="card-img-top" :lat="post.lat" :lng="post.lng"
@@ -113,7 +133,7 @@ const toggleMostrar = () => {
                                             <i class="fas fa-check text-success"></i> Está en alguna de las regiones de la institución
                                         </div>
                                         <div class="mb-1">
-                                            <button class="btn btn-success">Agregar post al incidente</button>
+                                            <button class="btn btn-success" @click="agregarPostsAIncidente(post)">Agregar post al incidente</button>
                                         </div>
                                     </div>
                                     <div class="card-footer">

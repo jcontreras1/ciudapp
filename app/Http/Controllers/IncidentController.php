@@ -12,36 +12,33 @@ use Inertia\Inertia;
 class IncidentController extends Controller
 {
     public function index(Institution $institution){
-
+        
         return Inertia::render('Institucion/Incidents',
-    
-            [
-                'institution' => $institution,
-                'incidents' => $institution->incidents
+        
+        [
+            'institution' => $institution,
+            'incidents' => $institution->incidents
             ]
         );
-
+        
     }
-
+    
     public function show(Institution $institution, Incident $incident)
     {
-        //Si solamente tiene un post, podría revisar todos reportes que estén cerca
-        $postsRelacionados = [];
-        if($incident->posts->count() == 1){
-            $post = $incident->posts->first();
-            $postsRelacionados = postCercanos($post, $institution);
-        }
-
+        $post = $incident->postOriginal;
+        $postsRelacionados = postCercanos($post, $institution);
+        
         return Inertia::render(
             'Institucion/Incident',
-
+            
             [
                 'institution' => $institution,
-                'postsRelacionados' => $postsRelacionados,
+                'myPostsRelacionados' => $postsRelacionados,
                 'myIncident' => new IncidentResource($incident),
                 'estados' => IncidentStatus::all(),
-            ]
-        );
-
+                ]
+            );
+            
+        }
     }
-}
+    
