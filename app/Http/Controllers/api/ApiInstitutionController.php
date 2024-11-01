@@ -32,10 +32,20 @@ class ApiInstitutionController extends Controller
         
         $reportes = [];
         $posts = Post::whereIn('subcategory_id', $request->subcategories)
-        ->orderBy('id', 'desc')
-        ->take(1000)
-        ->get();
-        
+            ->when($request->filled('withIncidents'), function ($query) use ($request) {
+                if (filter_var($request->withIncidents, FILTER_VALIDATE_BOOLEAN)) {
+                    // Incluir todos los registros si `withIncidents` es `true`
+                    return $query;
+                } else {
+                    // Filtrar solo registros donde `incident_id` sea `null` si `withIncidents` es `false`
+                    return $query->whereNull('incident_id');
+                }
+            })
+            ->orderBy('id', 'desc')
+            ->take(1000)
+            ->get();
+
+
         foreach ($posts as $post) {
             foreach ($institution->regions as $region) {
                 if (postInRegion($post, $region)) {

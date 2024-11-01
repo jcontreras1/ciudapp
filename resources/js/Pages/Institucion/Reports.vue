@@ -21,15 +21,20 @@ const reporteSeleccionado = ref();
 
 //Para agregarle independencia al módulo va y busca las subcategorías por sí solo, de modo que solo necesita la institución
 const allSubcategories = ref();
-
+const mostrarIncidentes = ref(true);
 const reportes = ref([]);
 const estosReportes = computed(() => {
     return reportes.reportes?.sort((a,b) => a.subcategory?.name.localeCompare(b.subcategory?.name));
 });
+const toggleWithIncidents = () => {
+    mostrarIncidentes.value = !mostrarIncidentes.value;
+    getReports();
+}
 
 const options = ref({
     regiones : [],
-    subcategories : []
+    subcategories : [],
+    withIncidents : mostrarIncidentes
 });
 
 const toggleCat = (id) => {
@@ -113,11 +118,24 @@ onMounted(() => {
                     </div>
                 </div>
                 <div class="col-12">				
-                    <div class="form-floating mb-3">
+                    <div class="form-floating mb-2">
                         <input type="date" class="form-control" id="floatingInput" placeholder="Fecha hasta">
                         <label for="floatingInput">Fecha hasta</label>					
                     </div>
                 </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-12">
+                    <label>Seleccionar todos los reportes o sólo los que no tengan incidentes</label>
+                    <Checkbox  
+                        class="fs-5 mb-2" 
+                        :name="'Todos los reportes'"
+                        :checked="true"
+                        @click="toggleWithIncidents"
+                        />
+            </div>
+                
             </div>
         </div>
     </div>
@@ -131,7 +149,7 @@ onMounted(() => {
                         <i class="fas fa-calendar-alt"></i> {{ new Date(reporte.post.created_at).toLocaleDateString() }}<br>
                         <i class="fas fa-map-marker-alt"></i> {{reporte.post.location_long }}
                     </div>
-                    <div v-if="!reporte.incident_id">
+                    <div v-if="!reporte.post.incident_id">
                         <button class="btn btn-xs btn-success" @click="createIncident(reporte.post.id)">Crear incidente</button>
                     </div>
                 </div>

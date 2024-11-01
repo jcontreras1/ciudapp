@@ -47,7 +47,6 @@ const agregarPostsAIncidente = (post) => {
             let res = await IncidentService.addPosts(`/institution/${props.institution.id}/incident/${incident.value.id}/addPosts`,
                 {   'posts' : [post.id] }
             );
-            console.log(res)
             incident.value = res.data.incident;
             postsRelacionados.value = res.data.postsRelacionados;
         }

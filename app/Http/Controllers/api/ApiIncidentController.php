@@ -109,7 +109,6 @@ class ApiIncidentController extends Controller
                 return response(['error' => 'El post ya es parte de un incidente'], 400);
             }
             
-            
             $status = IncidentStatus::where('code', 'open')->firstOrFail()->id;
             
             $incident = Incident::create(
@@ -119,6 +118,7 @@ class ApiIncidentController extends Controller
                         'institution_id' => $institution->id,
                         'user_id' => auth()->id(),
                         'status_id' => $status,
+                        'post_original_id' => $post->id,
                     ],            
                     )
                 );
