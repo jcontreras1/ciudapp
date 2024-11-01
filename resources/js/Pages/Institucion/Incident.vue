@@ -45,6 +45,12 @@ const guardarNuevoEstado = async (event) => {
     descripcionNuevoEstado.value = null;
 }
 
+const mostrar = ref(false);
+
+const toggleMostrar = () => {
+    mostrar.value = !mostrar.value;
+}
+
 </script>
 
 <template>    
@@ -70,8 +76,15 @@ const guardarNuevoEstado = async (event) => {
                 </div>        
                 
                 <!-- Card sugerencia -->
-                <div class="card" v-if="postsRelacionados.length">
-                    <div class="card-body">
+                <div class="card mb-3" v-if="postsRelacionados.length">
+                    <div class="card-header" @click="toggleMostrar" role="button">
+                        Posts relacionados
+                        <span class="float-right">
+                            <i class="fas fa-angle-up" role="button" v-if="mostrar"></i>
+                            <i class="fas fa-angle-down" role="button" v-else="!mostrar"></i>
+                        </span>
+                    </div>
+                    <div class="card-body" v-show="mostrar">
                         <div class="alert alert-info">
                             <i class="far fa-lightbulb fs-4"></i><br>
                             La siguiente es una lista de posts sugeridos que se encuentran en un radio aceptable de distancia de su post original.
@@ -109,9 +122,42 @@ const guardarNuevoEstado = async (event) => {
                                 </div>
                             </div>
                         </div>
-                        
                     </div>
                 </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        Posts del incidente
+                    </div>
+                    <div class="card-body">
+                        
+         
+
+                                                <div class="row">
+                            <div class="col-12 col-md-6 mb-3" v-for="post in incident.posts">
+                                <div class="card g-0 mb-3 h-100">
+                                    <div class="card-header text-muted"><small>#{{post.id}}</small></div>
+                                    <MapaPuntosSugeridosIncident class="card-img-top" :lat="post.lat" :lng="post.lng"
+                                    :puntos="[{'lng' : post.lng, 'lat' : post.lat}, {'lng' : incident.posts[0].lng, 'lat' : incident.posts[0].lat}]" />
+                                    <div class="card-body">
+                                        <h3>{{ incident.title }}</h3>
+                                        <div class="row">
+                                            <div class="col-12 col-md-6" v-for="img in post.images">
+                                                <img :src="img.file" class="img-thumbnail" alt="Captura">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer" v-if="post.location_long">
+                                        {{post.location_long}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- posts vigentes -->
+                
                 
                 
             </div>
@@ -158,7 +204,7 @@ const guardarNuevoEstado = async (event) => {
 
 <style>
 .img-thumbnail{
-  height: 150px;
+    height: 150px;
     object-fit: cover;
 }
 </style>

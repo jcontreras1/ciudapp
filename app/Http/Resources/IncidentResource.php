@@ -22,6 +22,7 @@ class IncidentResource extends JsonResource
             'history' => IncidentHistoryResource::collection($this->history),
             'user' => new BasicUserResource($this->user),
             'comments' => IncidentCommentResource::collection($this->comments),
+            'postOriginal' => $this->postOriginal ? new PostResource($this->postOriginal) : null,
         ];
     }
 }

@@ -13,6 +13,7 @@ class Incident extends Model
         'description',
         'user_id',
         'institution_id',
+        'post_original_id',
         'status_id'
     ];
 
@@ -39,6 +40,10 @@ class Incident extends Model
 
     public function history(){
         return $this->hasMany(IncidentHistory::class);
+    }
+
+    public function postOriginal(){
+        return $this->belongsTo(Post::class, 'post_original_id');
     }
 
 }
