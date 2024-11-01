@@ -72,7 +72,7 @@ const toggleMostrar = () => {
                     Institucion: <strong>{{ props.institution.name }}</strong>
                 </div>
                 <div class="fs-5 mb-1">
-                    Estado del incidente: <small class="text-secondary"><em>{{ incident.status.description }} <i :class="incident.status.icon"></i></em></small>
+                    Estado del incidente: <small class="text-secondary"><em>{{ incident.history?.slice().reverse()[0].status.description }} <i :class="incident.history?.slice().reverse()[0].status.icon"></i></em></small>
                 </div>        
                 
                 <!-- Card sugerencia -->
