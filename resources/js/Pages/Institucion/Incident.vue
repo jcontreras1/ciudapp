@@ -4,10 +4,11 @@ import { defineProps, ref, onMounted, computed } from 'vue';
 import MapaCalor from '../Mapa/MapaCalor.vue';
 import ReportService from '@/Services/ReportService';
 import Checkbox from '@/Components/Checkbox.vue';
-import AppLayout from '@/Layouts/AppLayout.vue';
+import AppLayoutFluid from '@/Layouts/AppLayoutFluid.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import SectionTitle from '@/Components/SectionTitle.vue';
 import IncidentService from '@/Services/IncidentService';
+import MapaPuntosSugeridosIncident from '@/Components/MapaPuntosSugeridosIncident.vue';
 
 
 const props = defineProps({
@@ -47,7 +48,7 @@ const guardarNuevoEstado = async (event) => {
 </script>
 
 <template>    
-    <AppLayout>
+    <AppLayoutFluid>
         
         <Head title="Incidentes" />
         <SectionTitle>
@@ -67,14 +68,52 @@ const guardarNuevoEstado = async (event) => {
                 <div class="fs-5 mb-1">
                     Estado del incidente: <small class="text-secondary"><em>{{ incident.status.description }} <i :class="incident.status.icon"></i></em></small>
                 </div>        
+                
+                <!-- Card sugerencia -->
                 <div class="card" v-if="postsRelacionados.length">
                     <div class="card-body">
                         <div class="alert alert-info">
                             <i class="far fa-lightbulb fs-4"></i><br>
                             La siguiente es una lista de posts sugeridos que se encuentran en un radio aceptable de distancia de su post original.
                         </div>
+                        
+                        <!-- posts sugeridos -->
+                        <div class="row">
+                            <div class="col-12 col-md-6 mb-3" v-for="post in props.postsRelacionados">
+                                <div class="card g-0 mb-3 h-100">
+                                    <div class="card-header text-muted"><small>#{{post.id}}</small></div>
+                                    <MapaPuntosSugeridosIncident class="card-img-top" :lat="post.lat" :lng="post.lng"
+                                    :puntos="[{'lng' : post.lng, 'lat' : post.lat}, {'lng' : incident.posts[0].lng, 'lat' : incident.posts[0].lat}]" />
+                                    <div class="card-body">
+                                        <h3>{{ incident.title }}</h3>
+                                        <div class="row">
+                                            <div class="col-12 col-md-6" v-for="img in post.images">
+                                                <img :src="img.file" class="img-thumbnail" alt="Captura">
+                                            </div>
+                                        </div>
+                                        <hr>
+                                        <i class="fas fa-arrows-alt-h"></i> Distancia del post original: <strong>{{ Math.round(post.distancia) }}  metros</strong>
+                                        <div v-if="!post.enRegion" class="mb-2">
+                                            <i class="fas fa-times text-danger" ></i> No está en ninguna región de la institución, pero podría ser tratado como si lo estuviera
+                                        </div>
+                                        <div v-else class="mb-2">
+                                            <i class="fas fa-check text-success"></i> Está en alguna de las regiones de la institución
+                                        </div>
+                                        <div class="mb-1">
+                                            <button class="btn btn-success">Agregar post al incidente</button>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer">
+                                        {{post.location_long}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
                     </div>
                 </div>
+                
+                
             </div>
             <div class="col-12 col-md-4">
                 <div class="card mb-4">
@@ -84,8 +123,9 @@ const guardarNuevoEstado = async (event) => {
                         </p>
                         <div class="mb-1">
                             <label>Estado</label>
+                            
                             <select class="form-control" v-model="nuevoEstado">
-                                <option v-for="estado in estados" :key="estado.id" :value="estado.id">{{ estado.description }}</option>
+                                <option v-for="estado in estados" :key="estado.id" :value="estado.id"><i :class="estado.icon"></i> {{ estado.description }}</option>
                             </select>
                         </div>
                         <div class="mb-1">
@@ -112,13 +152,13 @@ const guardarNuevoEstado = async (event) => {
             </div>
         </div>
         
-    </AppLayout>
+    </AppLayoutFluid>
     
 </template>
 
 <style>
-.card-img-top {
-    height: 200px;
+.img-thumbnail{
+  height: 150px;
     object-fit: cover;
 }
 </style>

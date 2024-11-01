@@ -1,4 +1,5 @@
 <?php
+use App\Http\Resources\PostResource;
 use App\Models\Institution;
 use App\Models\Post;
 use App\Models\Region;
@@ -74,7 +75,11 @@ function postCercanos(Post $post, Institution $institution, int $offset = 350): 
                     break;
                 }
             }
-            $result[] = array_merge($p->toArray(), ['distancia' => $distancia, 'enRegion' => $enRegion]);
+            $postArray = (new PostResource($p))->toArray(request());
+            $result[] = array_merge($postArray, [
+                'distancia' => $distancia,
+                'enRegion' => $enRegion
+            ]);
         }
     }
     return $result;
