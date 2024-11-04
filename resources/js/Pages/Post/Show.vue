@@ -29,8 +29,8 @@ const emit = defineEmits(['showPostOnModal', 'deletePost']);
                 <i class="fas fa-eye-slash"></i> Este post es privado
             </div>
             <div class="d-flex justify-content-between">
-                {{ post.id }}
                 <div>
+                    <b># {{ post.id }}</b> <br>
                     <i class="fas fa-calendar-alt"></i> 
                     {{ new Date(post.created_at).toLocaleDateString() }} 
                     <!-- {{ post.valid_until ? ' - ' + post.valid_until : '' }} -->

@@ -45,7 +45,7 @@ const agregarPostsAIncidente = (post) => {
     }).then(async (result) => {
         if (result.isConfirmed) {
             let res = await IncidentService.addPosts(`/institution/${props.institution.id}/incident/${incident.value.id}/addPosts`,
-                {   'posts' : [post.id] }
+            {   'posts' : [post.id] }
             );
             incident.value = res.data.incident;
             postsRelacionados.value = res.data.postsRelacionados;
@@ -70,6 +70,21 @@ const toggleMostrar = () => {
     mostrar.value = !mostrar.value;
 }
 
+const eliminarPost = async (post) => {
+    Swal.fire({
+        title: `¿Remover el post #${post.id} del incidente?`,
+        showCancelButton: true,
+        confirmButtonText: "Remover",
+        cancelButtonText: "Cancelar",
+        allowOutsideClick: () => !Swal.isLoading()
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            let res = await IncidentService.removePost(`/institution/${props.institution.id}/incident/${incident.value.id}/post/${post.id}/remove`);
+            incident.value = res.data.incident;
+            postsRelacionados.value = res.data.postsRelacionados;
+        }
+    });
+}
 </script>
 
 <template>    
@@ -88,10 +103,10 @@ const toggleMostrar = () => {
         <div class="row">
             <div class="col-12 col-md-8">
                 <div class="fs-5 mb-1">
-                    Institucion: <strong>{{ props.institution.name }}</strong>
+                    <i class="fas fa-university"></i> <strong>{{ props.institution.name }}</strong>
                 </div>
-                <div class="fs-5 mb-1">
-                    Estado del incidente: <small class="text-secondary"><em>{{ incident.history?.slice().reverse()[0].status.description }} <i :class="incident.history?.slice().reverse()[0].status.icon"></i></em></small>
+                <div class="fs-5 mb-2">
+                    <small  :style="{ color:  incident.history?.slice().reverse()[0].status.color }"><em> {{ incident.history?.slice().reverse()[0].status.description }} <i :class="incident.history?.slice().reverse()[0].status.icon"></i></em></small>
                 </div>        
                 
                 <!-- Card sugerencia -->
@@ -131,12 +146,12 @@ const toggleMostrar = () => {
                                         <div v-else class="mb-2">
                                             <i class="fas fa-check text-success"></i> Está en alguna de las regiones de la institución
                                         </div>
-                                        <div class="mb-1">
+                                        <div class="mb-1 d-grid gap-2" >
                                             <button class="btn btn-success" @click="agregarPostsAIncidente(post)">Agregar post al incidente</button>
                                         </div>
                                     </div>
                                     <div class="card-footer">
-                                        {{post.location_long}}
+                                        <i class="fas fa-map-marker-alt"></i> {{post.location_long}}
                                     </div>
                                 </div>
                             </div>
@@ -144,61 +159,69 @@ const toggleMostrar = () => {
                     </div>
                 </div>
                 
-                <div class="card">
-                    <div class="card-header">
-                        Posts del incidente
+                <div>
+                    <div>
+                        <h5>Posts del incidente</h5>
                     </div>
-                    <div class="card-body">
-                        
-         
-
-                                                <div class="row">
+                    <div class="card-body">              
+                        <div class="row">
                             <div class="col-12 col-md-6 mb-3" v-for="post in incident.posts">
                                 <div class="card g-0 mb-3 h-100">
-                                    <div class="card-header text-muted"><small>#{{post.id}}</small></div>
+                                    <div class="card-header text-muted"><small>#{{post.id}} - Creado el {{ new Date(post.created_at).toLocaleDateString() }}</small></div>
                                     <MapaPuntosSugeridosIncident class="card-img-top" :lat="post.lat" :lng="post.lng"
                                     :puntos="[{'lng' : post.lng, 'lat' : post.lat}, {'lng' : incident.posts[0].lng, 'lat' : incident.posts[0].lat}]" />
                                     <div class="card-body">
                                         <h3>{{ incident.title }}</h3>
-                                        <div class="row">
+                                        <div v-for="img in post.images" class="float-center mb-3">
+                                            <img :src="img.file" class="img-thumbnail" alt="Captura">
+                                        </div>
+                                        <!-- <div class="row">
                                             <div class="col-12 col-md-6" v-for="img in post.images">
-                                                <img :src="img.file" class="img-thumbnail" alt="Captura">
                                             </div>
+                                        </div> -->
+                                        <div  v-if="incident.postOriginal.id == post.id">                                        
+                                            <div class="col-12">
+                                                <div class="alert alert-info">
+                                                    <div class="alert-body">
+                                                        <i class="fas fa-info-circle"></i> Este es el post original y no se puede eliminar
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div v-else class="d-grid gap-2">
+                                            <button class="btn btn-danger" @click="eliminarPost(post)"><i class="fas fa-trash-alt"></i> Eliminar post del incidente</button>
+                                            <!-- <div class="m-3">
+                                            </div> -->
                                         </div>
                                     </div>
                                     <div class="card-footer" v-if="post.location_long">
-                                        {{post.location_long}}
+                                        <i class="fas fa-map-marker-alt"></i> {{post.location_long}}
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                
-                <!-- posts vigentes -->
-                
-                
-                
+                </div>                
+                <!-- posts vigentes -->              
             </div>
-            <div class="col-12 col-md-4">
-                <div class="card mb-4">
-                    <div class="card-body">
-                        <p class="lead">
-                            Nuevo estado
-                        </p>
-                        <div class="mb-1">
-                            <label>Estado</label>
-                            
-                            <select class="form-control" v-model="nuevoEstado">
-                                <option v-for="estado in estados" :key="estado.id" :value="estado.id"><i :class="estado.icon"></i> {{ estado.description }}</option>
-                            </select>
-                        </div>
-                        <div class="mb-1">
-                            <input class="form-control" placeholder="Comentario" v-model="descripcionNuevoEstado">
-                        </div>
-                        <button class="btn btn-outline-success float-end" @click="guardarNuevoEstado">  Guardar</button>
-                    </div>
+            <div class="col-12 col-md-4">                
+                <div class="mb-1">
+                    <label><b>Nuevo Estado</b></label>                    
+                    <select class="form-control" v-model="nuevoEstado">
+                        <option v-for="estado in estados" :key="estado.id" :value="estado.id"><i :class="estado.icon"></i> {{ estado.description }}</option>
+                    </select>
                 </div>
+                <div class="mb-3">
+                    <input class="form-control" placeholder="Comentario" v-model="descripcionNuevoEstado">
+                </div>
+                <div class="mb-3">
+                    <span class="float-end">
+                        <button class="btn btn-outline-success" @click="guardarNuevoEstado"> Guardar </button>
+                    </span>
+                </div>
+                <div class="clearfix"></div>
+                <hr>
+                <h5><i class="fas fa-history"></i> <b>Historial</b></h5>
                 <!-- {{incident}} -->
                 <div class="card mb-1" v-for="estado in incident.history?.slice().reverse()"  :style="{ borderLeft: '3px solid ' + estado.status.color }">
                     <div class="card-body">
@@ -212,8 +235,7 @@ const toggleMostrar = () => {
                             <em>-{{estado.user.name}}</em>
                         </div>
                     </div>
-                </div>
-                
+                </div>                
             </div>
         </div>
         

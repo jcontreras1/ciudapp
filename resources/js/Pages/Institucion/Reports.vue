@@ -46,6 +46,7 @@ const toggleCat = (id) => {
     getReports();
     
 }
+
 const getReports = async () => {
     const response = await ReportService.getReport(`/institution/${props.institution.id}/reports`, { params :  options.value});
     reportes.value = response.data;   
@@ -93,8 +94,7 @@ onMounted(() => {
             <MapaCalor :redibujar="redibujar" :reportes="reportes.reportes" :regiones="reportes.regiones" :reporteSeleccionado="reporteSeleccionado" />   
             
         </div>
-        <div class="col-12 col-md-3 ">
-            
+        <div class="col-12 col-md-3 ">            
             <div class="col-12 mb-3 ">
                 <div class="card">
                     <div class="card-body ">
@@ -129,13 +129,12 @@ onMounted(() => {
                 <div class="col-12">
                     <label>Seleccionar todos los reportes o sólo los que no tengan incidentes</label>
                     <Checkbox  
-                        class="fs-5 mb-2" 
-                        :name="'Todos los reportes'"
-                        :checked="true"
-                        @click="toggleWithIncidents"
-                        />
-            </div>
-                
+                    class="fs-5 mb-2" 
+                    :name="'Todos los reportes'"
+                    :checked="true"
+                    @click="toggleWithIncidents"
+                    />
+                </div>                
             </div>
         </div>
     </div>
@@ -147,18 +146,18 @@ onMounted(() => {
                     <div class="card-text mb-1">
                         <h4 @click="reporteSeleccionado = reporte"><u>{{ reporte.post.subcategory.name }}</u></h4><br>                       
                         <i class="fas fa-calendar-alt"></i> {{ new Date(reporte.post.created_at).toLocaleDateString() }}<br>
-                        <i class="fas fa-map-marker-alt"></i> {{reporte.post.location_long }}
+                        <i class="fas fa-map-marker-alt" v-if="reporte.post.location_long"></i> {{reporte.post.location_long }}
                     </div>
                     <div v-if="!reporte.post.incident_id">
                         <button class="btn btn-xs btn-success" @click="createIncident(reporte.post.id)">Crear incidente</button>
                     </div>
+                    <div v-else>
+                        <a :href="route('incidents.show', {'incident' : reporte.post.incident_id, 'institution' : props.institution.id})" class="btn btn-primary">Ver incidente</a>
+                    </div>
                 </div>
-            </div>	
-            
+            </div>            
         </div>		
-    </div>
-    
-    
+    </div> 
     
 </template>
 

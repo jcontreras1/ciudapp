@@ -150,13 +150,13 @@ const updateIntitutionForm = useForm({
         <!-- Nav tabs -->
         <ul class="nav nav-tabs" id="myTab" role="tablist">
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">
+                <button class="nav-link active" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">
                     REGIONES
                     
                 </button>
             </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#pepito" type="button" role="tab" aria-controls="home" aria-selected="true">
+            <li class="nav-item" role="presentation" v-if="institucion.regions.length">
+                <button class="nav-link" id="home-tab" data-bs-toggle="tab" data-bs-target="#pepito" type="button" role="tab" aria-controls="hom00e"  aria-selected="true">
                     REPORTES
                 </button>
             </li>
@@ -165,8 +165,7 @@ const updateIntitutionForm = useForm({
             </li> 
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="settings-tab" data-bs-toggle="tab" data-bs-target="#settings" type="button" role="tab" aria-controls="settings" aria-selected="false">EDITAR INSTITUCIÓN</button>
-            </li>
-           
+            </li>           
         </ul> 
         
         
@@ -174,11 +173,10 @@ const updateIntitutionForm = useForm({
         
         <div class="tab-content">
             <div class="py-2"></div>
-            <div class="tab-pane active" id="pepito" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+            <div class="tab-pane " id="pepito" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
                 <Reports :institution="institucion" :redibujar="variableDeIntercambio" />
             </div>
-            <div class="tab-pane " id="profile" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
-                <div v-if="true">
+            <div class="tab-pane active " id="profile" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
                     <!-- REGIONES -->
                     <h3>Regiones definidas
                         <a class="btn btn-success float-end" :href="route('region.create', institucion)" title="Crear región" v-if="props.amIAdmin">
@@ -218,7 +216,6 @@ const updateIntitutionForm = useForm({
                             <p class="fst-italic text-muted">No hay regiones definidas a esta institución.</p>
                         </div>
                     </div>
-                </div>
             </div>
             <div class="tab-pane" id="messages" role="tabpanel" aria-labelledby="messages-tab" tabindex="0">
                 <div v-if="true">

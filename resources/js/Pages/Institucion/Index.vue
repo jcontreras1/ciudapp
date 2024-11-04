@@ -63,9 +63,9 @@ const destroy = (institution) => {
                             <td>{{ institucion.city.name }} - {{ institucion.city.province.name }}</td>
                             <td>
                                 <div class="float-end">
-                                    <a :href="route('incidents.index', institucion)" class="btn btn-sm btn-info mr-1"><i class="fas fa-exclamation-triangle"></i></a>
-                                    <a :href="route('institution.edit', institucion)" class="btn btn-sm btn-primary mr-1"><i class="fas fa-edit"></i></a>
-                                    <button v-if="$page.props.isAdmin" @click="destroy(institucion)" class="btn btn-sm btn-danger"><i class="fas fa-trash-alt"></i></button>
+                                    <a :href="route('incidents.index', institucion)" title="Incidentes" class="btn btn-sm btn-info mr-1"><i class="fas fa-exclamation-triangle"></i></a>
+                                    <a :href="route('institution.edit', institucion)" title="Editar Institución" class="btn btn-sm btn-primary mr-1"><i class="fas fa-edit"></i></a>
+                                    <button v-if="$page.props.isAdmin" @click="destroy(institucion)" class="btn btn-sm btn-danger" title="Eliminar"><i class="fas fa-trash-alt"></i></button>
                                 </div>
                             </td>
                             

@@ -31,7 +31,7 @@ const myIncidents = ref(props.incidents);
  <Head title="Incidentes" />
         <SectionTitle>
             <template #title>
-                Instituciones
+               Incidentes de {{ institution.name }}
             </template>
             <template #aside>
                 <!-- <Link v-if="$page.props.isAdmin" :href="route('')" class="btn btn-primary" title="Crear institución"><i class="fas fa-plus"></i> </Link> -->
@@ -46,7 +46,6 @@ const myIncidents = ref(props.incidents);
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th>Nombre</th>
                         <th>Descripción</th>
                         <th>Fecha</th>
                         <th>Acciones</th>
@@ -54,11 +53,10 @@ const myIncidents = ref(props.incidents);
                 </thead>
                 <tbody>
                     <tr v-for="incident in incidents" :key="incident.id">
-                        <td>{{ incident.name }}</td>
                         <td>{{ incident.description }}</td>
-                        <td>{{ incident.date }}</td>
+                        <td>{{ new Date(incident.created_at).toLocaleDateString() }}</td>
                         <td>
-                            <a class="btn btn-primary mr-1" :href="route('incidents.show', {'institution' : incident.institution_id, 'incident' : incident.id})">Ver</a>
+                            <a class="btn btn-primary mr-1" :href="route('incidents.show', {'institution' : incident.institution_id, 'incident' : incident.id})" title="Ver Incidentes"><i class="far fa-eye"></i></a>
                             <!-- <button class="btn btn-danger">Eliminar</button> -->
                         </td>
                 </tr>
