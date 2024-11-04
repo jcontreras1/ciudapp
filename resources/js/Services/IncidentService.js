@@ -7,5 +7,8 @@ export default {
 
     addPosts(ruta, options){
         return Api.post(ruta, options);
+    },
+    removePost(ruta, options){
+        return Api.post(ruta, options);
     }
 }

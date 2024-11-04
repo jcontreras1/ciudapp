@@ -148,6 +148,27 @@ class ApiIncidentController extends Controller
 
                 ], 200);
             }
+
+            /**
+             * /
+             * @param \App\Models\Institution $institution
+             * @param \App\Models\Incident $incident
+             * @param \App\Models\Post $post
+             * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+             * Remover un post de un incidente. Requisito: El post no puede ser el post original del accidente
+             */
+            public function removePostFromIncident(Institution $institution, Incident $incident, Post $post){
+                if($incident->postOriginal->id == $post->id){
+                    return response(['error' => 'No se puede remover el post original del incidente'], 400);
+                }
+                $post->incident_id = null;
+                $post->save();
+                return response([
+                    'incident' => new IncidentResource($incident),
+                    'postsRelacionados' => postCercanos($incident->postOriginal, $institution),
+
+                ], 200);
+            }
             
         }
         
