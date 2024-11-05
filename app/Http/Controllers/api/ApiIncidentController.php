@@ -77,17 +77,24 @@ class ApiIncidentController extends Controller
         */
         public function changeStatus(Institution $institution, Incident $incident, StoreIncidentTraceRequest $request){
 
-            if($incident->status_id == $request->status_id){
-                return response('El estado del incidente no puede ser igual al estado anterior', 400);
-            }
             $status = IncidentStatus::find($request->status_id);
-            $incident->status_id = $status->id;
-            $incident->save();
-
+            
             //restaurar posts
             if($status->code == 'canceled'){
                 $incident->posts()->update(['incident_id' => null]);
+                $incident->comments()->delete();
+                $incident->history()->delete();
+                $incident->delete();
+                return response(IncidentResource::collection($institution->incidents),200);
             }
+            
+            if($incident->status_id == $request->status_id){
+                return response('El estado del incidente no puede ser igual al estado anterior', 400);
+            }
+            
+            $incident->status_id = $status->id;
+            $incident->save();
+           
 
             NewTraceIncidentEvent::dispatch($incident, $request->description);
             return response(new IncidentResource($incident),201);

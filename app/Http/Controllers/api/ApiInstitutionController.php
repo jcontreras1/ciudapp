@@ -7,11 +7,23 @@ use App\Http\Resources\PostResource;
 use App\Models\Institution;
 use App\Models\Post;
 use App\Models\Subcategory;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class ApiInstitutionController extends Controller
 {
     public function reports(Institution $institution, Request $request) {
+        
+        if ($request->filled('from') && $request->filled('to')) {
+            $fromDate = Carbon::parse($request->from);
+            $toDate = Carbon::parse($request->to);
+        
+            // Validar que 'from' sea antes o igual a 'to'
+            if ($fromDate->gt($toDate)) {
+                return response()->json(['La fecha "desde" debe ser anterior o igual a la fecha "hasta".'], 400);
+            }
+        }
+        
         // Necesito las regiones, y los reportes
         $regiones = [];
         foreach ($institution->regions as $region) {
@@ -32,20 +44,27 @@ class ApiInstitutionController extends Controller
         
         $reportes = [];
         $posts = Post::whereIn('subcategory_id', $request->subcategories)
-            ->when($request->filled('withIncidents'), function ($query) use ($request) {
-                if (filter_var($request->withIncidents, FILTER_VALIDATE_BOOLEAN)) {
-                    // Incluir todos los registros si `withIncidents` es `true`
-                    return $query;
-                } else {
-                    // Filtrar solo registros donde `incident_id` sea `null` si `withIncidents` es `false`
-                    return $query->whereNull('incident_id');
-                }
-            })
-            ->orderBy('id', 'desc')
-            ->take(1000)
-            ->get();
-
-
+        ->when($request->filled('withIncidents'), function ($query) use ($request) {
+            if (filter_var($request->withIncidents, FILTER_VALIDATE_BOOLEAN)) {
+                // Incluir todos los registros si `withIncidents` es `true`
+                return $query;
+            } else {
+                // Filtrar solo registros donde `incident_id` sea `null` si `withIncidents` es `false`
+                return $query->whereNull('incident_id');
+            }
+        })
+        ->when($request->filled('from'), function ($query) use ($request) {
+            // Filtrar por la fecha de `from`, solo si se proporciona
+            return $query->where('created_at', '>=', Carbon::parse($request->from)->startOfDay());
+        })
+        ->when($request->filled('to'), function ($query) use ($request) {
+            // Filtrar por la fecha de `to`, solo si se proporciona
+            return $query->where('created_at', '<=', Carbon::parse($request->to)->endOfDay());
+        })
+        ->orderBy('id', 'desc')
+        ->take(1000)
+        ->get();
+        
         foreach ($posts as $post) {
             foreach ($institution->regions as $region) {
                 if (postInRegion($post, $region)) {

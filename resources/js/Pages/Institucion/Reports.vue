@@ -23,6 +23,8 @@ const reporteSeleccionado = ref();
 const allSubcategories = ref();
 const mostrarIncidentes = ref(true);
 const reportes = ref([]);
+const fechaDesde = ref();
+const fechaHasta = ref();
 const estosReportes = computed(() => {
     return reportes.reportes?.sort((a,b) => a.subcategory?.name.localeCompare(b.subcategory?.name));
 });
@@ -34,7 +36,9 @@ const toggleWithIncidents = () => {
 const options = ref({
     regiones : [],
     subcategories : [],
-    withIncidents : mostrarIncidentes
+    withIncidents : mostrarIncidentes,
+    from : null,
+    to: null,
 });
 
 const toggleCat = (id) => {
@@ -45,6 +49,13 @@ const toggleCat = (id) => {
     }
     getReports();
     
+}
+
+const validarFechas = () => {
+    
+    options.value.from = fechaDesde.value ?? null;
+    options.value.to = fechaHasta.value ?? null;
+    getReports();
 }
 
 const getReports = async () => {
@@ -110,18 +121,22 @@ onMounted(() => {
                 </div>
             </div>
             
-            <div class="row" v-if="reportes.reportes && reportes.reportes.length > 0">
+            <!-- <div class="row" v-if="reportes.reportes?.length"> -->
+            <div class="row">
                 <div class="col-12">				
                     <div class="form-floating mb-3">
-                        <input type="date" class="form-control" id="floatingInput" placeholder="Fecha desde">
+                        <input type="date" class="form-control" id="floatingInput" v-model="fechaDesde" placeholder="Fecha desde">
                         <label for="floatingInput">Fecha desde</label>					
                     </div>
                 </div>
                 <div class="col-12">				
                     <div class="form-floating mb-2">
-                        <input type="date" class="form-control" id="floatingInput" placeholder="Fecha hasta">
+                        <input type="date" class="form-control" v-model="fechaHasta" id="floatingInput" placeholder="Fecha hasta">
                         <label for="floatingInput">Fecha hasta</label>					
                     </div>
+                </div>
+                <div class="col-12">
+                    <button class="btn btn-primary" @click="validarFechas">Filtrar <i class="fas fa-filter"></i></button>
                 </div>
             </div>
             <hr>

@@ -30,6 +30,8 @@ const props = defineProps({
     }
 });
 
+
+
 const incident = ref(props.myIncident.data);
 const postsRelacionados = ref(props.myPostsRelacionados);
 const nuevoEstado = ref(null)
@@ -53,15 +55,44 @@ const agregarPostsAIncidente = (post) => {
     });
     
 }
-const guardarNuevoEstado = async (event) => {
+const guardarNuevoEstadoOK = async (code) => {
     const res = await IncidentService.changeStatus(`/institution/${props.institution.id}/incident/${incident.value.id}/status`, 
     {
         'status_id': nuevoEstado.value,
         'description' : descripcionNuevoEstado.value
     });
+    if(code == 'canceled'){
+        location.href = '/institution/' + props.institution.id + '/edit';
+    }
     incident.value.history = res.data.history;
     nuevoEstado.value = null;
     descripcionNuevoEstado.value = null;
+}
+const guardarNuevoEstado = async (event) => {
+    const estadoSeleccionado = props.estados.find(estado => estado.id === nuevoEstado.value);
+    let code = null;
+      if (estadoSeleccionado) {
+        code = estadoSeleccionado.code;
+        if (code === 'canceled') {
+          Swal.fire({
+            title: '¿Cancelar Incidente?',
+            text: 'Una vez cancelado, no se podrá revertir e incluso se eliminarán los posts relacionados.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, cancelar',
+            cancelButtonText: 'No'
+          }).then((result) => {
+            if (result.isConfirmed) {
+                guardarNuevoEstadoOK(code);
+            }
+          });
+        }else{
+            guardarNuevoEstadoOK(code);
+        }
+      }
+  
+    
+
 }
 
 const mostrar = ref(false);
@@ -206,11 +237,13 @@ const eliminarPost = async (post) => {
             </div>
             <div class="col-12 col-md-4">                
                 <div class="mb-1">
-                    <label><b>Nuevo Estado</b></label>                    
-                    <select class="form-control" v-model="nuevoEstado">
-                        <option v-for="estado in estados" :key="estado.id" :value="estado.id"><i :class="estado.icon"></i> {{ estado.description }}</option>
-                    </select>
-                </div>
+  <label><b>Nuevo Estado</b></label>                    
+  <select class="form-control" v-model="nuevoEstado" >
+    <option v-for="estado in estados" :key="estado.id" :value="estado.id">
+      {{ estado.description }}
+    </option>
+  </select>
+</div>
                 <div class="mb-3">
                     <input class="form-control" placeholder="Comentario" v-model="descripcionNuevoEstado">
                 </div>
