@@ -111,7 +111,7 @@ const eliminarComentario = async (comment) => {
             <div class="mb-2 ">
                 <div class="">                    
                     <strong>{{ comentario.user?.name }} </strong> {{ comentario.created_at }}: 
-                    <span class="float-end">
+                    <span class="float-end" v-if="comentario.user.id == $page.props.auth?.user?.id">
                         <div class="dropdown">
                             <a  data-bs-toggle="dropdown" href="#" aria-expanded="false">
                                 <i class="fas fa-ellipsis-h"></i>
@@ -120,7 +120,7 @@ const eliminarComentario = async (comment) => {
                                 <li>
                                     <a class="dropdown-item" href="#" @click="editarComentario(comentario)"><i class="fas fa-edit text-primary"></i> Editar</a>
                                 </li>
-                                <li v-if="comentario.user.id == $page.props.auth?.user?.id">
+                                <li>
                                     <a href="#" class="dropdown-item link-underline link-underline-opacity-0" @click="eliminarComentario(comentario)"><i class="fas fa-trash-alt text-danger"></i> Eliminar</a>
                                 </li>
                             </ul>
@@ -160,6 +160,8 @@ const eliminarComentario = async (comment) => {
                 </i> &nbsp;{{ comentario.likes?.length }}                    
             </a>
         </Tooltip>
+        <span class="float-end text-muted" v-if="comentario.created_real !== comentario.updated_real"><em>Comentario editado</em></span>
+
     </div>
 </div>
 </div>

@@ -40,7 +40,7 @@ class ApiPostController extends Controller
     {
         // Verificar que el comentario pertenece al usuario actual o el post
         if ($comment->user_id !== auth()->id()) {
-            return response(['error' => 'No tienes permiso para actualizar este comentario'], 403);
+            return response(['No tienes permiso para actualizar este comentario'], 403);
         }
 
         // Actualizar el comentario con los nuevos datos
@@ -51,7 +51,7 @@ class ApiPostController extends Controller
 
         return response(new PostResource($post), 200);
     }
-    
+
     public function dropComment(PostComment $comment){
         $post = $comment->post;
         $comment->commentLikes()->delete();
