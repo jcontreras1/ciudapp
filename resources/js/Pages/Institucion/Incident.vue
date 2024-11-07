@@ -30,8 +30,6 @@ const props = defineProps({
     }
 });
 
-
-
 const incident = ref(props.myIncident.data);
 const postsRelacionados = ref(props.myPostsRelacionados);
 const nuevoEstado = ref(null)
@@ -52,9 +50,9 @@ const agregarPostsAIncidente = (post) => {
             incident.value = res.data.incident;
             postsRelacionados.value = res.data.postsRelacionados;
         }
-    });
-    
+    });    
 }
+
 const guardarNuevoEstadoOK = async (code) => {
     const res = await IncidentService.changeStatus(`/institution/${props.institution.id}/incident/${incident.value.id}/status`, 
     {
@@ -89,9 +87,7 @@ const guardarNuevoEstado = async (event) => {
         }else{
             guardarNuevoEstadoOK(code);
         }
-      }
-  
-    
+    }    
 
 }
 

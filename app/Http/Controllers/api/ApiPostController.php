@@ -34,7 +34,24 @@ class ApiPostController extends Controller
             201
         );
     }
+    // public function updateComment(
 
+    public function updateComment(Post $post, PostComment $comment, StoreCommentRequest $request)
+    {
+        // Verificar que el comentario pertenece al usuario actual o el post
+        if ($comment->user_id !== auth()->id()) {
+            return response(['error' => 'No tienes permiso para actualizar este comentario'], 403);
+        }
+
+        // Actualizar el comentario con los nuevos datos
+        $comment->update($request->validated());
+
+        // Disparar el evento que actualiza el post
+        PostUpdatedEvent::dispatch($post);
+
+        return response(new PostResource($post), 200);
+    }
+    
     public function dropComment(PostComment $comment){
         $post = $comment->post;
         $comment->commentLikes()->delete();

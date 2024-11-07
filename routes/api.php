@@ -5,6 +5,7 @@ use App\Http\Controllers\api\ApiCommentLikeController;
 use App\Http\Controllers\api\ApiIncidentCommentController;
 use App\Http\Controllers\api\ApiIncidentController;
 use App\Http\Controllers\api\CityController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\PostController;
 use App\Http\Resources\IncidentResource;
 use Illuminate\Http\Request;
@@ -22,9 +23,12 @@ Route::middleware('auth:sanctum')->group(function () {
 
     //Social
     Route::post('/post/{post}/comment', [ApiPostController::class, 'storeComment']);
+    Route::put('/post/{post}/comment/{comment}/actualizar', [ApiPostController::class, 'updateComment']);
+    
     Route::post('/post/{post}/like', [ApiPostController::class, 'like']);
     Route::resource('/comment/{post_comment}/like', ApiCommentLikeController::class)->only(['store', 'destroy']);
     Route::delete('/comment/{comment}/delete', [ApiPostController::class, 'dropComment']);
+
     //App
     Route::delete('/post/{post}', [ApiPostController::class, 'destroy']);
     Route::get('/cities', [CityController::class, 'search']);
