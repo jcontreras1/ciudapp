@@ -68,6 +68,9 @@ Route::middleware([
 
 include('auth.php');
 
+Route::get('/ask', function(){
+    return Inertia::render('OpenAI/Ask');
+});
 
 Route::get('/testing', function () {
     $institution = App\Models\Institution::with('regions')->find(2);    

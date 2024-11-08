@@ -65,4 +65,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('institution/{institution}/incident/{incident}/addPosts', [ApiIncidentController::class, 'addPostsToIncident']);
     Route::post('institution/{institution}/incident/{incident}/post/{post}/remove', [ApiIncidentController::class, 'removePostFromIncident']);
     Route::get('institution/{institution}/incident/{incident}/post/{post}/nearby', [ApiIncidentController::class, 'nearby']);
+    //IA
+    Route::post('/ask', [App\Http\Controllers\OpenAIService::class, 'generarRespuesta']);
+
 });
