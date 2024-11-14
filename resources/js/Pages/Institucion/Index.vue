@@ -39,7 +39,7 @@ const destroy = (institution) => {
                 <Link v-if="$page.props.isAdmin" :href="route('institution.create')" class="btn btn-primary" title="Crear institución"><i class="fas fa-plus"></i> </Link>
             </template>
         </SectionTitle>   
-        
+    
         
         
         <hr class="mb-3">

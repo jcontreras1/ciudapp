@@ -25,4 +25,8 @@ class Subcategory extends Model
     {
         return $this->belongsTo(Category::class);
     }
+
+    public function relationships(){
+        return $this->belongsToMany(Subcategory::class, 'subcategory_relationship', 'origin_id', 'destiny_id')->withPivot('percentage');
+    }
 }

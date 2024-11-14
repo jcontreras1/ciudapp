@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Category\StoreCategoryRequest;
+use App\Http\Requests\StoreSubcategoryRelationshipRequest;
 use App\Models\Category;
+use App\Models\Subcategory;
+use App\Models\SubcategoryRelationship;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -19,11 +22,38 @@ class CategoryController extends Controller
         //     'update',
         // ]);
 }
+public function relationships(){
+    $subcategories = Subcategory::with('category')->with('relationships')->get();   
+    return Inertia::render('Category/Relationships', 
+[
+    'subcategories' => $subcategories
+]);
+}
+
+
+public function storeRelationship(StoreSubcategoryRelationshipRequest $request){
+    SubcategoryRelationship::create([
+        'origin_id' => $request->origin_id,
+        'destiny_id' => $request->destiny_id,
+        'percentage' => $request->percentage,
+    ]);
+    SubcategoryRelationship::create([
+        'origin_id' => $request->destiny_id,
+        'destiny_id' => $request->origin_id,
+        'percentage' => $request->percentage,
+    ]);
+        $subcategories = Subcategory::with('category')->with('relationships')->get();
+        return response($subcategories, 200);
+}
+
     
     public function index(){
-        $categories = Category::with('subcategories')->get();
+        $categories = Category::with('subcategories.relationships')->get();
+        // return $categories;
         return Inertia::render('Category/Index', ['categorias' => $categories]);
     }
+
+
     
     public function create(){
         return Inertia::render('Category/Create');

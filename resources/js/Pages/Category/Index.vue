@@ -38,6 +38,7 @@ const selectedCategory = ref(null);
                 Categorías
             </template>
             <template #aside>
+                <Link :href="route('relationships')" class="btn btn-primary mr-1">Relaciones</Link>
                 <Link :href="route('category.create')" class="btn btn-primary">Crear categoría</Link>
             </template>
         </SectionTitle>

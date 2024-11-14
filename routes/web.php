@@ -57,6 +57,7 @@ Route::middleware([
             return redirect()->route('home');
         })->name('dashboard');
         Route::resource('category', App\Http\Controllers\CategoryController::class)->except('show');
+        Route::get('relationships', [App\Http\Controllers\CategoryController::class, 'relationships'])->name('relationships');
         Route::resource('category/{category}/subcategory', App\Http\Controllers\SubcategoryController::class)->except('show');
         Route::resource('post/{post}/comment', App\Http\Controllers\CommentController::class)->only(['index', 'store', 'update']);
  

@@ -5,8 +5,10 @@ use App\Http\Controllers\api\ApiCommentLikeController;
 use App\Http\Controllers\api\ApiIncidentCommentController;
 use App\Http\Controllers\api\ApiIncidentController;
 use App\Http\Controllers\api\CityController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\SubcategoryController;
 use App\Http\Resources\IncidentResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -65,4 +67,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('institution/{institution}/incident/{incident}/addPosts', [ApiIncidentController::class, 'addPostsToIncident']);
     Route::post('institution/{institution}/incident/{incident}/post/{post}/remove', [ApiIncidentController::class, 'removePostFromIncident']);
     Route::get('institution/{institution}/incident/{incident}/post/{post}/nearby', [ApiIncidentController::class, 'nearby']);
+
+    //Relaciones entre subcategorías
+    Route::post('/relationships', [CategoryController::class, 'storeRelationship']);
 });
