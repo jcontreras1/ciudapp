@@ -84,7 +84,7 @@ const mostrarMas = () => {
 // Escuchar nuevos posts creados y almacenarlos temporalmente
 Echo.channel('post').listen('.created', (response) => {
     temporalPost.value = [response.post, ...temporalPost.value];
-    console.log(temporalPost.value);
+    console.log(temporalPost.value)
 });
 
 Echo.channel('post').listen('.updated', (response) => {
@@ -110,12 +110,12 @@ Echo.channel('post').listen('.updated', (response) => {
             <hr>
         </div>
 
-        <div class="mb-3 col-12" v-if="temporalPost.length">
+        <div class="mb-3 col-12" v-if="temporalPost.filter(elem => elem.user_id !== $page.props.auth.user?.id).length">
             <a class="float-center link-underline link-underline-opacity-0" href="#" @click.prevent="mostrarMas" v-if="temporalPost.length == 1">
-                Actualizar {{ temporalPost.length }} reporte Nuevo ...
+                Actualizar {{ temporalPost.length }} reporte nuevo ...
             </a>
             <a class="float-center link-underline link-underline-opacity-0" href="#" @click.prevent="mostrarMas" v-if="temporalPost.length > 1">
-                Actualizar {{ temporalPost.length }} reportes Nuevos...
+                Actualizar {{ temporalPost.length }} reportes nuevos ...
             </a>
         </div>
 

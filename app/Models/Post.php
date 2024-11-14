@@ -21,6 +21,7 @@ class Post extends Model
         'location_long',            // llenables desde un listener
         'valid_until',              // valido hasta un período de tiempo dado por la subcategoría 
         'incident_id',              // si es un incidente, se llena con el id del incidente
+        'city_id',
     ];
     protected $table = "post";
 

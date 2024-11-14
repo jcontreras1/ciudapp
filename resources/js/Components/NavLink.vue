@@ -17,6 +17,7 @@ const classes = computed(() => {
 </script>
 
 <template>
+
     <span class="nav-item">
         <a class="nav-link d-flex flex-column flex-md-row" :href="href">
             <!-- Icono siempre visible -->

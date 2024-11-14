@@ -70,4 +70,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     //Relaciones entre subcategorías
     Route::post('/relationships', [CategoryController::class, 'storeRelationship']);
+
+     //IA
+    Route::post('/ask', [App\Http\Controllers\OpenAIService::class, 'generarRespuesta']);
 });
