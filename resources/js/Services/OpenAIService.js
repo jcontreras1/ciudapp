@@ -3,6 +3,7 @@ import Api from './Api'
 export default {
    
     ask(question){
-        return Api.post('/ask', {'question': question});
+        console.log(question)
+        return Api.post('/ask', {'prompt': question});
     }
 }
