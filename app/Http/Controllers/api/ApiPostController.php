@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\api;
 
+use App\Events\PostDeletedEvent;
 use App\Events\PostUpdatedEvent;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCommentRequest;
@@ -130,7 +131,7 @@ class ApiPostController extends Controller
         $post->images()->delete();
         $post->comments()->delete();
         $post->likes()->delete();
-
+        PostDeletedEvent::dispatch($post->id);
         $post->delete();
 
         return response([], 201);
