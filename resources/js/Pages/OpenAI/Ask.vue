@@ -20,7 +20,7 @@ const submit = () => {
     text.value = '';
     OpenAIService.ask(userMessage)
     .then(response => {
-        messages.value.push({ text: response.data.response, query: response.data.query, sender: 'ai' });
+        messages.value.push({ text: response.data.response, query: response.data.query, copied: false, sender: 'ai' });
         consultando.value = false;
     })
     .catch(error => {
@@ -28,6 +28,27 @@ const submit = () => {
         consultando.value = false;
     });
 }
+
+const copyToClipboard = (text, index) => {
+    console.log(index);
+       // Crear un elemento de textarea temporal
+       const tempTextArea = document.createElement('textarea');
+      tempTextArea.value = text;
+      document.body.appendChild(tempTextArea);
+      tempTextArea.select();
+      document.execCommand('copy');  // Copiar al portapapeles
+
+      // Eliminar el textarea temporal
+      document.body.removeChild(tempTextArea);
+
+      // Marcar este mensaje como copiado en el objeto
+     messages.value[index].copiado = true;
+
+      // Ocultar el mensaje después de 2 segundos
+      setTimeout(() => {
+            messages.value[index].copiado = false;
+      }, 1500);  // El mensaje desaparece después de 2 segundos
+    }
 
 </script>
 
@@ -42,7 +63,7 @@ const submit = () => {
                 <div class="col-12 mb-3">                    
                     <form id="chat-form" @submit.prevent="submit" class="mb-3">
                         <div class="mb-3">
-                            <textarea class="form-control" id="user-input" rows="3" v-model="text" placeholder="Escribe tu mensaje..." required></textarea>
+                            <textarea class="form-control" id="user-input" rows="3" v-model="text" placeholder="Escribe tu mensaje..." required @keypress.enter.prevent="submit"></textarea>
                         </div>
                         <button type="submit" class="btn btn-success" :disabled="!text.length || consultando">
                             <i class="fas fa-cog fa-spin" v-if="consultando"></i>
@@ -64,8 +85,17 @@ const submit = () => {
                                     </div>
                                     <div >{{ message.text }}</div>
                                 </div>
-                                <div class="card-footer" v-if="message.sender === 'ai'">
-                                    {{ message.query }}
+                                <div class="card-footer" v-if="message.sender === 'ai' && message.query">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            
+                                            <i class="fas fa-database text-danger"></i> <code>{{ message.query }}</code>
+                                        </div>
+                                        <div>
+                                            <span v-if="messages[index].copiado" class="message">¡Copiado!</span>&nbsp;&nbsp;
+                                            <i class="far fa-copy" role="button" title="Copiar" @click="copyToClipboard(message.query, index)"></i>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -88,5 +118,26 @@ const submit = () => {
     padding-right: 10px; /* Para espacio entre los mensajes y el borde */
     display: flex;
     flex-direction: column-reverse; /* Esta es la clave para que los mensajes más recientes estén al final */
+}
+/* Estilo para el mensaje de "copiado" */
+.message {
+  display: inline-block;
+  padding-left: 5px;
+  padding-right: 5px;
+  background-color: #198754;
+  color: white;
+  border-radius: 5px;
+  text-align: center;
+  opacity: 0.9;
+  transition: opacity 1s ease-out;
+}
+
+.message {
+  opacity: 1;
+  transition: opacity 1s ease-out;
+}
+
+.message.fade {
+  opacity: 0;
 }
 </style>
