@@ -25,9 +25,7 @@ const mostrarIncidentes = ref(true);
 const reportes = ref([]);
 const fechaDesde = ref();
 const fechaHasta = ref();
-const estosReportes = computed(() => {
-    return reportes.reportes?.sort((a,b) => a.subcategory?.name.localeCompare(b.subcategory?.name));
-});
+
 const toggleWithIncidents = () => {
     mostrarIncidentes.value = !mostrarIncidentes.value;
     getReports();
@@ -60,7 +58,8 @@ const validarFechas = () => {
 
 const getReports = async () => {
     const response = await ReportService.getReport(`/institution/${props.institution.id}/reports`, { params :  options.value});
-    reportes.value = response.data;   
+    reportes.value = response.data;
+    console.log(reportes.value.reportes)
 }
 
 const getSubcategories = async () => {
@@ -87,8 +86,23 @@ const createIncident = (postId) => {
             location.href = `/institution/${props.institution.id}/incidents/${res.id}`;
         }
     });
-    //console.log(response);
 }
+
+// Escuchar nuevos posts creados y almacenarlos temporalmente
+Echo.channel('post').listen('.created', (response) => {
+    setTimeout(getReports, "600");    
+});
+
+Echo.channel('post').listen('.updated', (response) => {
+    setTimeout(getReports, "600");    
+});
+
+Echo.channel('post').listen('.deleted', (response) => {
+    let id = response.post;
+    if(reportes.value.reportes.filter(report => report.post.id === id).length > 0){
+        setTimeout(getReports, "600");
+    }
+});
 
 onMounted(() => {
     getSubcategories();
@@ -122,63 +136,63 @@ onMounted(() => {
             </div>
             
             <!-- <div class="row" v-if="reportes.reportes?.length"> -->
-            <div class="row">
-                <div class="col-12">				
-                    <div class="form-floating mb-3">
-                        <input type="date" class="form-control" id="floatingInput" v-model="fechaDesde" placeholder="Fecha desde">
-                        <label for="floatingInput">Fecha desde</label>					
+                <div class="row">
+                    <div class="col-12">				
+                        <div class="form-floating mb-3">
+                            <input type="date" class="form-control" id="floatingInput" v-model="fechaDesde" placeholder="Fecha desde">
+                            <label for="floatingInput">Fecha desde</label>					
+                        </div>
+                    </div>
+                    <div class="col-12">				
+                        <div class="form-floating mb-2">
+                            <input type="date" class="form-control" v-model="fechaHasta" id="floatingInput" placeholder="Fecha hasta">
+                            <label for="floatingInput">Fecha hasta</label>					
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <button class="btn btn-primary" @click="validarFechas">Filtrar <i class="fas fa-filter"></i></button>
                     </div>
                 </div>
-                <div class="col-12">				
-                    <div class="form-floating mb-2">
-                        <input type="date" class="form-control" v-model="fechaHasta" id="floatingInput" placeholder="Fecha hasta">
-                        <label for="floatingInput">Fecha hasta</label>					
-                    </div>
+                <hr>
+                <div class="row">
+                    <div class="col-12">
+                        <label>Seleccionar todos los reportes o sólo los que no tengan incidentes</label>
+                        <Checkbox  
+                        class="fs-5 mb-2" 
+                        :name="'Todos los reportes'"
+                        :checked="true"
+                        @click="toggleWithIncidents"
+                        />
+                    </div>                
                 </div>
-                <div class="col-12">
-                    <button class="btn btn-primary" @click="validarFechas">Filtrar <i class="fas fa-filter"></i></button>
-                </div>
-            </div>
-            <hr>
-            <div class="row">
-                <div class="col-12">
-                    <label>Seleccionar todos los reportes o sólo los que no tengan incidentes</label>
-                    <Checkbox  
-                    class="fs-5 mb-2" 
-                    :name="'Todos los reportes'"
-                    :checked="true"
-                    @click="toggleWithIncidents"
-                    />
-                </div>                
             </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-12 col-md-3 mb-2" v-for="reporte in reportes.reportes?.sort((a,b) => a.post.subcategory.name.localeCompare(b.post.subcategory?.name))" :key="reporte.id">
-            <div class="card h-100" role="button">
-                <img :src="reporte.post.images.map(report => report.file)" class="card-img-top" alt="" >
-                <div class="card-body">
-                    <div class="card-text mb-1">
-                        <h4 @click="reporteSeleccionado = reporte"><u>{{ reporte.post.subcategory.name }}</u></h4><br>                       
-                        <i class="fas fa-calendar-alt"></i> {{ new Date(reporte.post.created_at).toLocaleDateString() }}<br>
-                        <i class="fas fa-map-marker-alt" v-if="reporte.post.location_long"></i> {{reporte.post.location_long }}
+        <div class="row">
+            <div class="col-12 col-md-3 mb-2" v-for="reporte in reportes.reportes?.sort((a,b) => a.post.subcategory.name.localeCompare(b.post.subcategory?.name))" :key="reporte.id">
+                <div class="card h-100" role="button">
+                    <img :src="reporte.post.images.map(report => report.file)" class="card-img-top" alt="" >
+                    <div class="card-body">
+                        <div class="card-text mb-1">
+                            <h4 @click="reporteSeleccionado = reporte"><u>{{ reporte.post.subcategory.name }}</u></h4><br>                       
+                            <i class="fas fa-calendar-alt"></i> {{ new Date(reporte.post.created_at).toLocaleDateString() }}<br>
+                            <i class="fas fa-map-marker-alt" v-if="reporte.post.location_long"></i> {{reporte.post.location_long }}
+                        </div>
+                        <div v-if="!reporte.post.incident_id">
+                            <button class="btn btn-xs btn-success" @click="createIncident(reporte.post.id)">Crear incidente</button>
+                        </div>
+                        <div v-else>
+                            <a :href="route('incidents.show', {'incident' : reporte.post.incident_id, 'institution' : props.institution.id})" class="btn btn-primary">Ver incidente</a>
+                        </div>
                     </div>
-                    <div v-if="!reporte.post.incident_id">
-                        <button class="btn btn-xs btn-success" @click="createIncident(reporte.post.id)">Crear incidente</button>
-                    </div>
-                    <div v-else>
-                        <a :href="route('incidents.show', {'incident' : reporte.post.incident_id, 'institution' : props.institution.id})" class="btn btn-primary">Ver incidente</a>
-                    </div>
-                </div>
-            </div>            
-        </div>		
-    </div> 
+                </div>            
+            </div>		
+        </div> 
+        
+    </template>
     
-</template>
-
-<style>
-.card-img-top {
-    height: 200px;
-    object-fit: cover;
-}
+    <style>
+    .card-img-top {
+        height: 200px;
+        object-fit: cover;
+    }
 </style>

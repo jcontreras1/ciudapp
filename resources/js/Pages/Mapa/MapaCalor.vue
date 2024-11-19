@@ -2,13 +2,6 @@
 import { onMounted, ref, watch } from 'vue';
 import mapboxgl from 'mapbox-gl';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
-import * as turf from '@turf/turf';
-
-
-
-
-
-
 
 const props = defineProps({
 	reportes: {
@@ -78,19 +71,18 @@ function convertReportsToGeoJSON(reportes) {
 }
 
 watch(
-  () => props.reporteSeleccionado,
-  (nuevoReporteSeleccionado) => {
-
-
-    if (nuevoReporteSeleccionado && map.value) {
-      // Obtener las coordenadas del reporte seleccionado
-      const { lng, lat, likes } = nuevoReporteSeleccionado;
-	  const fecha = nuevoReporteSeleccionado.post.created_at;
-	  const direccion = nuevoReporteSeleccionado.post.location_long || 'No definido';
-	  const subcategoria = nuevoReporteSeleccionado.post.subcategory.name;
-		 console.log(nuevoReporteSeleccionado);
-      // Crear el contenido del popup
-      const popupContent = `
+() => props.reporteSeleccionado,
+(nuevoReporteSeleccionado) => {
+	
+	
+	if (nuevoReporteSeleccionado && map.value) {
+		// Obtener las coordenadas del reporte seleccionado
+		const { lng, lat, likes } = nuevoReporteSeleccionado;
+		const fecha = nuevoReporteSeleccionado.post.created_at;
+		const direccion = nuevoReporteSeleccionado.post.location_long || 'No definido';
+		const subcategoria = nuevoReporteSeleccionado.post.subcategory.name;
+		// Crear el contenido del popup
+		const popupContent = `
         <div class="custom-popup">
           <b><u>${subcategoria}</u></b><br>
           <i class="fas fa-calendar-day"></i> ${new Date(fecha).toLocaleDateString()} <br>
@@ -98,21 +90,31 @@ watch(
           <i class="fas fa-map-marked-alt"></i> ${direccion}<br>
         </div>
       `;
-
-      // Asegurarse de que el mapa no esté demasiado alejado
-      while (Math.abs(lng - nuevoReporteSeleccionado.lng) > 180) {
-        nuevoReporteSeleccionado.lng += lng > nuevoReporteSeleccionado.lng ? 360 : -360;
-      }
-
-      // Crear y mostrar el popup en el mapa
-      new mapboxgl.Popup()
-        .setLngLat([lng, lat])
-        .setHTML(popupContent)
-        .addTo(map.value);
-    }
-  },
-  { deep: true }
+		
+		// Asegurarse de que el mapa no esté demasiado alejado
+		while (Math.abs(lng - nuevoReporteSeleccionado.lng) > 180) {
+			nuevoReporteSeleccionado.lng += lng > nuevoReporteSeleccionado.lng ? 360 : -360;
+		}
+		
+		// Crear y mostrar el popup en el mapa
+		new mapboxgl.Popup()
+		.setLngLat([lng, lat])
+		.setHTML(popupContent)
+		.addTo(map.value);
+	}
+},
+{ deep: true }
 );
+
+watch(() => props.reportes, (newValue) => {
+	// Convertir los reportes a GeoJSON
+	geoJsonReports.value = convertReportsToGeoJSON(newValue);
+	// Actualizar la fuente del mapa si existe
+	const source = map.value.getSource('reportes');
+	if (source) {
+		source.setData(geoJsonReports.value);  // Actualiza los datos en la fuente del mapa
+	}
+}, { deep: true });
 
 onMounted(() => {
 	
@@ -328,7 +330,6 @@ onMounted(() => {
 			const direccion = e.features[0].properties.direccion;
 			const subcategoria = e.features[0].properties.subcategoria;
 			const imagen = e.features[0].properties.imagen;
-			console.log(imagen);
 			
 			/*Asegúrese de que si el mapa se aleja de manera que 
 			sean visibles varias copias de la característica, 
@@ -356,15 +357,7 @@ onMounted(() => {
 		});
 	});
 	
-	watch(() => props.reportes, (newValue) => {
-		// Convertir los reportes a GeoJSON
-		geoJsonReports.value = convertReportsToGeoJSON(newValue);
-		// Actualizar la fuente del mapa si existe
-		const source = map.value.getSource('reportes');
-		if (source) {
-			source.setData(geoJsonReports.value);  // Actualiza los datos en la fuente del mapa
-		}
-	}, { deep: true });
+	
 	
 	
 </script>
