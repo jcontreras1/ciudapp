@@ -43,7 +43,6 @@ style: 'mapbox://styles/mapbox/streets-v11', // Add a style to your map
 center: [props.post.lng, props.post.lat], // Use props for dynamic location
 zoom: 12  // Adjust zoom level for better visibility
 });
-//     console.log(props.post.lat , props.post.lng)
 //     const marker1 = new mapboxgl.Marker()
 //     .setLngLat([props.post.lng, props.post.lat])
 //     .addTo(map);

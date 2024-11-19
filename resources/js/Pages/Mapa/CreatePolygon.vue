@@ -65,10 +65,8 @@ onMounted(() => {
         const answer = document.getElementById('calculated-area');
         if (data.features.length > 0) {
             const coordinates = data.features[0].geometry.coordinates[0]; // Coordenadas del polígono
-            // console.log('Puntos del polígono:', coordinates); // Mostrar los puntos en consola
             emit('puntos', coordinates);
             const area = turf.area(data);
-            // console.log('Área:', area);
             // Restrict the area to 2 decimal points.
             const rounded_area = Math.round(area * 100) / 100;
             answer.innerHTML = `<p><strong></strong></p><p></p>`;

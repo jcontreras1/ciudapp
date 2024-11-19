@@ -118,11 +118,9 @@ const geocoding = () =>{
         .then((response) => {
             searchingGeocode.value = false;
             form.fullAddress = response.data.features[0]?.properties.full_address;
-            // console.log();
         })
         .catch((error) => {
             searchingGeocode.value = false;
-            console.log(error);
         });
     }, 150);
 }
@@ -235,16 +233,6 @@ const funcionDeSubmit = () => {
         });
     });
 };
-const testearPusher = () => {
-    axios.get('/api/t3st')
-    .then((response) => {
-        console.log(response.data)
-    })
-    .catch(error => {
-        console.error(error)
-    });
-    
-}
 
 function toggleCategory(id){
     reposicionarTemporal();

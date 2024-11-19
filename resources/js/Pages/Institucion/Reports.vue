@@ -59,7 +59,6 @@ const validarFechas = () => {
 const getReports = async () => {
     const response = await ReportService.getReport(`/institution/${props.institution.id}/reports`, { params :  options.value});
     reportes.value = response.data;
-    console.log(reportes.value.reportes)
 }
 
 const getSubcategories = async () => {

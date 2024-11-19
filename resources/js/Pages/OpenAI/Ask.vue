@@ -24,13 +24,11 @@ const submit = () => {
         consultando.value = false;
     })
     .catch(error => {
-        console.error(error);
         consultando.value = false;
     });
 }
 
 const copyToClipboard = (text, index) => {
-    console.log(index);
        // Crear un elemento de textarea temporal
        const tempTextArea = document.createElement('textarea');
       tempTextArea.value = text;
