@@ -37,7 +37,7 @@ const descripcionNuevoEstado = ref(null)
 
 const agregarPostsAIncidente = (post) => {
     Swal.fire({
-        title: `¿Agregar el post #${post.id} al incidente?`,
+        title: `¿Agregar el post al incidente?`,
         showCancelButton: true,
         confirmButtonText: "Agregar",
         cancelButtonText: "Cancelar",
@@ -99,7 +99,7 @@ const toggleMostrar = () => {
 
 const eliminarPost = async (post) => {
     Swal.fire({
-        title: `¿Remover el post #${post.id} del incidente?`,
+        title: `¿Eliminar el post del incidente?`,
         showCancelButton: true,
         confirmButtonText: "Remover",
         cancelButtonText: "Cancelar",
