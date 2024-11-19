@@ -155,7 +155,7 @@ const eliminarPost = async (post) => {
                         <div class="row">
                             <div class="col-12 col-md-6 mb-3" v-for="post in postsRelacionados">
                                 <div class="card g-0 mb-3 h-100">
-                                    <div class="card-header text-muted"><small>#{{post.id}}</small></div>
+                                    <div class="card-header text-muted"><small># {{post.subcategory.name}}</small></div>
                                     <MapaPuntosSugeridosIncident class="card-img-top" :lat="post.lat" :lng="post.lng"
                                     :puntos="[{'lng' : post.lng, 'lat' : post.lat}, {'lng' : incident.posts[0].lng, 'lat' : incident.posts[0].lat}]" />
                                     <div class="card-body">
@@ -177,7 +177,7 @@ const eliminarPost = async (post) => {
                                             <button class="btn btn-success" @click="agregarPostsAIncidente(post)">Agregar post al incidente</button>
                                         </div>
                                     </div>
-                                    <div class="card-footer">
+                                    <div class="card-footer" v-if="post.location_long">
                                         <i class="fas fa-map-marker-alt"></i> {{post.location_long}}
                                     </div>
                                 </div>
@@ -194,7 +194,7 @@ const eliminarPost = async (post) => {
                         <div class="row">
                             <div class="col-12 col-md-6 mb-3" v-for="post in incident.posts">
                                 <div class="card g-0 mb-3 h-100">
-                                    <div class="card-header text-muted"><small>#{{post.id}} - Creado el {{ new Date(post.created_at).toLocaleDateString() }}</small></div>
+                                    <div class="card-header text-muted"><small><b># {{post.subcategory.name}}</b> - Creado el {{ new Date(post.created_at).toLocaleDateString() }}</small></div>
                                     <MapaPuntosSugeridosIncident class="card-img-top" :lat="post.lat" :lng="post.lng"
                                     :puntos="[{'lng' : post.lng, 'lat' : post.lat}, {'lng' : incident.posts[0].lng, 'lat' : incident.posts[0].lat}]" />
                                     <div class="card-body">
