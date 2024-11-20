@@ -12,5 +12,8 @@ export default {
     },
     deleteComment(ruta){
         return Api.delete(ruta);
+    },
+    updateComment(ruta,options){
+       return Api.put(ruta,options);
     }
 }

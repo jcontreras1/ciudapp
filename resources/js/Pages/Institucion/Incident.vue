@@ -30,8 +30,6 @@ const props = defineProps({
     }
 });
 
-
-
 const incident = ref(props.myIncident.data);
 const postsRelacionados = ref(props.myPostsRelacionados);
 const nuevoEstado = ref(null)
@@ -39,7 +37,7 @@ const descripcionNuevoEstado = ref(null)
 
 const agregarPostsAIncidente = (post) => {
     Swal.fire({
-        title: `¿Agregar el post #${post.id} al incidente?`,
+        title: `¿Agregar el post al incidente?`,
         showCancelButton: true,
         confirmButtonText: "Agregar",
         cancelButtonText: "Cancelar",
@@ -52,9 +50,9 @@ const agregarPostsAIncidente = (post) => {
             incident.value = res.data.incident;
             postsRelacionados.value = res.data.postsRelacionados;
         }
-    });
-    
+    });    
 }
+
 const guardarNuevoEstadoOK = async (code) => {
     const res = await IncidentService.changeStatus(`/institution/${props.institution.id}/incident/${incident.value.id}/status`, 
     {
@@ -89,9 +87,7 @@ const guardarNuevoEstado = async (event) => {
         }else{
             guardarNuevoEstadoOK(code);
         }
-      }
-  
-    
+    }    
 
 }
 
@@ -103,7 +99,7 @@ const toggleMostrar = () => {
 
 const eliminarPost = async (post) => {
     Swal.fire({
-        title: `¿Remover el post #${post.id} del incidente?`,
+        title: `¿Eliminar el post del incidente?`,
         showCancelButton: true,
         confirmButtonText: "Remover",
         cancelButtonText: "Cancelar",
@@ -143,7 +139,7 @@ const eliminarPost = async (post) => {
                 <!-- Card sugerencia -->
                 <div class="card mb-3" v-if="postsRelacionados?.length">
                     <div class="card-header" @click="toggleMostrar" role="button">
-                        Posts relacionados
+                        Posts relacionados ({{ postsRelacionados.length ? postsRelacionados.length : '' }})
                         <span class="float-right">
                             <i class="fas fa-angle-up" role="button" v-if="mostrar"></i>
                             <i class="fas fa-angle-down" role="button" v-else="!mostrar"></i>
@@ -159,7 +155,7 @@ const eliminarPost = async (post) => {
                         <div class="row">
                             <div class="col-12 col-md-6 mb-3" v-for="post in postsRelacionados">
                                 <div class="card g-0 mb-3 h-100">
-                                    <div class="card-header text-muted"><small>#{{post.id}}</small></div>
+                                    <div class="card-header text-muted"><small># {{post.subcategory.name}}</small></div>
                                     <MapaPuntosSugeridosIncident class="card-img-top" :lat="post.lat" :lng="post.lng"
                                     :puntos="[{'lng' : post.lng, 'lat' : post.lat}, {'lng' : incident.posts[0].lng, 'lat' : incident.posts[0].lat}]" />
                                     <div class="card-body">
@@ -181,7 +177,7 @@ const eliminarPost = async (post) => {
                                             <button class="btn btn-success" @click="agregarPostsAIncidente(post)">Agregar post al incidente</button>
                                         </div>
                                     </div>
-                                    <div class="card-footer">
+                                    <div class="card-footer" v-if="post.location_long">
                                         <i class="fas fa-map-marker-alt"></i> {{post.location_long}}
                                     </div>
                                 </div>
@@ -198,7 +194,7 @@ const eliminarPost = async (post) => {
                         <div class="row">
                             <div class="col-12 col-md-6 mb-3" v-for="post in incident.posts">
                                 <div class="card g-0 mb-3 h-100">
-                                    <div class="card-header text-muted"><small>#{{post.id}} - Creado el {{ new Date(post.created_at).toLocaleDateString() }}</small></div>
+                                    <div class="card-header text-muted"><small><b># {{post.subcategory.name}}</b> - Creado el {{ new Date(post.created_at).toLocaleDateString() }}</small></div>
                                     <MapaPuntosSugeridosIncident class="card-img-top" :lat="post.lat" :lng="post.lng"
                                     :puntos="[{'lng' : post.lng, 'lat' : post.lat}, {'lng' : incident.posts[0].lng, 'lat' : incident.posts[0].lat}]" />
                                     <div class="card-body">

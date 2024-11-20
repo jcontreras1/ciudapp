@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\api;
 
+use App\Events\PostDeletedEvent;
 use App\Events\PostUpdatedEvent;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCommentRequest;
@@ -33,6 +34,23 @@ class ApiPostController extends Controller
             new PostResource($post),
             201
         );
+    }
+    // public function updateComment(
+
+    public function updateComment(Post $post, PostComment $comment, StoreCommentRequest $request)
+    {
+        // Verificar que el comentario pertenece al usuario actual o el post
+        if ($comment->user_id !== auth()->id()) {
+            return response(['No tienes permiso para actualizar este comentario'], 403);
+        }
+
+        // Actualizar el comentario con los nuevos datos
+        $comment->update($request->validated());
+
+        // Disparar el evento que actualiza el post
+        PostUpdatedEvent::dispatch($post);
+
+        return response(new PostResource($post), 200);
     }
 
     public function dropComment(PostComment $comment){
@@ -113,7 +131,7 @@ class ApiPostController extends Controller
         $post->images()->delete();
         $post->comments()->delete();
         $post->likes()->delete();
-
+        PostDeletedEvent::dispatch($post->id);
         $post->delete();
 
         return response([], 201);

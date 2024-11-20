@@ -84,7 +84,6 @@ const mostrarMas = () => {
 // Escuchar nuevos posts creados y almacenarlos temporalmente
 Echo.channel('post').listen('.created', (response) => {
     temporalPost.value = [response.post, ...temporalPost.value];
-    console.log(temporalPost.value)
 });
 
 Echo.channel('post').listen('.updated', (response) => {

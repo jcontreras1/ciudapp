@@ -60,7 +60,13 @@ function postInRegion(Post $post, Region $region) {
  * Si el post está lo suficientemente cerca, pero no está en la región, se agrega a la lista de posts cercanos, aclarando que no está en la región.
  */
 function postCercanos(Post $post, Institution $institution, int $offset = 350): array{
-    $posts = Post::where('subcategory_id', $post->subcategory_id)
+    $subcategories = $post->subcategory->relationships->filter(function($relationship){
+        // return true;
+        return $relationship->pivot->percentage >= 20;
+    })->pluck('id')->toArray();
+    $subcategories[] = $post->subcategory_id;
+    // $posts = Post::where('subcategory_id', $post->subcategory_id)
+    $posts = Post::whereIn('subcategory_id', $subcategories)
     ->where('id', '<>', $post->id)
     ->where('incident_id', null)
     ->get();

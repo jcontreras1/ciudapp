@@ -1,5 +1,4 @@
 <script setup>
-
 import { defineProps, ref } from 'vue';
 import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import Tooltip from '@/Components/Tooltip.vue';
@@ -18,15 +17,46 @@ const commentForm = useForm({
 // Variable para controlar cuántos comentarios se muestran
 const visibleCommentsCount = ref(3); // Muestra 3 comentarios inicialmente
 
+// Estado para saber qué comentario estamos editando
+const editingCommentId = ref(null); 
+const editingCommentText = ref("");
+
+// Función para editar un comentario
+const editarComentario = (comentario) => {
+    editingCommentId.value = comentario.id;
+    editingCommentText.value = comentario.comment; // Cargar el texto del comentario para editarlo
+};
+
+// Función para guardar los cambios del comentario
+const actualizarComentario = async () => {
+    sending.value = true;
+
+    // Asegúrate de incluir tanto el postId como el commentId en la URL
+    const response = await CommentService.updateComment(`/post/${props.post.id}/comment/${editingCommentId.value}/actualizar`, { comment: editingCommentText.value });
+
+    sending.value = false;
+    myPost.value = response.data;  // Asumiendo que el backend devuelve el post actualizado
+    editingCommentId.value = null;  // Resetear el estado de edición
+    editingCommentText.value = "";  // Limpiar el texto del comentario
+};
+
+
+// Función para cancelar la edición
+const cancelarEdicion = () => {
+    editingCommentId.value = null;
+    editingCommentText.value = "";
+};
+
+// Función para crear un nuevo comentario
 const comentar = async () => {
     sending.value = true;
     const response = await CommentService.createComment(`/post/${props.post.id}/comment`, commentForm);
     sending.value = false;
     myPost.value = response.data;
     commentForm.comment = "";
-    
 };
 
+// Función para like/unlike comentario
 const likeComent = async(id) => {
     sending.value = true;
     const response = await CommentService.createLink(`/comment/${id}/like`);
@@ -42,7 +72,6 @@ const dislikeComment = async (id, like) => {
 }
 
 const toggleLike = (comment, yo) => {
-    
     if (comment.likes.map(element => element.id).includes(yo)) {
         dislikeComment(comment.id, comment.likes.filter(elem => elem.id === yo)[0]?.pivot.id);
     } else {
@@ -63,7 +92,7 @@ const eliminarComentario = async (comment) => {
         confirmButtonText: 'Eliminar',
         cancelButtonText: 'Cancelar'
     });
-
+    
     if (result.isConfirmed) {
         const response = await CommentService.deleteComment(`/comment/${comment.id}/delete`);
         myPost.value = response.data;
@@ -81,24 +110,60 @@ const eliminarComentario = async (comment) => {
         <div class="card-body">
             <div class="mb-2 ">
                 <div class="">                    
-                    <strong>{{ comentario.user?.name }}</strong> {{ comentario.created_at }}:
+                    <strong>{{ comentario.user?.name }} </strong> {{ comentario.created_at }}: 
+                    <span class="float-end" v-if="comentario.user.id == $page.props.auth?.user?.id">
+                        <div class="dropdown">
+                            <a  data-bs-toggle="dropdown" href="#" aria-expanded="false">
+                                <i class="fas fa-ellipsis-h"></i>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a class="dropdown-item" href="#" @click="editarComentario(comentario)"><i class="fas fa-edit text-primary"></i> Editar</a>
+                                </li>
+                                <li>
+                                    <a href="#" class="dropdown-item link-underline link-underline-opacity-0" @click="eliminarComentario(comentario)"><i class="fas fa-trash-alt text-danger"></i> Eliminar</a>
+                                </li>
+                            </ul>
+                        </div>                   
+                    </span>
                 </div>               
             </div>
-            <h5 class="card-text">{{ comentario.comment }}</h5>
-            <div class="">
-                <Tooltip :list="comentario.likes">                         
-                    <a class="link-underline link-underline-opacity-0 mr-2" href="#" @click.prevent="toggleLike(comentario, $page.props.auth?.user?.id)">
-                        <i class="fas fa-heart" 
-                        :class="{'text-danger' : comentario.likes.map(element => element.id).includes($page.props.auth?.user?.id)}">
-                    </i> &nbsp;{{ comentario.likes?.length }}                    
-                </a>
-                {{  }}
-                <span v-if="comentario.user.id == $page.props.auth?.user?.id ">
-                    <a href="#" class="link-underline link-underline-opacity-0" @click="eliminarComentario(comentario)"><i class="fas fa-trash-alt text-danger"></i></a>
-                </span>
-            </Tooltip>
+            
+            <!-- Mostrar campo de edición si estamos editando este comentario -->
+            <div v-if="editingCommentId === comentario.id">
+                <input 
+                v-model="editingCommentText" 
+                class="form-control" 
+                type="text" 
+                @keyup.enter="actualizarComentario" 
+                />
+                
+                <div class="mt-2">
+                    <button 
+                    class="btn btn-outline-success mr-2" 
+                    @click="actualizarComentario" 
+                    :disabled="sending">
+                    {{ sending ? 'Guardando...' : 'Guardar' }}
+                </button>
+                <button class="btn btn-outline-secondary" @click="cancelarEdicion">Cancelar</button>
+            </div>
         </div>
+        
+        <!-- Mostrar el comentario normal si no está en modo de edición -->
+        <h5 v-else class="card-text">{{ comentario.comment }}</h5>
+        
+        <div class="mt-2">
+            <Tooltip :list="comentario.likes">                         
+                <a class="link-underline link-underline-opacity-0 mr-2" href="#" @click.prevent="toggleLike(comentario, $page.props.auth?.user?.id)">
+                    <i class="fas fa-heart" 
+                    :class="{'text-danger' : comentario.likes.map(element => element.id).includes($page.props.auth?.user?.id)}">
+                </i> &nbsp;{{ comentario.likes?.length }}                    
+            </a>
+        </Tooltip>
+        <span class="float-end text-muted" v-if="comentario.created_real !== comentario.updated_real"><em>Comentario editado</em></span>
+
     </div>
+</div>
 </div>
 
 <!-- Botón "Cargar más" si hay más comentarios -->
@@ -107,6 +172,7 @@ const eliminarComentario = async (comment) => {
 </div>
 
 <div class="py-1"></div>
+
 <!-- Crea un comentario -->
 <form @submit.prevent="comentar">
     <div class="row">

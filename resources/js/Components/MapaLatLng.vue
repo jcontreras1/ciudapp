@@ -13,31 +13,49 @@ const props = defineProps({
         default: 0,
     },
 });
+
 const apiKey = import.meta.env.VITE_MAPBOX_TOKEN;
+
 const onDragEnd = (event) => {
     const { lng, lat } = event.target.getLngLat();
     emit('update:lat', lat);
     emit('update:lng', lng);
 };
+
 const mapContainer = ref(null);
-const marker = new mapboxgl.Marker({draggable: true});
+const marker = new mapboxgl.Marker({ draggable: true });
 marker.on('dragend', onDragEnd);
+
 const map = ref(null);
+const initialZoom = 12; // Zoom inicial cuando se carga el mapa
 
 onMounted(() => {
     map.value = new mapboxgl.Map({
         container: mapContainer.value,
         style: 'mapbox://styles/mapbox/streets-v11',
         center: [props.lng, props.lat],
-        zoom: 12,
+        zoom: initialZoom,  // Asignamos el zoom inicial
+        interactive: true, // Permitimos interacción (zoom, pan, etc.)
     });
 
-    mapboxgl.accessToken = apiKey;    
+    mapboxgl.accessToken = apiKey;
+
     map.value.once('load', () => {
         map.value.resize();
     });
 
-    //marker.setLngLat([props.lng, props.lat]).addTo(map.value);
+    marker.setLngLat([props.lng, props.lat]).addTo(map.value);
+    
+    // Mantener el zoom actualizado solo cuando el usuario interactúe
+    map.value.on('zoom', () => {
+        // No hacemos nada aquí, el zoom lo controla el usuario.
+    });
+
+    // Evitar que el zoom se cambie cuando se mueva el marcador
+    marker.on('dragend', () => {
+        const currentZoom = map.value.getZoom(); // Obtiene el zoom actual
+        map.value.setZoom(currentZoom); // Vuelve a aplicar el mismo zoom
+    });
 });
 
 // Observa cambios en latitud y longitud
@@ -46,8 +64,7 @@ watch(() => [props.lat, props.lng], ([newLat, newLng]) => {
         marker.remove();
         map.value.jumpTo({
             center: [newLng, newLat],
-            zoom: 13,
-            // pitch: 45,
+            zoom: map.value.getZoom(), // Mantener el zoom actual
         });
         marker.setLngLat([newLng, newLat]).addTo(map.value);
         setTimeout(() => {

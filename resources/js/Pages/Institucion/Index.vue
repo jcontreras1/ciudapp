@@ -38,40 +38,25 @@ const destroy = (institution) => {
             <template #aside>
                 <Link v-if="$page.props.isAdmin" :href="route('institution.create')" class="btn btn-primary" title="Crear institución"><i class="fas fa-plus"></i> </Link>
             </template>
-        </SectionTitle>   
-        
-        
+        </SectionTitle>
         
         <hr class="mb-3">
-        <div v-if="instituciones?.data?.length">
-            <div class="table-responsive">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Nombre</th>
-                            <th>Email</th>
-                            <th>Dirección</th>
-                            <th>Ciudad</th>
-                            <th class="text-end">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="institucion in instituciones?.data" :key="institucion.id">
-                            <td>{{ institucion.name }}</td>
-                            <td>{{ institucion.mail }}</td>
-                            <td>{{ institucion.address }}</td>
-                            <td>{{ institucion.city.name }} - {{ institucion.city.province.name }}</td>
-                            <td>
-                                <div class="float-end">
-                                    <a :href="route('incidents.index', institucion)" title="Incidentes" class="btn btn-sm btn-info mr-1"><i class="fas fa-exclamation-triangle"></i></a>
-                                    <a :href="route('institution.edit', institucion)" title="Editar Institución" class="btn btn-sm btn-primary mr-1"><i class="fas fa-edit"></i></a>
-                                    <button v-if="$page.props.isAdmin" @click="destroy(institucion)" class="btn btn-sm btn-danger" title="Eliminar"><i class="fas fa-trash-alt"></i></button>
-                                </div>
-                            </td>
-                            
-                        </tr>
-                    </tbody>
-                </table>
+        
+        <div class="row" v-if="instituciones?.data?.length">
+            <div class="col-12 col-md-3" v-for="institucion in instituciones?.data" :key="institucion.id">              
+
+                <div class="card ">
+                    <div class="card-body">
+                        <h5 class="card-title text-center"  >{{ (institucion.name.toUpperCase()) }}</h5>
+                        <p class="text-muted text-center"><em>{{institucion.city.name}} - {{ institucion.city.province.name }}</em></p>
+                        <!-- <hr class="text-primary"> -->
+                    </div>
+                    <div class="btn-group" role="group">
+                        <a :href="route('incidents.index', institucion)" title="Incidentes" class="btn btn-sm btn-info "><i class="fas fa-exclamation-triangle"></i></a>
+                        <a :href="route('institution.edit', institucion)" title="Editar Institución" class="btn btn-sm btn-primary "><i class="fas fa-edit"></i></a>
+                        <button v-if="$page.props.isAdmin" @click="destroy(institucion)" class="btn btn-sm btn-danger" title="Eliminar"><i class="fas fa-trash-alt"></i></button>
+                    </div>                
+                </div>    
             </div>
         </div>
         
