@@ -10,72 +10,33 @@ const props = defineProps({
         required: true,
     },
 });
+const mySubcategories = ref(props.subcategories);
 
-// Creamos una variable reactiva `myProps` para almacenar `props.subcategories`
-const myProps = ref({
-    subcategories: [...props.subcategories]
-});
-
-// Usamos un objeto `relaciones` para almacenar las relaciones
-const relaciones = ref({}); 
-
-// Rellenamos la matriz `relaciones` con las relaciones
-myProps.value.subcategories.forEach(subcategory => {
-    subcategory.relationships.forEach(relationship => {
-        const origin_id = relationship.pivot.origin_id;
-        const destiny_id = relationship.pivot.destiny_id;
-        const percentage = relationship.pivot.percentage;
-        
-        // Si el origin_id no existe aún en el objeto, inicializamos un arreglo vacío
-        if (!relaciones.value[origin_id]) {
-            relaciones.value[origin_id] = [];
-        }
-        
-        // Verificamos si ya existe una relación con el destino, y la agregamos
-        const existingRelationship = relaciones.value[origin_id].find(rel => rel[destiny_id]);
-        
-        if (existingRelationship) {
-            // Si ya existe, actualizamos el porcentaje (en caso de que haya múltiples relaciones con el mismo destiny_id)
-            existingRelationship[destiny_id] = percentage;
-        } else {
-            // Si no existe, la agregamos como un nuevo objeto { destiny_id: percentage }
-            relaciones.value[origin_id].push({ [destiny_id]: percentage });
-        }
-    });
-});
+const filteredSubcategories = ref(mySubcategories.value);
+const filter = () => {
+    //filtrar por subcategory.name o por subcategory.category.name
+    filteredSubcategories.value = mySubcategories.value.filter(subcategory => subcategory.name.toLowerCase().includes(event.target.value.toLowerCase()) || subcategory.category.name.toLowerCase().includes(event.target.value.toLowerCase()));
+}
 
 // Función para actualizar una relación al perder el foco (blur)
-const actualizarFilaColumna = (e, origin, destiny) => {
+const actualizar = (e, origin, destiny) => {
+    if(e.target.value < 0 || e.target.value > 100 || isNaN(e.target.value)){
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'El porcentaje debe estar entre 0 y 100',
+        });
+        e.target.value = 0;
+        return;
+    }
     axios.post('/api/relationships', {
         origin_id: origin,
         destiny_id: destiny,
         percentage: e.target.value,
     }).then(response => {
-        // Actualizamos myProps.subcategories con los nuevos datos que vienen del backend
-        myProps.value.subcategories = response.data;
-        myProps.value.subcategories.forEach(subcategory => {
-    subcategory.relationships.forEach(relationship => {
-        const origin_id = relationship.pivot.origin_id;
-        const destiny_id = relationship.pivot.destiny_id;
-        const percentage = relationship.pivot.percentage;
+        // Actualizamos mymySubcategories.value con los nuevos datos que vienen del backend
+        mySubcategories.value = response.data;
         
-        // Si el origin_id no existe aún en el objeto, inicializamos un arreglo vacío
-        if (!relaciones.value[origin_id]) {
-            relaciones.value[origin_id] = [];
-        }
-        
-        // Verificamos si ya existe una relación con el destino, y la agregamos
-        const existingRelationship = relaciones.value[origin_id].find(rel => rel[destiny_id]);
-        
-        if (existingRelationship) {
-            // Si ya existe, actualizamos el porcentaje (en caso de que haya múltiples relaciones con el mismo destiny_id)
-            existingRelationship[destiny_id] = percentage;
-        } else {
-            // Si no existe, la agregamos como un nuevo objeto { destiny_id: percentage }
-            relaciones.value[origin_id].push({ [destiny_id]: percentage });
-        }
-    });
-});
     }).catch(error => {
         let errors = null;
         if (error.response.data.errors) {
@@ -109,34 +70,36 @@ const actualizarFilaColumna = (e, origin, destiny) => {
             <template #aside>
             </template>
         </SectionTitle>
-
-        <hr>
         
-        <!-- Usamos myProps.subcategories en vez de props.subcategories -->
-        <table class="table">
-            <thead>
-                <tr>
-                    <th></th>
-                    <th v-for="(subcategory, index) in myProps.subcategories" :key="subcategory.id">{{ subcategory.name }}</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="(subcategory, rowIndex) in myProps.subcategories" :key="subcategory.id">
-                    <td>{{ subcategory.name }}</td>
-                    <td v-for="(otherSubcategory, colIndex) in myProps.subcategories" :key="otherSubcategory.id" align="center">
-                        <div v-if="rowIndex >= colIndex">
-                        <!-- Ocultamos la celda simétrica (cuando rowIndex === colIndex) -->
-
-                             <span v-if="rowIndex === colIndex">100 <i class="fas fa-"></i></span>
-                             <input v-else @blur="actualizarFilaColumna($event, rowIndex + 1, colIndex + 1)" 
-                             type="number" 
-                             :value="relaciones[rowIndex + 1]?.find(rel => rel[colIndex + 1])?.[colIndex + 1] || 0" 
-                             class="form-control text-center"
-                             v-if="rowIndex !== colIndex"> <!-- Solo mostrar el input si no es la celda simétrica -->
+        <hr>
+        <input class="form-control mb-3" type="text" placeholder="Filtrar" @input="filter">
+        <div class="row">
+            <div class="col-12 col-md-6" v-for="subcategory in mySubcategories">
+                <div class="card mb-2">
+                    <div class="card-header">
+                        {{ subcategory.name }} - {{ subcategory.category.name }} [{{ subcategory.id }}]
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-12" v-for="innerSubcategory in mySubcategories">
+                                <div v-if="innerSubcategory.id !== subcategory.id">
+                                    <div class="input-group mb-1">
+                                        <span class="input-group-text col-4">{{ innerSubcategory.name }}[{{ innerSubcategory.id }}]</span>
+                                        <input 
+                                        class="form-control form-control-sm" 
+                                        type="number"
+                                        :value="innerSubcategory.relationships && innerSubcategory.relationships.filter( rel => (rel.pivot.destiny_id === subcategory.id) && (rel.pivot.origin_id === innerSubcategory.id) )?.[0]?.pivot.percentage || 0"
+                                        @blur="actualizar($event, innerSubcategory.id, subcategory.id)"
+                                        >
+                                        <span class="input-group-text">%</span>
+                                    </div>
+                                    
+                                </div>
                             </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </AppLayout>
 </template>
