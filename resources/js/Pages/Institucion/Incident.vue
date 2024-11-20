@@ -139,7 +139,7 @@ const eliminarPost = async (post) => {
                 <!-- Card sugerencia -->
                 <div class="card mb-3" v-if="postsRelacionados?.length">
                     <div class="card-header" @click="toggleMostrar" role="button">
-                        Posts relacionados
+                        Posts relacionados ({{ postsRelacionados.length ? postsRelacionados.length : '' }})
                         <span class="float-right">
                             <i class="fas fa-angle-up" role="button" v-if="mostrar"></i>
                             <i class="fas fa-angle-down" role="button" v-else="!mostrar"></i>

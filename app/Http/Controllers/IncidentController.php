@@ -27,9 +27,6 @@ class IncidentController extends Controller
     {
         $post = $incident->postOriginal;
         $postsRelacionados = postCercanos($post, $institution);
-
-        // return $postsRelacionados;
-        
         return Inertia::render(
             'Institucion/Incident',            
             [
