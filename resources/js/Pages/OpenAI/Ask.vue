@@ -48,6 +48,10 @@ const copyToClipboard = (text, index) => {
       }, 1500);  // El mensaje desaparece después de 2 segundos
     }
 
+    const vaciarChat = () => {
+        messages.value = [];
+    }
+
 </script>
 
 <template>
@@ -63,10 +67,14 @@ const copyToClipboard = (text, index) => {
                         <div class="mb-3">
                             <textarea class="form-control" id="user-input" rows="3" v-model="text" placeholder="Escribe tu mensaje..." required @keypress.enter.prevent="submit"></textarea>
                         </div>
-                        <button type="submit" class="btn btn-success" :disabled="!text.length || consultando">
-                            <i class="fas fa-cog fa-spin" v-if="consultando"></i>
-                            <span v-else>Enviar</span>
-                        </button>
+                        <div class="d-flex justify-content-between">
+
+                            <button type="submit" class="btn btn-success" :disabled="!text.length || consultando">
+                                <i class="fas fa-cog fa-spin" v-if="consultando"></i>
+                                <span v-else>Enviar</span>
+                            </button>
+                            <button @click="vaciarChat" title="Vaciar el chat" class="btn btn-danger" v-if="messages.length"><i class="fas fa-trash"></i></button>
+                        </div>
                     </form>
                 </div>
                 <div class="col-12">
@@ -81,7 +89,7 @@ const copyToClipboard = (text, index) => {
                                         <span v-if="message.sender === 'user'">Tú</span>
                                         <span v-else>IA</span>
                                     </div>
-                                    <div >{{ message.text }}</div>
+                                    <div v-html="message.text"></div>
                                 </div>
                                 <div class="card-footer" v-if="message.sender === 'ai' && message.query">
                                     <div class="d-flex justify-content-between">

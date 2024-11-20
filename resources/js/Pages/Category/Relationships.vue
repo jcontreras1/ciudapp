@@ -13,7 +13,7 @@ const props = defineProps({
 const mySubcategories = ref(props.subcategories);
 
 const filteredSubcategories = ref(mySubcategories.value);
-const filter = () => {
+const filter = (event) => {
     //filtrar por subcategory.name o por subcategory.category.name
     filteredSubcategories.value = mySubcategories.value.filter(subcategory => subcategory.name.toLowerCase().includes(event.target.value.toLowerCase()) || subcategory.category.name.toLowerCase().includes(event.target.value.toLowerCase()));
 }
@@ -77,11 +77,8 @@ const actualizar = (e, origin, destiny) => {
             <input class="form-control " type="text" placeholder="Buscar" @input="filter">
         </div>
         <div class="row">
-            <div class="col-12 col-md-6" v-for="subcategory in mySubcategories">
+            <div class="col-12 col-md-6" v-for="subcategory in filteredSubcategories">
                 <div class="card mb-2">
-                    <!-- <div class="card-header">
-                        {{ subcategory.name }} - {{ subcategory.category.name }}
-                    </div> -->
                     <div class="card-body">
                         <h5 class="card-title">{{ subcategory.name }} - {{ subcategory.category.name }}</h5>
                         <hr>
@@ -92,35 +89,20 @@ const actualizar = (e, origin, destiny) => {
                                         <span class="input-group-text col-1" v-html="innerSubcategory.icon"></span>
                                         <span class="input-group-text col-4">{{ innerSubcategory.name }}</span>
                                         <input 
-                                         class="form-control form-control-sm" 
-                                        type="number"
-                                        :value="innerSubcategory.relationships && innerSubcategory.relationships.filter( rel => (rel.pivot.destiny_id === subcategory.id) && (rel.pivot.origin_id === innerSubcategory.id) )?.[0]?.pivot.percentage || 0"
-                                        @blur="actualizar($event, innerSubcategory.id, subcategory.id)"
-                                        >
-                                        <span class="input-group-text">%</span>
-                                    </div>
-                                    
-                                    
-                                    
-                                    
-                                    <!-- <div class="input-group mb-1">
-                                        <span class="input-group-text col-4">{{ innerSubcategory.name }}</span>
-                                        <span class="fs-3" v-html="innerSubcategory.icon"></span>
-                                        <input 
                                         class="form-control form-control-sm" 
                                         type="number"
                                         :value="innerSubcategory.relationships && innerSubcategory.relationships.filter( rel => (rel.pivot.destiny_id === subcategory.id) && (rel.pivot.origin_id === innerSubcategory.id) )?.[0]?.pivot.percentage || 0"
                                         @blur="actualizar($event, innerSubcategory.id, subcategory.id)"
                                         >
                                         <span class="input-group-text">%</span>
-                                    </div> -->
-                                    
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+            <div v-if="!filteredSubcategories.length"><em>No hay resultados que coincidan con su búsqueda...</em></div>
         </div>
     </AppLayout>
 </template>
