@@ -42,19 +42,28 @@ const destroy = (institution) => {
         
         <hr class="mb-3">
         
-        <div class="row" v-if="instituciones?.data?.length">
-            <div class="col-12 col-md-3" v-for="institucion in instituciones?.data" :key="institucion.id">              
-
-                <div class="card ">
-                    <div class="card-body">
-                        <h5 class="card-title text-center"  >{{ (institucion.name.toUpperCase()) }}</h5>
-                        <p class="text-muted text-center"><em>{{institucion.city.name}} - {{ institucion.city.province.name }}</em></p>
+        <div class="row d-flex justify-content-evenly" v-if="instituciones?.data?.length">
+            <div class="col-md-4" v-for="institucion in instituciones?.data" :key="institucion.id">              
+                <div class="card border-0 h-100">
+                    <div class="card-body text-center">
+                        <img class="rounded-circle mb-4" width="100" :src="`https://ui-avatars.com/api/?name=${institucion.name.toUpperCase()[0]}&color=7F9CF5&background=EBF4FF`">
+                        <div class="fs-2 text-center mb-3"  >{{ (institucion.name.toUpperCase()) }}</div>
                         <!-- <hr class="text-primary"> -->
+                        <strong>{{ institucion.address }}</strong>
+                        <p class="text-muted text-center">{{institucion.city.name}} - {{ institucion.city.province.name }}</p>
                     </div>
+
+                    <a :href="route('incidents.index', institucion)" title="Incidentes" class="btn btn-outline-info mb-1">
+                        <i class="fas fa-exclamation-triangle"></i> <span class="d-none d-md-inline-block">Incidentes</span> 
+                    </a>
+                    <a :href="route('institution.edit', institucion)" title="Editar Institución" class="btn btn-outline-primary mb-1">
+                        <i class="fas fa-edit"></i> <span class="d-none d-md-inline-block">Editar</span> 
+                        
+                    </a>
+                    <button v-if="$page.props.isAdmin" @click="destroy(institucion)" class="btn btn-outline-danger mb-1" title="Eliminar">
+                        <i class="fas fa-trash-alt"></i> <span class="d-none d-md-inline-block">Eliminar</span> 
+                    </button>
                     <div class="btn-group" role="group">
-                        <a :href="route('incidents.index', institucion)" title="Incidentes" class="btn btn-sm btn-info "><i class="fas fa-exclamation-triangle"></i></a>
-                        <a :href="route('institution.edit', institucion)" title="Editar Institución" class="btn btn-sm btn-primary "><i class="fas fa-edit"></i></a>
-                        <button v-if="$page.props.isAdmin" @click="destroy(institucion)" class="btn btn-sm btn-danger" title="Eliminar"><i class="fas fa-trash-alt"></i></button>
                     </div>                
                 </div>    
             </div>
