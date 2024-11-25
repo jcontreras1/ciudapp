@@ -62,6 +62,7 @@ const form = useForm({
     image: null,
     subcategory_id:null,
     fullAddress : null,
+    comment: null,
 });
 
 
@@ -139,45 +140,6 @@ const urlToFile = (url) => {
     return file;
 }
 
-// Metodo para enviar el formulario
-// function funcionDeSubmit_old() {
-//     if(form.subcategory_id === null){
-//         Swal.fire({
-//             'icon' : 'error',
-//             'title' : 'Debe seleccionar una categoría y una subcategoría',
-//             'toast': true,
-//             'position': 'top-end',
-//             'timer': 2500,
-//             'timerProgressBar' : true,
-//             'showConfirmButton' : false
-//         });
-//         return;
-//     }
-
-//     if(form.image === null){
-//         Swal.fire({
-//             'icon' : 'error',
-//             'title' : 'Debe seleccionar una imagen',
-//             'toast': true,
-//             'position': 'top-end',
-//             'timer': 2500,
-//             'timerProgressBar' : true,
-//             'showConfirmButton' : false
-//         });
-//         return;
-//     }
-
-//     form.post(route('posts.store'));
-//     activeCategory.value = null;
-//     imageSrc.value = null;
-//     form.image = null;
-//     form.
-//     fullAddress = null;
-//     form.latitud = 0;
-//     form.longitud = 0;
-//     form.subcategory_id = null;
-//     document.getElementById('image').value = '';    
-// }
 const funcionDeSubmit = () => {
     if (form.subcategory_id === null) {
         Swal.fire({
@@ -223,6 +185,7 @@ const funcionDeSubmit = () => {
         form.longitud = 0;
         form.subcategory_id = null;
         document.getElementById('image').value = ''; 
+        form.comment = null;
     })
     .catch(error => {
         sending.value = false;
@@ -240,11 +203,10 @@ function toggleCategory(id){
 }
 
 </script>
-
 <template>
     <!-- Crear un Post -->    
     <div id="c"></div>
-    <div class=" card w-100">
+    <div class="card w-100">
         <div class="card-body">
             <div v-if="categorias.length === 0 || cantidadSubcategorias === 0">
                 <div class="alert alert-danger">
@@ -254,70 +216,74 @@ function toggleCategory(id){
                 </div>
             </div>
             <form @submit.prevent="funcionDeSubmit" ref="formCreatePost" v-else>
-                <div class="row">
+                <div class="row mb-3">
                     <div class="fs-4">Nuevo reporte</div>
                     <p>Seleccione la categoria y subcategoria del posteo <i class="fas fa-carret-down"></i> </p>
-                    <!-- <p for="formFile" class="form-label mr-4">Seleccione la categoria y subcategoria del posteo</p> -->
-                    <div v-for="category in categorias" :key="category.id" class="col-12 col-md-4 mb-3">
-                        <!-- Boton para elegir las categorias -->
-                        <button type="button" class="btn shadow border-2 rounded-4 w-100" :class="{
+                    
+                    <!-- Categorías -->
+                    <div v-for="category in categorias" :key="category.id" class="col-12 col-md-4 mb-1">
+                        <button type="button" class="btn shadow pb-0 rounded-4 w-100" :class="{
                             'bg-success' : category.id === activeCategory,
-                            // 'bg-secondary' : subcategory.id != form.subcategory_id
                         }" @click="toggleCategory(category.id)">
-                        <!-- Category icon and name -->
                         <span v-if="!activeCategory" v-html="category.icon" class="fs-3"></span>
                         <p class="fs-4">{{ category.name }}</p>
                     </button>
-                    
-                    <!-- Subcategorías -->
-                    <div v-if="activeCategory === category.id " class="mt-1">
-                        <!-- Mensaje si no hay subcategorías -->
+                </div>
+                
+                <!-- Subcategorías (se muestra fuera del bloque de categoría activa) -->
+                <div v-if="activeCategory !== null" class="mt-3">
+                    <div v-for="category in categorias" :key="category.id" v-show="category.id === activeCategory">
                         <div v-if="category.subcategories.length === 0" class="alert alert-warning">
-                            <div class="alert-body">
-                                No tiene subcategorías
-                            </div>
+                            No tiene subcategorías
                         </div>
-                        <ul class="list-group" v-else>
-                            <li v-for="subcategory in category.subcategories" :key="subcategory.id"
-                            class="list-group-item rounded-4"
+                        <div v-else>
+                            <button type="button" v-for="subcategory in category.subcategories" :key="subcategory.id"
+                            class="btn rounded-4 mr-2 mb-2"
                             :class="{
-                                'bg-success' : subcategory.id == form.subcategory_id,
-                                // 'bg-secondary' : subcategory.id != form.subcategory_id
+                                'btn-success' : subcategory.id == form.subcategory_id,
+                                'btn-outline-success' : subcategory.id != form.subcategory_id
                             }"
-                            role="button"
-                            @click="form.subcategory_id = subcategory.id"
-                            >
+                            @click="form.subcategory_id = subcategory.id">
                             <span v-html="subcategory.icon"></span> 
                             {{ subcategory.name }}
-                        </li>
-                    </ul>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
         
-        <input type="file" class="form-control border-2 p-2 rounded-5 mb-1" id="image"
+        <div class="input-group mb-3">
+            <span class="input-group-text"><i class="fas fa-camera"></i></span>
+              <input type="file" class="form-control " id="image"
         name="image" capture="environment" accept="image/png, image/jpeg"
         @change="onFileChange">
-        <div class="mb-3">
+        </div>
+        
+        <!-- Inputs adicionales como la imagen y el mapa -->
+      
+        
+        <div class="mb-1">
             <MapaLatLng :lat="form.latitud" :lng="form.longitud" @update:lat="(lat) => {form.latitud = lat; geocoding()}" @update:lng="(lng) => {form.longitud = lng}" > </MapaLatLng>
         </div>
-        <div v-if="searchingGeocode" class="d-flex mb-3 ml-2">
+        
+        <div v-if="searchingGeocode" class="d-flex mb-3">
             <i class="fas fa-spinner fa-spin"></i>
         </div>
-        <input type="text" class="form-control border-2 p-2 rounded-5 mb-4" id="contenido" readonly v-show="form.fullAddress" v-model="form.fullAddress" required>
-        
-        <!-- Boton para postear -->
-        <button class="btn btn-primary rounded-4" :disabled="(form.subcategory_id == null && form.image == null) || sending">
+        <div v-else class="mb-3">                
+            <span>{{form.fullAddress}}</span>
+        </div>
+        <div>
+            <label for="" class="p"><i class="fas fa-comment-alt"></i> Comentario</label>
+            <input type="text" class="form-control mb-3" v-model="form.comment">
+        </div>
+        <button class="btn btn-primary rounded-4 float-end" :disabled="(form.subcategory_id == null && form.image == null) || sending">
             <span>
                 <i v-if="sending" class="fas fa-circle-notch fa-spin"></i>
                 <span v-else>Guardar</span>
             </span>
         </button>
-        
-        <!-- <button type="button" @click="testearPusher">TEST PUSHER</button> -->
-        
-        
     </form>
 </div>
 </div>
 </template>
+

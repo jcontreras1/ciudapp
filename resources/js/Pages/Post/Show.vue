@@ -34,8 +34,12 @@ const emit = defineEmits(['showPostOnModal', 'deletePost']);
                         <span v-if="post.category?.name"><b> #{{ post.category?.name }}</b>&nbsp;</span>
                         <span v-if="post.subcategory?.name"><b> #{{ post.subcategory.name }} </b></span>
                     </h3>
+                    <div class="mb-2">
+                    {{post.comment }}
+                    </div>
                     <i class="fas fa-calendar-alt"></i> 
                     {{ new Date(post.created_at).toLocaleDateString() }} 
+                    
                     <!-- {{ post.valid_until ? ' - ' + post.valid_until : '' }} -->
                 </div>   
                 

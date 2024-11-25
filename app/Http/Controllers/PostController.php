@@ -44,6 +44,7 @@ class PostController extends Controller
 
 
     public function store(Request $request){
+        return $request;
         DB::beginTransaction();
 
         if($request->has('image')){
@@ -57,7 +58,7 @@ class PostController extends Controller
                 'user_id' => auth()->id(),
                 'lat' => $request->latitud,
                 'lng' => $request->longitud,
-                'comment' => "",
+                'comment' => $request->comment,
                 'private' => false,
                 'subcategory_id' => $request->subcategory_id,
                 'location_long' => $request->fullAddress ?? null,
