@@ -26,12 +26,13 @@ class OpenAIService extends Controller
         - Subcategoría: Energía pertenece a la categoría es Servicoop
         - Subcategoría: Emergencias pertenece a la categoría es Policía
         - Subcategoría: Denuncias pertenece a la categoría es Policía
-        Si te preguntaran, por ejemplo, cuantos reportes hay de ecología, deberás hacer un join con la tabla subcategoría y filtrar por el nombre de la subcategoría ecología. Es importante que entiendas cuales son subcategorías y cuales son categorías, ya que peuden preguntar por cualquiera de las 2.
+        - Si te preguntaran, por ejemplo, cuantos reportes hay de ecología, deberás hacer un join con la tabla subcategoría y filtrar por el nombre de la subcategoría ecología. Es importante que entiendas cuales son subcategorías y cuales son categorías, ya que peuden preguntar por cualquiera de las 2.
         - Hay que tener presente que una de las subcategorías puede ser `denuncias` no hay que confundir reportes, o posts que pertenecen a la tabla `post` con la subcategoría denuncias.
-        Cada subcategoría, se relaciona con la tabla `category` a través de la foranea `subcategory_id`. 
+        - Cada subcategoría, se relaciona con la tabla `category` a través de la foranea `subcategory_id`. 
         - Una institución puede crear regiones, a través de la tabla `region` (lógicamente cada región tendrá un `institution_id`) que está delimitada por una serie de puntos (tabla `point`) para luego consultar si un post está o no en una región definida. 
         - Cuando se generan muchos posts, se puede armar un incidente (tabla `incident`) que engloba muchos posts. Estos posts tienen un a foránea `incident_id`. A este incidente se le puede dar seguimiento agregando comentarios a través de la tabla `incident_comment`.
-        Los usuarios podrían preguntarte cosas normales, como por ejemplo ¿De qué color es el cielo? o algo referido al contexto de este sistema, como por ejemplo: ¿Cuantos reportes de energía se hicieron en el último mes? Para lo cual vamos a implementar un separador que consta de 3 (tres) signos pesos `$` para yo saber como me vas a responder.
+        - Cada tabla tiene un `created_at`, un `updated_at` y un `deleted_at` para saber cuándo se creó, se actualizó y se eliminó un registro. Recuerda que los registros que muestres deberían tener el campo `deleted_at` nulo, ya que si no, no deberías mostrarlos. Por otra parte, en los resultados que pidan mostrar una lista de registros, no sería necesario mostrar los campos `created_at`, `updated_at` ni `deleted_at`.
+        - Los usuarios podrían preguntarte cosas normales, como por ejemplo ¿De qué color es el cielo? o algo referido al contexto de este sistema, como por ejemplo: ¿Cuantos reportes de energía se hicieron en el último mes? Para lo cual vamos a implementar un separador que consta de 3 (tres) signos pesos `$` para yo saber como me vas a responder.
         - Si la pregunta del usuario es normal y no tiene que ver con el contexto brindado, deberás responder la pregunta del usuario de forma normal como si fueras ChatGPT con el siguiente formato: 0$$$tu respuesta, es decir, usando un 0 y tres signos de pesos como separador antes de tu respuesta. Ejemplo: Si la pregunta del usuario es: cuanto es 1000 + 1000, la respuesta deberá ser: 0$$$2000
         - Si la pregunta tiene que ver con el contexto, deberás responder 1$$$tu respuesta, es decir, usando un 1 y tres signos de pesos como separador antes de tu respuesta que debe ser una respuesta que sólamente contenga lenguaje SQL válido, sin explicaciones, y sin comentarios extra. Ejemplo: cuantos posts hay? Respuesta: 1$$$SELECT COUNT(*) FROM `posts`;
         - Si te preguntan entre la relación entre 2 sucesos, deberás saber que mi base de datos no tiene la función corr para averiguar correlaciones, lo que si puedo hacer, es enviarte los datos consultados por la query que me des, basado en esos datos deberás calcular la correlación por tu cuenta. En caso de que no puedas responderla, deberás dar una explicación acorde a la relación entre los dos datos.
@@ -65,11 +66,9 @@ class OpenAIService extends Controller
                 $queryPerform = DB::select($query);
             } catch (\Exception $e) {
                 return response([
-                    "errors" => [
-                        'La respuesta entregada por OpenAI no puede ejecutarse en el sistema',
-                        "<strong>$query</strong>",
-                        ]
-                    ], 400);
+                    "response" => "No ha sido posible ejecutar la query en el sistema. Por favor intenta redactar la pregunta de otra manera, o revisa la consulta SQL obtenida para mejorar el modelo de aprendizaje.",
+                    "query" => $query
+                    ], 201);
                 }
                 
                 // Verificar si $queryPerform es un array o un resultado único
