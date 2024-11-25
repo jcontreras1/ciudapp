@@ -25,6 +25,7 @@ const submit = () => {
     })
     .catch(error => {
         consultando.value = false;
+        console.log(error)
     });
 }
 
