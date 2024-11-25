@@ -254,13 +254,13 @@ function toggleCategory(id){
         
         <div class="input-group mb-3">
             <span class="input-group-text"><i class="fas fa-camera"></i></span>
-              <input type="file" class="form-control " id="image"
-        name="image" capture="environment" accept="image/png, image/jpeg"
-        @change="onFileChange">
+            <input type="file" class="form-control " id="image"
+            name="image" capture="environment" accept="image/png, image/jpeg"
+            @change="onFileChange">
         </div>
         
         <!-- Inputs adicionales como la imagen y el mapa -->
-      
+        
         
         <div class="mb-1">
             <MapaLatLng :lat="form.latitud" :lng="form.longitud" @update:lat="(lat) => {form.latitud = lat; geocoding()}" @update:lng="(lng) => {form.longitud = lng}" > </MapaLatLng>
@@ -272,10 +272,12 @@ function toggleCategory(id){
         <div v-else class="mb-3">                
             <span>{{form.fullAddress}}</span>
         </div>
-        <div>
-            <label for="" class="p"><i class="fas fa-comment-alt"></i> Comentario</label>
-            <input type="text" class="form-control mb-3" v-model="form.comment">
+        
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addon1"><i class="fas fa-comment"></i></span>
+            <input type="text" class="form-control" v-model="form.comment">
         </div>
+        
         <button class="btn btn-primary rounded-4 float-end" :disabled="(form.subcategory_id == null && form.image == null) || sending">
             <span>
                 <i v-if="sending" class="fas fa-circle-notch fa-spin"></i>
