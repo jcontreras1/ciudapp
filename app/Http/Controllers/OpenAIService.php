@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 use Illuminate\Support\Facades\DB;
 use OpenAI\Laravel\Facades\OpenAI;
-
-
 use Illuminate\Http\Request;
 
 class OpenAIService extends Controller
@@ -12,32 +10,71 @@ class OpenAIService extends Controller
     public function generarRespuesta(Request $request)
     {
         $prompt2 = $request->input('prompt');
-        $prompt1 = '
-        A partir de ahora, eres un asistente que solamente responde preguntas normales, o con lenguaje SQL, sin texto para humanos si es que la pregunta tiene que ver con el contexto que te voy a dar. Este es un sistema de gestión de incidentes que involucra varios actores, como usuarios, posts, instituciones, ciudades, regiones, incidentes, categorías y subcategorías entre otros. Las tablas en la base de datos están interconectadas de la siguiente manera: 
-        - La tabla `users` almacena información de los usuarios, como nombre, correo electrónico y preferencias.
-        - La tabla `institution` almacena información sobre las instituciones, que pueden estar relacionadas con los usuarios mediante la tabla pivot `user_institution`.
-        - La tabla `post` (recuerda que es singular, no plural) almacena incidentes que los usuarios pueden reportar. Cada post tiene `latitud`, `longitud` y `comment`. Además, otros usuarios puede comentar el post a través de la tabla `post_comment` que tiene al `user_id` y el `comment`. El post tiene la dirección de la calle y la altura en la columna `location_long` (es posible que si requiera alguna dirección, deba hacer un comparador like y no preguntar espcificamente por esta dirección) y una ciudad a la que pertenece que se ubica en la tabla `city` mediante la foránea `city_id`.
-        - Cada post tiene, además, una `subcategory_id` que se relaciona con la tabla `subcategory` de la cual podemos obtener el nombre en la columna `name` (todas las subcategorías almacenadas en la base de datos están en español, al igual que todos los datos de la base de datos). Las subcategorías actuales son: 
-        - Subcategoría: Obras pertenece a la categoría es Municipio
-        - Subcategoría: Limpieza pertenece a la categoría es  Municipio
-        - Subcategoría: Tránsito pertenece a la categoría es Municipio
-        - Subcategoría: Alumbrado pertenece a la categoría es Servicoop
-        - Subcategoría: Cloacas pertenece a la categoría es Servicoop
-        - Subcategoría: Energía pertenece a la categoría es Servicoop
-        - Subcategoría: Emergencias pertenece a la categoría es Policía
-        - Subcategoría: Denuncias pertenece a la categoría es Policía
-        - Si te preguntaran, por ejemplo, cuantos reportes hay de ecología, deberás hacer un join con la tabla subcategoría y filtrar por el nombre de la subcategoría ecología. Es importante que entiendas cuales son subcategorías y cuales son categorías, ya que peuden preguntar por cualquiera de las 2.
-        - Hay que tener presente que una de las subcategorías puede ser `denuncias` no hay que confundir reportes, o posts que pertenecen a la tabla `post` con la subcategoría denuncias.
-        - Cada subcategoría, se relaciona con la tabla `category` a través de la foranea `subcategory_id`. 
-        - Una institución puede crear regiones, a través de la tabla `region` (lógicamente cada región tendrá un `institution_id`) que está delimitada por una serie de puntos (tabla `point`) para luego consultar si un post está o no en una región definida. 
-        - Cuando se generan muchos posts, se puede armar un incidente (tabla `incident`) que engloba muchos posts. Estos posts tienen un a foránea `incident_id`. A este incidente se le puede dar seguimiento agregando comentarios a través de la tabla `incident_comment`.
-        - Cada tabla tiene un `created_at`, un `updated_at` y un `deleted_at` para saber cuándo se creó, se actualizó y se eliminó un registro. Recuerda que los registros que muestres deberían tener el campo `deleted_at` nulo, ya que si no, no deberías mostrarlos. Por otra parte, en los resultados que pidan mostrar una lista de registros, no sería necesario mostrar los campos `created_at`, `updated_at` ni `deleted_at`.
-        - Los usuarios podrían preguntarte cosas normales, como por ejemplo ¿De qué color es el cielo? o algo referido al contexto de este sistema, como por ejemplo: ¿Cuantos reportes de energía se hicieron en el último mes? Para lo cual vamos a implementar un separador que consta de 3 (tres) signos pesos `$` para yo saber como me vas a responder.
-        - Si la pregunta del usuario es normal y no tiene que ver con el contexto brindado, deberás responder la pregunta del usuario de forma normal como si fueras ChatGPT con el siguiente formato: 0$$$tu respuesta, es decir, usando un 0 y tres signos de pesos como separador antes de tu respuesta. Ejemplo: Si la pregunta del usuario es: cuanto es 1000 + 1000, la respuesta deberá ser: 0$$$2000
-        - Si la pregunta tiene que ver con el contexto, deberás responder 1$$$tu respuesta, es decir, usando un 1 y tres signos de pesos como separador antes de tu respuesta que debe ser una respuesta que sólamente contenga lenguaje SQL válido, sin explicaciones, y sin comentarios extra. Ejemplo: cuantos posts hay? Respuesta: 1$$$SELECT COUNT(*) FROM `posts`;
-        - Si te preguntan entre la relación entre 2 sucesos, deberás saber que mi base de datos no tiene la función corr para averiguar correlaciones, lo que si puedo hacer, es enviarte los datos consultados por la query que me des, basado en esos datos deberás calcular la correlación por tu cuenta. En caso de que no puedas responderla, deberás dar una explicación acorde a la relación entre los dos datos.
-    ';
-        
+
+        $prompt1 = "Objetivo: A partir de ahora, eres un asistente que responde únicamente de dos maneras:
+
+Si la pregunta es general (no relacionada con la base de datos), responde con el formato 0^^^respuesta.
+Si la pregunta está relacionada con la base de datos, responde exclusivamente en SQL válido con el formato 1^^^consulta SQL, sin explicaciones ni comentarios adicionales. Todas las sql devueltas, deberán estar escritas en una sola linea sin saltos de línea.
+Contexto del sistema: Este es un sistema de gestión de incidentes que involucra usuarios, publicaciones (posts), instituciones, ciudades (city), regiones (region), incidentes (incident), categorías (category) y subcategorías (subcategory).
+
+Estructura de la base de datos:
+
+Users: Contiene nombre, correo y preferencias.
+Institutions (institution): Se relacionan con usuarios mediante la tabla pivote user_institution.
+Posts (post): Contienen latitud, longitud, comment, location_long (dirección) y city_id. Están relacionados con subcategorías mediante subcategory_id.
+Los usuarios pueden comentar en post_comment (user_id, comment).
+Incidents (incident): Varios posts pueden formar un incidente.
+Subcategories (subcategory): Se relacionan con categories (category) mediante category_id.
+Ejemplo: 'Obras' → 'Municipio', 'Energía' → 'ervicoop', 'Denuncias' → 'Policía'.
+Regions (region): Creadas por instituciones (institution_id). Definidas por puntos geográficos (point).
+Tiempos (created_at, updated_at, deleted_at): No mostrar registros con deleted_at distinto de NULL. No incluir estos campos en listas de registros.
+Reglas de respuesta:
+
+Si la pregunta es general (fuera del contexto del sistema):
+Responde en el formato 0^^^respuesta.
+Ejemplo:
+Pregunta: '¿Cuánto es 1000 + 1000?'
+Respuesta: 0^^^2000.
+
+Si la pregunta es sobre la base de datos:
+Responde en el formato 1^^^consulta SQL.
+Ejemplo:
+Pregunta: '¿Cuántos posts hay?'
+Respuesta: 1^^^SELECT COUNT(*) FROM post WHERE deleted_at IS NULL.
+
+Si se menciona una categoría, verificar su relación con una subcategoría antes de filtrar.
+
+Si se menciona una dirección, usar LIKE en location_long.
+
+Si preguntan por correlaciones:
+Genera la consulta para obtener los datos necesarios. Si los datos no permiten calcular una correlación, explica la relación con base en la estructura del sistema.
+
+Reglas adicionales para consultas de relación entre incidentes:
+
+Si se pregunta por la relación entre Tránsito y Accidentes en una calle y altura específicas:
+
+Obtener los datos filtrando los posts donde subcategory_id corresponda a 'Tránsito' o 'Accidentes'.
+Usar location_long LIKE '%[calle] [altura]%' para encontrar coincidencias.
+Responder con SQL:
+
+1^^^SELECT COUNT(*) AS total_transito 
+     FROM post 
+     WHERE subcategory_id = (SELECT id FROM subcategory WHERE name = 'Tránsito') 
+     AND location_long LIKE '%Manuel Belgrano 100%' 
+     AND deleted_at IS NULL
+
+SELECT COUNT(*) AS total_accidentes 
+     FROM post 
+     WHERE subcategory_id = (SELECT id FROM subcategory WHERE name = 'Accidentes') 
+     AND location_long LIKE '%Manuel Belgrano 100%' 
+     AND deleted_at IS NULL
+
+ Si los resultados se proveen, calcular la correlación entre ambas variables.
+
+Si la correlación no es viable, dar un análisis basado en la cantidad de reportes y su proximidad temporal.
+"; 
+
+        // Solicitar respuesta a OpenAI
         $result = OpenAI::chat()->create([
             'model' => config('app.openai_model'),
             'messages' => [
@@ -46,60 +83,85 @@ class OpenAIService extends Controller
             ],
         ]);
         
-        //Primer respuesta
+        // Primer respuesta de OpenAI
         $respuesta = $result->choices[0]->message->content;
-        $respuesta = explode("$$$", $respuesta);
-        //La pregunta no tiene nada que ver con el contexto
-        if($respuesta[0] == "0"){
+        $respuesta = explode("^^^", $respuesta); // Dividimos la respuesta por el separador
+        
+        // Si la respuesta es general (no relacionada con la base de datos)
+        if ($respuesta[0] == "0") {
             return response([
                 "response" => $respuesta[1],
                 "query" => ""
-            ],
-            201);
+            ], 201);
         }
-        //La respuesta si tiene que ver con el contexto y es una query
-        if($respuesta[0] == "1"){
-            $query = $respuesta[1];
-            //Ejecutar la query raw:
-            $queryPerform = null;
-            try {
-                $queryPerform = DB::select($query);
-            } catch (\Exception $e) {
-                return response([
-                    "response" => "No ha sido posible ejecutar la query en el sistema. Por favor intenta redactar la pregunta de otra manera, o revisa la consulta SQL obtenida para mejorar el modelo de aprendizaje.",
-                    "query" => $query
-                    ], 201);
+
+        // Si la respuesta está relacionada con la base de datos y contiene una o más queries
+        if ($respuesta[0] == "1") {
+            // Limpiamos el texto de la consulta eliminando saltos de línea y espacios innecesarios
+            $queries = explode(";", trim($respuesta[1]));
+
+            // Eliminamos los saltos de línea y dejamos las queries en una sola línea
+            // $queries = array_map(function($query) {
+            //     // Reemplazamos múltiples espacios por uno solo y eliminamos los saltos de línea
+            //     return preg_replace('/\s+/', ' ', trim($query));
+            // }, $queries);
+
+            $results = [];
+            foreach ($queries as $query) {
+                // Validamos que la consulta no esté vacía
+                if (empty($query)) {
+                    continue; // Si la consulta está vacía, la saltamos
                 }
-                
+
+                // Ejecutar la consulta SQL
+                $queryPerform = null;
+                try {
+                    $queryPerform = DB::select($query);
+                } catch (\Exception $e) {
+                    return response([
+                        "response" => "No ha sido posible ejecutar la query: $query. Por favor intenta redactar la pregunta de otra manera.",
+                        "query" => $query
+                    ], 500);  // Cambié el código de estado a 500, que es más adecuado para errores del servidor
+                }
+
                 // Verificar si $queryPerform es un array o un resultado único
                 if (is_array($queryPerform)) {
-                    // Si es un array, podemos usar implode para convertirlo en una cadena (por ejemplo, si los resultados son filas de datos)
+                    // Si es un array, los unimos en un solo string
                     $queryPerform = implode(', ', array_map(function($item) {
-                        // Si cada elemento de $queryPerform es un objeto, extraemos solo las propiedades necesarias
                         return implode(' ', (array) $item);
                     }, $queryPerform));
                 }
-                
-                $segundoContexto = "Ahora eres un asistente que, basado en la pregunta original que hizo el usuario, que es: '$prompt2'. Deberás responder con los siguientes datos obtenidos de la consulta.: " . $queryPerform;
-                
-                $result = OpenAI::chat()->create([
-                    'model' => config('app.openai_model'),
-                    'messages' => [
-                        ['role' => 'system', 'content' => $segundoContexto], 
-                    ],
-                ]);
-                $respuesta = $result->choices[0]->message->content;
-                
-                return response([
-                    "response" => $respuesta,
-                    "query" => $query
-                ], 201);
+
+                $results[] = $queryPerform; // Guardamos el resultado de cada consulta
             }
-            
-            
-            
-            
-            
+
+            // Concatenamos los resultados obtenidos de las consultas
+            $resultContent = implode("\n", $results);
+
+            // Regenerar el contexto para OpenAI con los resultados obtenidos
+            $segundoContexto = "Ahora eres un asistente que, basado en la pregunta original que hizo el usuario, que es: '$prompt2'. Deberás responder con los siguientes datos obtenidos de las consultas SQL: \n" . $resultContent;
+
+            // Hacer una nueva llamada a OpenAI con los resultados de la consulta
+            $result = OpenAI::chat()->create([
+                'model' => config('app.openai_model'),
+                'messages' => [
+                    ['role' => 'system', 'content' => $segundoContexto], 
+                ],
+            ]);
+            $respuestaFinal = $result->choices[0]->message->content;
+
+            // Devolver la respuesta final con los resultados
+            return response([
+                "response" => $respuestaFinal,
+                "query" => implode('; ', $queries)  // Concatenamos las queries y las devolvemos como una cadena única
+            ], 201);
         }
     }
-    
+}
+
+
+        
+        
+
+
+     
