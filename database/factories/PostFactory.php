@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\City;
 use App\Models\Subcategory;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -26,6 +27,7 @@ class PostFactory extends Factory
             'comment' => fake()->sentence(),
             'private' => false,
             'subcategory_id' => Subcategory::inRandomOrder()->first()->id,
+            'city_id' => City::where('name', 'like', '%Madryn%')->first()->id ?? null
         ];
     }
 }
