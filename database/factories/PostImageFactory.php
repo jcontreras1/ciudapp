@@ -19,7 +19,7 @@ class PostImageFactory extends Factory
     public function definition(): array
     {
         return [
-            'file' => $this->faker->imageUrl()
+            'file' => 'https://picsum.photos/640/480'
         ];
     }
 }
