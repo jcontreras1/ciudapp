@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 use Illuminate\Support\Facades\DB;
 use OpenAI\Laravel\Facades\OpenAI;
@@ -14,7 +13,7 @@ class OpenAIService extends Controller
         $prompt1 = "Objetivo: A partir de ahora, eres un asistente que responde únicamente de dos maneras:
 
 Si la pregunta es general (no relacionada con la base de datos), responde con el formato 0^^^respuesta.
-Si la pregunta está relacionada con la base de datos, responde exclusivamente en SQL válido con el formato 1^^^consulta SQL, sin explicaciones ni comentarios adicionales. Todas las sql devueltas, deberán estar escritas en una sola linea sin saltos de línea.
+Si la pregunta está relacionada con la base de datos, responde exclusivamente en SQL válido con el formato 1^^^consulta SQL, sin explicaciones ni comentarios adicionales. Todas las SQL devueltas, deberán estar escritas en una sola línea sin saltos de línea y sin puntos al final (Esto es muy importante).
 Contexto del sistema: Este es un sistema de gestión de incidentes que involucra usuarios, publicaciones (posts), instituciones, ciudades (city), regiones (region), incidentes (incident), categorías (category) y subcategorías (subcategory).
 
 Estructura de la base de datos:
@@ -69,10 +68,17 @@ SELECT COUNT(*) AS total_accidentes
      AND location_long LIKE '%Manuel Belgrano 100%' 
      AND deleted_at IS NULL
 
- Si los resultados se proveen, calcular la correlación entre ambas variables.
+Si se pregunta por la relación entre posts, se deben generar las siguientes consultas SQL para obtener los posts que estén relacionados entre sí por proximidad (menor a 10 metros):
 
-Si la correlación no es viable, dar un análisis basado en la cantidad de reportes y su proximidad temporal.
-"; 
+1^^^SELECT p1.id AS post1_id, p2.id AS post2_id, (6371000 * acos(cos(radians(p1.lat)) * cos(radians(p2.lat)) * cos(radians(p2.lng) - radians(p1.lng)) + sin(radians(p1.lat)) * sin(radians(p2.lat)))) AS distance
+     FROM post p1 
+     JOIN post p2 ON p1.id <> p2.id 
+     WHERE (6371000 * acos(cos(radians(p1.lat)) * cos(radians(p2.lat)) * cos(radians(p2.lng) - radians(p1.lng)) + sin(radians(p1.lat)) * sin(radians(p2.lat)))) < 10 
+     AND p1.deleted_at IS NULL AND p2.deleted_at IS NULL;
+
+Si se menciona la relación entre posts y alguna categoría o subcategoría, verificar que esté correctamente relacionada antes de incluir la condición en la consulta SQL.
+";
+
 
         // Solicitar respuesta a OpenAI
         $result = OpenAI::chat()->create([
@@ -139,7 +145,16 @@ Si la correlación no es viable, dar un análisis basado en la cantidad de repor
             $resultContent = implode("\n", $results);
 
             // Regenerar el contexto para OpenAI con los resultados obtenidos
-            $segundoContexto = "Ahora eres un asistente que, basado en la pregunta original que hizo el usuario, que es: '$prompt2'. Deberás responder con los siguientes datos obtenidos de las consultas SQL: \n" . $resultContent;
+            $segundoContexto = "Ahora eres un asistente que, basado en la pregunta original que hizo el usuario, que es: '$prompt2', deberás responder con los siguientes datos obtenidos de las consultas SQL:
+
+Los siguientes posts están relacionados entre sí porque la distancia entre ellos es menor a 10 metros, lo que sugiere que podrían estar en la misma ubicación geográfica o ser parte de un incidente común. Es importante notar que, en algunos casos, las categorías o subcategorías de los posts también podrían indicar una relación más directa, como que pertenecen a la misma temática o tipo de incidente.
+
+Aquí tienes la lista de las relaciones encontradas:
+
+$resultContent
+
+Cada una de estas relaciones indica que los posts están muy cerca geográficamente, lo que podría indicar que están relacionados por un mismo evento o incidente. Si hay alguna categoría o subcategoría común, esto podría reforzar la idea de que estos posts están vinculados más allá de la proximidad geográfica.";
+
 
             // Hacer una nueva llamada a OpenAI con los resultados de la consulta
             $result = OpenAI::chat()->create([

@@ -31,7 +31,7 @@ const submit = () => {
 
 const copyToClipboard = (text, index) => {
        // Crear un elemento de textarea temporal
-       const tempTextArea = document.createElement('textarea');
+        const tempTextArea = document.createElement('textarea');
       tempTextArea.value = text;
       document.body.appendChild(tempTextArea);
       tempTextArea.select();
