@@ -1,5 +1,6 @@
 <?php
 namespace App\Http\Controllers;
+use App\Models\Subcategory;
 use Illuminate\Support\Facades\DB;
 use OpenAI\Laravel\Facades\OpenAI;
 use Illuminate\Http\Request;
@@ -8,78 +9,118 @@ class OpenAIService extends Controller
 {
     public function generarRespuesta(Request $request)
     {
+        $listaDeSubcategorias = Subcategory::with('category')
+        ->select('id', 'name', 'category_id')
+        ->get()
+        ->map(function($subcat) {
+            return (object)[
+                'id' => $subcat->id,
+                'name' => $subcat->name,
+                'category_name' => $subcat->category ? $subcat->category->name : null,
+            ];
+        });
+        $subcategorias = [];
+        foreach ($listaDeSubcategorias as $subcategory) {
+            $subcategorias[] = [
+                'id' => $subcategory->id,
+                'name' => $subcategory->name,
+            ];
+        }
+        
         $prompt2 = $request->input('prompt');
-
-        $prompt1 = "Objetivo: A partir de ahora, eres un asistente que responde únicamente de dos maneras:
-
-Si la pregunta es general (no relacionada con la base de datos), responde con el formato 0^^^respuesta.
-Si la pregunta está relacionada con la base de datos, responde exclusivamente en SQL válido con el formato 1^^^consulta SQL, sin explicaciones ni comentarios adicionales. Todas las SQL devueltas, deberán estar escritas en una sola línea sin saltos de línea y sin puntos al final (Esto es muy importante).
-Contexto del sistema: Este es un sistema de gestión de incidentes que involucra usuarios, publicaciones (posts), instituciones, ciudades (city), regiones (region), incidentes (incident), categorías (category) y subcategorías (subcategory).
-
+        
+        if (preg_match('/eventos? relacionados?/i', $prompt2)) {
+            $prompt2 = "¿Qué posts están relacionados por cercanía y categoría?";
+        }
+        
+        $prompt1 = "
+        
+Objetivo: Eres un asistente que responde únicamente en dos formatos según el tipo de pregunta:
+- Preguntas generales (no relacionadas con la base de datos): Responde con '0^^^respuesta'.
+- Preguntas sobre la base de datos: Responde con '1^^^consulta SQL' en una sola línea, sin saltos ni explicaciones adicionales.
+        
+Contexto: Sistema de gestión de incidentes con entidades: usuarios (users), publicaciones (post), instituciones (institutions), ciudades (city), regiones (region), incidentes (incident), categorías (category) y subcategorías (subcategory).
+        
 Estructura de la base de datos:
+- Users: Campos: name, email, preferences.
+- Institutions: Relacionadas con users vía tabla pivote user_institution.
+- Posts: Campos: latitude (lat), longitude (lng), comment, location_long (dirección), city_id, subcategory_id. Relacionados con subcategorías.
+- Post_Comment: Campos: user_id, comment.
+- Incidents: Agrupan múltiples posts.
+- Subcategories: Relacionadas con categories vía category_id (ejemplo: 'Obras' → 'Municipio', 'Energía' → 'Servicoop', 'Denuncias' → 'Policía', 'Delitos' → 'Robo', 'Ecología' → 'Contaminación').
+- Regions: Creadas por institutions (institution_id), definidas por puntos geográficos (point).
+- Tiempos: Campos created_at, updated_at, deleted_at. Excluir registros con deleted_at NOT NULL.
 
-Users: Contiene nombre, correo y preferencias.
-Institutions (institution): Se relacionan con usuarios mediante la tabla pivote user_institution.
-Posts (post): Contienen latitud, longitud, comment, location_long (dirección) y city_id. Están relacionados con subcategorías mediante subcategory_id.
-Los usuarios pueden comentar en post_comment (user_id, comment).
-Incidents (incident): Varios posts pueden formar un incidente.
-Subcategories (subcategory): Se relacionan con categories (category) mediante category_id.
-Ejemplo: 'Obras' → 'Municipio', 'Energía' → 'ervicoop', 'Denuncias' → 'Policía'.
-Regions (region): Creadas por instituciones (institution_id). Definidas por puntos geográficos (point).
-Tiempos (created_at, updated_at, deleted_at): No mostrar registros con deleted_at distinto de NULL. No incluir estos campos en listas de registros.
+IMPORTANTE:
+Los nombres exactos de las tablas en SQL son:
+- user
+- post
+- institution
+- incident
+- subcategory
+- category
+- city
+- region
+- post_comment
+No uses nombres en plural ni versiones alternativas. Usá exactamente estos nombres.
+
+Por ejemplo:
+Pregunta: ¿Qué posts están cerca?
+Respuesta: 1^^^SELECT p1.id AS post1_id, p2.id AS post2_id, (6371 * acos(cos(radians(p1.lat)) * cos(radians(p2.lat)) * cos(radians(p2.lng) - radians(p1.lng)) + sin(radians(p1.lat)) * sin(radians(p2.lat)))) * 1000 AS distance FROM post p1 JOIN post p2 ON p1.id < p2.id WHERE p1.deleted_at IS NULL AND p2.deleted_at IS NULL HAVING distance < 100
+
+        
 Reglas de respuesta:
-
-Si la pregunta es general (fuera del contexto del sistema):
-Responde en el formato 0^^^respuesta.
-Ejemplo:
-Pregunta: '¿Cuánto es 1000 + 1000?'
-Respuesta: 0^^^2000.
-
-Si la pregunta es sobre la base de datos:
-Responde en el formato 1^^^consulta SQL.
-Ejemplo:
-Pregunta: '¿Cuántos posts hay?'
-Respuesta: 1^^^SELECT COUNT(*) FROM post WHERE deleted_at IS NULL.
-
-Si se menciona una categoría, verificar su relación con una subcategoría antes de filtrar.
-
-Si se menciona una dirección, usar LIKE en location_long.
-
-Si preguntan por correlaciones:
-Genera la consulta para obtener los datos necesarios. Si los datos no permiten calcular una correlación, explica la relación con base en la estructura del sistema.
-
-Reglas adicionales para consultas de relación entre incidentes:
-
-Si se pregunta por la relación entre Tránsito y Accidentes en una calle y altura específicas:
-
-Obtener los datos filtrando los posts donde subcategory_id corresponda a 'Tránsito' o 'Accidentes'.
-Usar location_long LIKE '%[calle] [altura]%' para encontrar coincidencias.
-Responder con SQL:
-
-1^^^SELECT COUNT(*) AS total_transito 
-     FROM post 
-     WHERE subcategory_id = (SELECT id FROM subcategory WHERE name = 'Tránsito') 
-     AND location_long LIKE '%Manuel Belgrano 100%' 
-     AND deleted_at IS NULL
-
-SELECT COUNT(*) AS total_accidentes 
-     FROM post 
-     WHERE subcategory_id = (SELECT id FROM subcategory WHERE name = 'Accidentes') 
-     AND location_long LIKE '%Manuel Belgrano 100%' 
-     AND deleted_at IS NULL
-
-Si se pregunta por la relación entre posts, se deben generar las siguientes consultas SQL para obtener los posts que estén relacionados entre sí por proximidad (menor a 10 metros):
-
-1^^^SELECT p1.id AS post1_id, p2.id AS post2_id, (6371000 * acos(cos(radians(p1.lat)) * cos(radians(p2.lat)) * cos(radians(p2.lng) - radians(p1.lng)) + sin(radians(p1.lat)) * sin(radians(p2.lat)))) AS distance
-     FROM post p1 
-     JOIN post p2 ON p1.id <> p2.id 
-     WHERE (6371000 * acos(cos(radians(p1.lat)) * cos(radians(p2.lat)) * cos(radians(p2.lng) - radians(p1.lng)) + sin(radians(p1.lat)) * sin(radians(p2.lat)))) < 10 
-     AND p1.deleted_at IS NULL AND p2.deleted_at IS NULL;
-
-Si se menciona la relación entre posts y alguna categoría o subcategoría, verificar que esté correctamente relacionada antes de incluir la condición en la consulta SQL.
+1. Preguntas generales:
+   - Formato: '0^^^respuesta
+   - Ejemplo: Pregunta: '¿Qué es la ecología?' → Respuesta: '0^^^Estudio de las relaciones entre organismos y su entorno'.
+        
+2. Preguntas sobre la base de datos:
+   - Formato: '1^^^consulta SQL' (una sola línea, sin punto final).
+   - Ejemplo: Pregunta: '¿Cuántos posts existen?' → Respuesta: '1^^^SELECT COUNT(*) FROM post WHERE deleted_at IS NULL'.
+        
+3. Filtros específicos:
+   - Categorías/Subcategorías: Verificar relación con subcategory antes de filtrar.
+   - Direcciones: Usar LIKE en location_long (ejemplo: LIKE '%Calle 123%').
+   - Si no hay suficientes datos, intentá generar una consulta ejemplo igualmente, aunque sea con condiciones genéricas, y luego indicá que puede requerir ajustes.
+    - Solo si la pregunta no tiene ningún sentido o no se puede relacionar con ningún dato del sistema, usá '0^^^análisis basado en estructura'.
+        
+4. Relación entre posts (cercanía geográfica y subcategorías):
+   - Si se pregunta por posts relacionados:
+     - **Cercanía geográfica**: Usa la fórmula de Haversine para calcular la distancia entre posts (en metros). Umbral por defecto: 100 metros, ajustable si se especifica.
+     - **Subcategorías relacionadas**: Evalúa si las subcategorías de los posts están vinculadas según estas reglas:
+       - Relacionadas: 'Denuncias' con 'Delitos' (mismo contexto de seguridad).
+       - No relacionadas: 'Ecología' con cualquier otra (contexto aislado).
+       - Otras combinaciones: Verificar si comparten category_id o definir relación manualmente si se especifica.
+     - - Si se pregunta por posts relacionados:
+  - Usá la fórmula de Haversine para calcular distancia (en metros).
+  - Incluí en el resultado: `p1.id` y `p2.id` como `post1_id` y `post2_id`.
+  - Incluí también los **nombres de las subcategorías** de cada post como `subcategory1` y `subcategory2`, haciendo `JOIN` con la tabla `subcategory`.
+  - Ejemplo de campos esperados en la respuesta: `post1_id`, `post2_id`, `subcategory1`, `subcategory2`, `distance`.
+  - No uses `subcategory_id` sin nombre, ya que el análisis posterior requiere subcategorías legibles.
+        
+Notas:
+- 'Evento' puede interpretarse como un post o incidente. Si no se especifica, asumí que se refiere a un post.
+- Si se pregunta por eventos relacionados, interpretá que busca pares de posts que estén cercanos y compartan subcategoría o categoría relacionada.
+- Consultas SQL deben ser válidas y ejecutables.
+- No incluir campos temporales en listas de registros.
+- Umbral de distancia ajustable si se especifica (ejemplo: 'posts a menos de 50 metros').
+- Si se pregunta por posts relacionados, devolvé una consulta que retorne una lista de pares de posts (p1.id, p2.id) junto con sus subcategorías y distancia entre sí.
+- Asegurate de incluir el cálculo de distancia (Haversine) y un filtro de subcategorías compatibles (ya sea por nombre, category_id o regla manual).
+- La consulta debe estar optimizada para mostrar relaciones útiles y concretas, y evitar repeticiones.
+        
+Datos adicionales: Estas son las subcategorías disponibles en el sistema:
+        
+        
+" . json_encode($subcategorias) . ".
+        
+        
+Ejemplo de relaciones inferidas automáticamente:
+- 'Robo' y 'Violencia' → Relacionadas por contexto de seguridad.
+- 'Basura' y 'Contaminación' → Relacionadas por contexto ecológico.
+- 'Luminarias' y 'Calles rotas' → Potencialmente relacionadas por contexto urbano.
 ";
-
-
+        
+        
         // Solicitar respuesta a OpenAI
         $result = OpenAI::chat()->create([
             'model' => config('app.openai_model'),
@@ -100,25 +141,27 @@ Si se menciona la relación entre posts y alguna categoría o subcategoría, ver
                 "query" => ""
             ], 201);
         }
-
+        
         // Si la respuesta está relacionada con la base de datos y contiene una o más queries
         if ($respuesta[0] == "1") {
             // Limpiamos el texto de la consulta eliminando saltos de línea y espacios innecesarios
             $queries = explode(";", trim($respuesta[1]));
-
-            // Eliminamos los saltos de línea y dejamos las queries en una sola línea
-            // $queries = array_map(function($query) {
-            //     // Reemplazamos múltiples espacios por uno solo y eliminamos los saltos de línea
-            //     return preg_replace('/\s+/', ' ', trim($query));
-            // }, $queries);
-
+            
+            $queries = array_map(function ($query) {
+                return str_replace(
+                    ['FROM posts', 'JOIN posts', 'FROM users', 'JOIN users'], 
+                    ['FROM post', 'JOIN post', 'FROM user', 'JOIN user'], 
+                    $query
+                );
+            }, $queries);
+            
             $results = [];
             foreach ($queries as $query) {
                 // Validamos que la consulta no esté vacía
                 if (empty($query)) {
                     continue; // Si la consulta está vacía, la saltamos
                 }
-
+                
                 // Ejecutar la consulta SQL
                 $queryPerform = null;
                 try {
@@ -129,7 +172,7 @@ Si se menciona la relación entre posts y alguna categoría o subcategoría, ver
                         "query" => $query
                     ], 500);  // Cambié el código de estado a 500, que es más adecuado para errores del servidor
                 }
-
+                
                 // Verificar si $queryPerform es un array o un resultado único
                 if (is_array($queryPerform)) {
                     // Si es un array, los unimos en un solo string
@@ -137,25 +180,27 @@ Si se menciona la relación entre posts y alguna categoría o subcategoría, ver
                         return implode(' ', (array) $item);
                     }, $queryPerform));
                 }
-
+                
                 $results[] = $queryPerform; // Guardamos el resultado de cada consulta
             }
-
+            
             // Concatenamos los resultados obtenidos de las consultas
             $resultContent = implode("\n", $results);
-
+            
             // Regenerar el contexto para OpenAI con los resultados obtenidos
-            $segundoContexto = "Ahora eres un asistente que, basado en la pregunta original que hizo el usuario, que es: '$prompt2', deberás responder con los siguientes datos obtenidos de las consultas SQL:
-
-Los siguientes posts están relacionados entre sí porque la distancia entre ellos es menor a 10 metros, lo que sugiere que podrían estar en la misma ubicación geográfica o ser parte de un incidente común. Es importante notar que, en algunos casos, las categorías o subcategorías de los posts también podrían indicar una relación más directa, como que pertenecen a la misma temática o tipo de incidente.
-
-Aquí tienes la lista de las relaciones encontradas:
-
-$resultContent
-
-Cada una de estas relaciones indica que los posts están muy cerca geográficamente, lo que podría indicar que están relacionados por un mismo evento o incidente. Si hay alguna categoría o subcategoría común, esto podría reforzar la idea de que estos posts están vinculados más allá de la proximidad geográfica.";
-
-
+            
+            
+            $segundoContexto = "Eres un asistente que interpreta los resultados de una consulta SQL basada en la pregunta original del usuario: '$prompt2'. Los datos obtenidos son: " . json_encode($queryPerform) . ".
+            
+Tu tarea es responder de forma clara, útil y específica según el tipo de pregunta:
+            
+- Si la pregunta es un conteo simple (ej: '¿Cuántos posts hay?'), devuelve solo el número o un mensaje corto con el total.
+- Si la pregunta busca semejanza entre posts (ej: '¿Qué posts de Denuncias y Delitos están cerca?'), analizá los pares de posts (post1_id, post2_id, distance, subcategory_id). Para cada par:
+  - Especificá: los IDs de los posts, sus subcategorías y la distancia entre ellos.
+  - Usá frases como: 'Revisá el post con ID X y el ID Y, que están a Z metros de distancia y pertenecen a subcategorías similares.'
+  - Si hay varios pares relacionados, listalos uno por uno con esa estructura.
+- Si no hay datos suficientes, respondé: 'No hay datos suficientes para responder la pregunta.'";
+            
             // Hacer una nueva llamada a OpenAI con los resultados de la consulta
             $result = OpenAI::chat()->create([
                 'model' => config('app.openai_model'),
@@ -164,7 +209,7 @@ Cada una de estas relaciones indica que los posts están muy cerca geográficame
                 ],
             ]);
             $respuestaFinal = $result->choices[0]->message->content;
-
+            
             // Devolver la respuesta final con los resultados
             return response([
                 "response" => $respuestaFinal,
@@ -175,8 +220,7 @@ Cada una de estas relaciones indica que los posts están muy cerca geográficame
 }
 
 
-        
-        
 
 
-     
+
+

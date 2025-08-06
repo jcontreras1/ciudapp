@@ -11,7 +11,7 @@ const props = defineProps({
 const text = ref('');
 const consultando = ref(false);
 const messages = ref([]);
-
+const mostrarSql = ref(false);
 
 const submit = () => {
     consultando.value = true;
@@ -60,7 +60,14 @@ const copyToClipboard = (text, index) => {
         <Head title="Inicio"></Head>
         
         <div class="chat-container">
-            <h2 class="">Preguntas a la IA</h2>
+            <h2 class="">Preguntas a la IA
+                <span class="float-end">
+                    <button title="Mostrar u ocultar SQL" class="btn btn-sm btn-primary" @click="mostrarSql = !mostrarSql">
+                        <i class="fas fa-eye" v-if="mostrarSql"></i>                        
+                        <i class="fas fa-eye-slash" v-if="!mostrarSql"></i>                        
+                    </button>
+                </span>
+            </h2>
             
             <div class="row">
                 <div class="col-12 mb-3">                    
@@ -85,17 +92,16 @@ const copyToClipboard = (text, index) => {
                         <div class="col-12">
                             
                             <div  class="card mb-2" v-for="(message, index) in messages" :key="index">
-                                <div class="card-body" :class="{'d-flex align-items-end flex-column' : message.sender === 'user'}">
+                                <div class="p-3" :class="{'d-flex align-items-end flex-column' : message.sender === 'user'}">
                                     <div class="badge bg-success mb-2">
                                         <span v-if="message.sender === 'user'">Tú</span>
                                         <span v-else>IA</span>
                                     </div>
                                     <div v-html="message.text"></div>
                                 </div>
-                                <div class="card-footer" v-if="message.sender === 'ai' && message.query">
+                                <div v-show="mostrarSql" class="card-footer" v-if="message.sender === 'ai' && message.query">
                                     <div class="d-flex justify-content-between">
-                                        <div>
-                                            
+                                        <div class="text-muted">
                                             <i class="fas fa-database text-danger"></i> <code>{{ message.query }}</code>
                                         </div>
                                         <div>
