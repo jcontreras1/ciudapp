@@ -130,5 +130,6 @@ return [
      */
     'openai_api_key' => env('OPENAI_API_KEY'),
     'openai_model' => env('OPENAI_MODEL', 'gpt-3.5-turbo'),
+    'google_api_key' => env('GOOGLE_API_KEY','AIzaSyD1eYkG8pXnJkK0mXhW3bXl0k8H3pX2QmM'),
 
 ];

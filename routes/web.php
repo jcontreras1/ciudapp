@@ -14,6 +14,19 @@ Route::resource('posts', App\Http\Controllers\PostController::class);
 Route::get('/google-auth/redirect', function () {
     return Socialite::driver('google')->redirect();
 });
+
+Route::get('/test2', function () {
+    return \App\Http\Controllers\Services\GetBoundsFromAddressesService::getbounds(
+        'san martin',
+        'marcos a zar',
+        'roca',
+        'estivariz'
+    );
+});
+Route::get('/test', function () {
+    $url = \App\Http\Controllers\Services\GetVertexFromStreetsService::getVertex('san martin', 'gobernador maiz');
+    return $url;
+});
  
 Route::get('/google-auth/callback', function () {
     $userGoogle = Socialite::driver('google')->stateless()->user();
