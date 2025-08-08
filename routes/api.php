@@ -4,6 +4,7 @@ use App\Events\NewPostEvent;
 use App\Http\Controllers\api\ApiCommentLikeController;
 use App\Http\Controllers\api\ApiIncidentCommentController;
 use App\Http\Controllers\api\ApiIncidentController;
+use App\Http\Controllers\api\ApiMapController;
 use App\Http\Controllers\api\CityController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CommentController;
@@ -22,6 +23,9 @@ Route::get('/user', function (Request $request) {
 
 Route::get('/post/{post}', [ApiPostController::class, 'show']);
 Route::middleware('auth:sanctum')->group(function () {
+
+    //Maps
+    Route::post('/bounds', [ApiMapController::class, 'bounds']);
 
     //Social
     Route::post('/post/{post}/comment', [ApiPostController::class, 'storeComment']);

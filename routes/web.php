@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\IncidentController;
+use App\Http\Controllers\PostController;
 use App\Models\Preference;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -19,8 +20,8 @@ Route::get('/test2', function () {
     return \App\Http\Controllers\Services\GetBoundsFromAddressesService::getbounds(
         'san martin',
         'marcos a zar',
-        'roca',
-        'estivariz'
+        'moreno',
+        'rivadavia'
     );
 });
 Route::get('/test', function () {
@@ -65,6 +66,7 @@ Route::middleware([
             return Inertia::render('Profile/Partials/UpdatePasswordForm');
         })->name('profile.updatePassword');
 
+        Route::get('/bounds', [PostController::class, 'bounds'])->name('posts.bounds');
 
         Route::get('/dashboard', function () {
             return redirect()->route('home');

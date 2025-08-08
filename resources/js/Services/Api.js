@@ -1,15 +1,5 @@
 import axios from 'axios'
 
-// export default() => {
-// 	return axios.create({
-// 		baseURL: '/api',
-// 		headers: {
-// 			'Accept': 'application/json',
-// 			'Content-Type': 'application/json'
-// 		},
-// 	});
-// }
-
 export default {
     get(url, options = null) {
         return axios.get('/api' + url, options)
@@ -21,13 +11,19 @@ export default {
                         errors += error.response.data.errors[aux] + '<br>';
                     }
                 }
+                let html;
                 if (error.response) {
+                    if (typeof error.response.data === 'object' && error.response.data !== null && 'message' in error.response.data) {
+                        html = errors ?? error.response.data.message;
+                    } else {
+                        html = errors ?? error.response.data;
+                    }
                     Swal.fire({
                         allowEnterKey: true,
                         focusConfirm: true,
                         icon: 'error',
                         title: `Error ${error.response.status}`,
-                        html: errors ?? (error.response.data),
+                        html: html,
                     });
                 }
             });
@@ -43,13 +39,19 @@ export default {
                         errors += error.response.data.errors[aux] + '<br>';
                     }
                 }
+                let html;
                 if (error.response) {
+                    if (typeof error.response.data === 'object' && error.response.data !== null && 'message' in error.response.data) {
+                        html = errors ?? error.response.data.message;
+                    } else {
+                        html = errors ?? error.response.data;
+                    }
                     Swal.fire({
                         allowEnterKey: true,
                         focusConfirm: true,
                         icon: 'error',
                         title: `Error ${error.response.status}`,
-                        html: errors ?? error.response.data,
+                        html: html,
                     });
                 }
             });
@@ -65,13 +67,19 @@ export default {
                         errors += error.response.data.errors[aux] + '<br>';
                     }
                 }
+                let html;
                 if (error.response) {
+                    if (typeof error.response.data === 'object' && error.response.data !== null && 'message' in error.response.data) {
+                        html = errors ?? error.response.data.message;
+                    } else {
+                        html = errors ?? error.response.data;
+                    }
                     Swal.fire({
                         allowEnterKey: true,
                         focusConfirm: true,
                         icon: 'error',
                         title: `Error ${error.response.status}`,
-                        html: errors ?? error.response.data,
+                        html: html,
                     });
                 }
             });
@@ -87,14 +95,19 @@ export default {
                         errors += error.response.data.errors[aux] + '<br>';
                     }
                 }
+                let html;
                 if (error.response) {
+                    if (typeof error.response.data === 'object' && error.response.data !== null && 'message' in error.response.data) {
+                        html = errors ?? error.response.data.message;
+                    } else {
+                        html = errors ?? error.response.data;
+                    }
                     Swal.fire({
                         allowEnterKey: true,
                         focusConfirm: true,
                         icon: 'error',
                         title: `Error ${error.response.status}`,
-                        html: errors ?? error.response.data,
-                        
+                        html: html,
                     });
                 }
             });

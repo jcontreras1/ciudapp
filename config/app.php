@@ -123,13 +123,13 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
-    'mapbox_api_key' => env('VITE_MAPBOX_TOKEN', 'pk.eyJ1IjoiamNvbnRyZXJhczEiLCJhIjoiY20xNTJzMmN4MDMxYjJqcHNlcHk5Z2d6NyJ9.9wn__xVAiSc51mSPJmnpYA'),
+    'mapbox_api_key' => env('VITE_MAPBOX_TOKEN', ''),
     
     /**
      * OpenAI Environment Variables
      */
     'openai_api_key' => env('OPENAI_API_KEY'),
     'openai_model' => env('OPENAI_MODEL', 'gpt-3.5-turbo'),
-    'google_api_key' => env('GOOGLE_API_KEY','AIzaSyD1eYkG8pXnJkK0mXhW3bXl0k8H3pX2QmM'),
+    'google_api_key' => env('GOOGLE_API_KEY',''),
 
 ];

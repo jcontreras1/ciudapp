@@ -35,13 +35,12 @@ class PostController extends Controller
             ],
         ];
 
-        return Inertia::render('Mapa/MapaCalor', ['data' => $data]);
-
-      
+        return Inertia::render('Mapa/MapaCalor', ['data' => $data]);      
     }
 
-
-
+    public function bounds(Request $request){
+       return Inertia::render('Mapa/Bounds');
+    }
 
     public function store(Request $request){
         return $request;
