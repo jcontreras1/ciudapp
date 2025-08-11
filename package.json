@@ -28,9 +28,11 @@
         "@mapbox/mapbox-gl-draw": "^1.4.3",
         "@turf/buffer": "^7.1.0",
         "@turf/helpers": "^7.1.0",
-        "@turf/turf": "^7.1.0",
+        "@turf/turf": "^7.2.0",
         "@vueuse/core": "^11.1.0",
+        "lodash": "^4.17.21",
         "mapbox-gl": "^3.6.0",
+        "marked": "^16.1.2",
         "sweetalert2": "^11.14.0"
     }
 }

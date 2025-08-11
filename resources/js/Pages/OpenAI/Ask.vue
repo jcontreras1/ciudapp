@@ -3,6 +3,8 @@ import { Head, Link } from '@inertiajs/vue3';
 import AppLayoutHome from '@/Layouts/AppLayoutHome.vue';
 import { onMounted, ref, watch } from 'vue';
 import OpenAIService from '@/Services/OpenAIService';
+import { marked } from "marked"
+
 
 const props = defineProps({
     
@@ -20,7 +22,7 @@ const submit = () => {
     text.value = '';
     OpenAIService.ask(userMessage)
     .then(response => {
-        messages.value.push({ text: response.data.response, query: response.data.query, copied: false, sender: 'ai' });
+        messages.value.push({ text: marked(response.data.response), query: response.data.query, copied: false, sender: 'ai' });
         consultando.value = false;
     })
     .catch(error => {

@@ -3,6 +3,8 @@
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\IncidentController;
 use App\Http\Controllers\PostController;
+use App\Models\City;
+use App\Models\Post;
 use App\Models\Preference;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -16,17 +18,30 @@ Route::get('/google-auth/redirect', function () {
     return Socialite::driver('google')->redirect();
 });
 
-Route::get('/test2', function () {
-    return \App\Http\Controllers\Services\GetBoundsFromAddressesService::getbounds(
-        'san martin',
-        'marcos a zar',
-        'moreno',
-        'rivadavia'
-    );
-});
-Route::get('/test', function () {
-    $url = \App\Http\Controllers\Services\GetVertexFromStreetsService::getVertex('san martin', 'gobernador maiz');
-    return $url;
+
+Route::get('/refactor', function(){
+    $posts = Post::orderBy('id', 'desc')->whereNull('location_long')->limit(50)->get();
+
+    foreach ($posts as $post) {
+        $url = "https://api.mapbox.com/search/geocode/v6/reverse?longitude=$post->lng&latitude=$post->lat&access_token=" . config('app.mapbox_api_key');
+        info("Mapbox API URL: " . $url);
+        $response = Http::get($url);
+        //info($response);
+        $response = $response->object();
+        //inferir ciudad
+        $ciudadGeocoding = $response->features[0]?->properties?->context?->place?->name ?? null;
+
+        $ciudadModel = $ciudadGeocoding ? City::where('name', $ciudadGeocoding)->first() : null;
+        $post->update([
+            'location_short' => $response->features[0]?->properties?->place_formatted,
+            'city_id' => $ciudadModel?->id ?? null,
+            
+            'location_long' => $response->features[0]?->properties?->full_address, // cuidado que a veces es null
+        ]);
+    }
+
+    return $posts;
+
 });
  
 Route::get('/google-auth/callback', function () {

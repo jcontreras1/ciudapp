@@ -7,83 +7,51 @@ use Illuminate\Http\Request;
 
 class GetBoundsFromAddressesService extends Controller
 {
-    public static function getBounds($address1, $address2, $address3, $address4, $city = 'Puerto Madryn', $state = 'Chubut', $country = 'Argentina')
+       
+    public static function getBoundsWithShifts($calles, $city = 'Puerto Madryn', $state = 'Chubut', $country = 'Argentina')
     {
-        $addresses = [
-            self::normalizeStreet($address1),
-            self::normalizeStreet($address2),
-            self::normalizeStreet($address3),
-            self::normalizeStreet($address4),
-        ];
-        
+        // Normalizar todas las calles recibidas
+        $addresses = array_map([self::class, 'normalizeStreet'], $calles);
+
         $bounds = [];
-        
-        for ($i = 0; $i < count($addresses); $i++) {
-            for ($j = $i + 1; $j < count($addresses); $j++) {
-                $street1 = $addresses[$i];
-                $street2 = $addresses[$j];
-                
-                $vertex = GetVertexFromStreetsService::getVertex($street1, $street2, $city, $state, $country);
-                
-                if ($vertex) {
-                    $bounds[] = $vertex;
-                } else {
-                    \Log::warning("No se encontró intersección válida para: {$street1} y {$street2}");
-                }
-            }
-        }
-        
-        return $bounds;
-    }
 
-    public static function getBoundsWithShifts($address1, $address2, $address3, $address4, $city = 'Puerto Madryn', $state = 'Chubut', $country = 'Argentina')
-{
-    $addresses = [
-        self::normalizeStreet($address1),
-        self::normalizeStreet($address2),
-        self::normalizeStreet($address3),
-        self::normalizeStreet($address4),
-    ];
+        for ($shift = 0; $shift < count($addresses); $shift++) {
+            // Generar pares de calles
+            for ($i = 0; $i < count($addresses); $i++) {
+                for ($j = $i + 1; $j < count($addresses); $j++) {
+                    $street1 = $addresses[$i];
+                    $street2 = $addresses[$j];
 
-    $bounds = [];
+                    $vertex = GetVertexFromStreetsService::getVertex($street1, $street2, $city, $state, $country);
 
-    for ($shift = 0; $shift < count($addresses); $shift++) {
-        // Generar pares de calles
-        for ($i = 0; $i < count($addresses); $i++) {
-            for ($j = $i + 1; $j < count($addresses); $j++) {
-                $street1 = $addresses[$i];
-                $street2 = $addresses[$j];
+                    if ($vertex && !self::vertexExists($bounds, $vertex)) {
+                        $bounds[] = $vertex;
 
-                $vertex = GetVertexFromStreetsService::getVertex($street1, $street2, $city, $state, $country);
-
-                if ($vertex && !self::vertexExists($bounds, $vertex)) {
-                    $bounds[] = $vertex;
-
-                    // Si ya tenemos 4 vértices, cortamos
-                    if (count($bounds) === 4) {
-                        return $bounds;
+                        // Si ya tenemos 4 vértices, cortamos
+                        if (count($bounds) === 4) {
+                            return $bounds;
+                        }
                     }
                 }
             }
+
+            // Rotar calles para probar nuevos pares
+            array_push($addresses, array_shift($addresses));
         }
 
-        // Rotar calles para probar nuevos pares
-        array_push($addresses, array_shift($addresses));
+        return $bounds;
     }
-
-    return $bounds;
-}
-
-private static function vertexExists($bounds, $vertex, $tolerance = 0.00001)
-{
-    foreach ($bounds as $b) {
-        if (abs($b['lat'] - $vertex['lat']) < $tolerance &&
+    
+    private static function vertexExists($bounds, $vertex, $tolerance = 0.00001)
+    {
+        foreach ($bounds as $b) {
+            if (abs($b['lat'] - $vertex['lat']) < $tolerance &&
             abs($b['lng'] - $vertex['lng']) < $tolerance) {
-            return true;
+                return true;
+            }
         }
+        return false;
     }
-    return false;
-}
     
     /**
     * Limpia y normaliza nombres de calles

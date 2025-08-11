@@ -76,5 +76,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/relationships', [CategoryController::class, 'storeRelationship']);
 
      //IA
-    Route::post('/ask', [App\Http\Controllers\OpenAIService::class, 'generarRespuesta']);
+    // Route::post('/ask', [App\Http\Controllers\OpenAIService::class, 'generarRespuesta']);
+    Route::post('/ask', [App\Http\Controllers\OpenAIController::class, 'generarRespuesta']);
 });

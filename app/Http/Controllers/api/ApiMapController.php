@@ -10,20 +10,15 @@ class ApiMapController extends Controller
 {
     public function bounds(Request $request)
     {
-        $calle1 = $request->input('calle1');
-        $calle2 = $request->input('calle2');
-        $calle3 = $request->input('calle3');
-        $calle4 = $request->input('calle4');
-
-    //  return [$calle1, $calle2, $calle3, $calle4];
-
-     $bounds = GetBoundsFromAddressesService::getBoundsWithShifts(
-            $calle1,
-            $calle2,
-            $calle3,
-            $calle4
-        );
-
+        
+        $calles = $request->input('calles');
+        
+        if (!is_array($calles) || count($calles) < 3) {
+            return response()->json(['error' => 'Se requieren al menos 4 calles.'], 422);
+        }
+        
+        $bounds = GetBoundsFromAddressesService::getBoundsWithShifts($calles);
+        
         return response()->json($bounds);
     }
 }
