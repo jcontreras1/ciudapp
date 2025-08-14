@@ -27,21 +27,36 @@ class GetVertexFromStreetsService extends Controller
         $response = file_get_contents($url);
         $data = json_decode($response, true);
         
-        // Validamos la respuesta
-        if (
-            isset($data['status']) &&
-            $data['status'] === 'OK' &&
-            isset($data['results'][0]['geometry']['location']) &&
-            in_array('intersection', $data['results'][0]['types'] ?? [])
-            ) {
-                return [
-                    'lat' => $data['results'][0]['geometry']['location']['lat'],
-                    'lng' => $data['results'][0]['geometry']['location']['lng'],
-                ];
-            }
+        // Validamos la respuesta (Opción original con tipo intersection obligatorio)
+        // if (
+        //     isset($data['status']) &&
+        //     $data['status'] === 'OK' &&
+        //     isset($data['results'][0]['geometry']['location']) &&
+        //     in_array('intersection', $data['results'][0]['types'] ?? [])
+        //     ) {
+        //         return [
+        //             'lat' => $data['results'][0]['geometry']['location']['lat'],
+        //             'lng' => $data['results'][0]['geometry']['location']['lng'],
+        //         ];
+        //     }
             
-            // No se encontró una intersección válida
-            return null;
-        }
+        //     // No se encontró una intersección válida
+        //     return null;
+        //Opción 2 con geometría por ajuste de cercanía
+        if (
+    isset($data['status']) &&
+    $data['status'] === 'OK' &&
+    isset($data['results'][0]['geometry']['location'])
+) {
+    return [
+        'lat' => $data['results'][0]['geometry']['location']['lat'],
+        'lng' => $data['results'][0]['geometry']['location']['lng'],
+    ];
+}
+    
+    
+    }
+
+
     }
     

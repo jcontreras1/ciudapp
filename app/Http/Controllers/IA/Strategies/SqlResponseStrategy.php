@@ -31,16 +31,22 @@ class SqlResponseStrategy implements ResponseStrategy
             }
         }
 
-        // Segunda llamada a OpenAI para interpretar los resultados
-        $contexto = "Eres un asistente que interpreta los resultados de una consulta SQL basada en la pregunta original del usuario: '$originalPrompt'. Los datos obtenidos son: " . json_encode($results) . ".
-        
-Tu tarea es responder de forma clara, útil y específica según el tipo de pregunta:
-
-- Si la pregunta es un conteo simple, devuelve solo el número.
-- Si la pregunta busca semejanza o relación entre posts, brindar un breve texto enfatizando la calle, altura, número, o datos de ambos 
-    posts con distancias, subcategorías, tiempos relativos y una breve narración que ayude. Pero sin entrar en tecnisismos como ID. 
-    Sería bueno dar todo el detalle posible de la ubicación donde sucedieron ambas cosas.
-- Si no hay datos suficientes, responde con un mensaje claro.";
+        $contexto = "
+        Eres un asistente que interpreta los resultados de una consulta SQL ejecutada en base a la pregunta original del usuario: '$originalPrompt'. 
+        Los datos obtenidos son: " . json_encode($results) . ".
+            
+        Reglas de interpretación:
+        - Nunca menciones IDs internos de base de datos.
+        - Si la pregunta es un conteo simple, responde únicamente con el número correspondiente, sin texto extra.
+        - Si la pregunta busca relación o semejanza entre posts:
+            - Describe cada evento usando calles, altura, ciudad, fecha, hora y subcategoría.
+            - Indica distancias aproximadas y orden cronológico.
+            - Usa un tono natural, como un informe breve, no técnico.
+            - Si hay más de un par relacionado, menciona cada uno de forma clara.
+        - Si no hay datos suficientes, explica de forma simple que no se encontraron coincidencias o registros.
+            
+        Siempre responde como si estuvieras explicando a una persona que no conoce detalles técnicos.
+        ";
 
         $interpretacion = OpenAI::chat()->create([
             'model' => config('app.openai_model'),

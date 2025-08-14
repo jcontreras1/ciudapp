@@ -26,6 +26,46 @@ class OpenAIResponder extends Controller
     
     public function generarRespuesta(string $promptUsuario, array $subcategorias)
     {
+
+        // return [
+        //     "response" => "En las últimas 48 horas, se ha registrado un incidente delictivo en las inmediaciones de las calles mencionadas. Específicamente, se documentó un suceso el 13 de agosto de 2025, alrededor de las 11:26 de la mañana en la calle 28 de Julio, en la ciudad de Puerto Madryn, Chubut, Argentina. El reporte clasificado dentro de la categoría de \"Delitos\" menciona la presencia de \"Ladrones\" en esa ubicación. La información se recopiló de manera pública y no fue eliminada, indicando que sigue siendo relevante en el periodo reciente consultado.",
+        //     "query" => "SELECT * FROM post WHERE subcategory_id = (SELECT id FROM subcategory WHERE name = 'Delitos') AND deleted_at IS NULL AND created_at >= NOW() - INTERVAL 48 HOUR",
+        //     "calles" => [
+        //         "28 de julio",
+        //         "25 de mayo",
+        //         "belgrano",
+        //         "bartolomé mitre"
+        //     ],
+        //     "bounds" => [
+        //         [
+        //             "lat" => -42.76362169999999,
+        //             "lng" => -65.03483109999999
+        //         ],
+        //         [
+        //             "lat" => -42.7671362,
+        //             "lng" => -65.0343207
+        //         ],
+        //         [
+        //             "lat" => -42.7670002,
+        //             "lng" => -65.0375554
+        //         ],
+        //         [
+        //             "lat" => -42.7675712,
+        //             "lng" => -65.03566599999999
+        //         ]
+        //     ],
+        //     "posts" => [
+        //         [
+        //             "lat" => -42.7666075201028,
+        //             "lng" => -65.03615572285777
+        //         ]
+        //     ]
+        // ];
+
+
+
+
+
         $contexto = $this->generarContextoInicial($subcategorias);
         
         $result = OpenAI::chat()->create([
@@ -56,6 +96,7 @@ class OpenAIResponder extends Controller
         Objetivo: Eres un asistente que responde únicamente en dos formatos según el tipo de pregunta:
         - Preguntas generales (no relacionadas con la base de datos): Responde con '0^^^respuesta'.
         - Preguntas sobre la base de datos: Responde con '1^^^consulta SQL' en una sola línea, sin saltos ni explicaciones adicionales.
+        - Preguntas sobre sucesos entre 4 o más calles: Responde con '2^^^conjunto de todas las calles introducidas por el usuario separadas por || ¡¡¡ <un sql base que incluya todos los filtros del usuario por ejemplo de subcategorías, fecha, etc. pero sin filtrar por calles, eso lo hago yo después>
 
         Contexto: Sistema de gestión de incidentes con entidades: usuarios (users), publicaciones (post), instituciones (institutions), ciudades (city), regiones (region), incidentes (incident), categorías (category) y subcategorías (subcategory).
 
@@ -89,20 +130,24 @@ class OpenAIResponder extends Controller
 
         Reglas de respuesta:
         1. Preguntas generales:
-           - Formato: '0^^^respuesta
-           - Ejemplo: Pregunta: '¿Qué es la ecología?' → Respuesta: '0^^^Estudio de las relaciones entre organismos y su entorno'.
+        - Ejemplo: Pregunta: '¿Qué es la ecología?' → Respuesta: '0^^^Estudio de las relaciones entre organismos y su entorno'.
+        - Formato: '0^^^respuesta
 
         2. Preguntas sobre la base de datos:
-           - Formato: '1^^^consulta SQL' (una sola línea, sin punto final).
-           - Ejemplo: Pregunta: '¿Cuántos posts existen?' → Respuesta: '1^^^SELECT COUNT(*) FROM post WHERE deleted_at IS NULL'.
+        - Ejemplo: Pregunta: '¿Cuántos posts existen?' → Respuesta: '1^^^SELECT COUNT(*) FROM post WHERE deleted_at IS NULL'.
+        - Formato: '1^^^consulta SQL' (una sola línea, sin punto final).
 
-        3. Filtros específicos:
+        3. Preguntas sobre sucesos entre 4 o más calles:
+        - Ejemplo: Pregunta: podrías darme los delitos de la última semana entre las calles Belgrano, Bartolomé mitre, 25 de Mayo y 28 de julio?
+        - Formato: '2^^^Belgrano||Bartolomé mitre||25 de Mayo||28 de julio!!!SELECT * FROM post WHERE subcategory_id = (SELECT id FROM subcategory WHERE name IN ('Delitos', 'Denuncias', 'Hurto')) AND deleted_at IS NULL AND created_at >= NOW() - INTERVAL 7 DAY' 
+
+        4. Filtros específicos:
            - Categorías/Subcategorías: Verificar relación con subcategory antes de filtrar.
            - Direcciones: Usar LIKE en location_long (ejemplo: LIKE '%Calle 123%').
            - Si no hay suficientes datos, intentá generar una consulta ejemplo igualmente, aunque sea con condiciones genéricas, y luego indicá que puede requerir ajustes.
             - Solo si la pregunta no tiene ningún sentido o no se puede relacionar con ningún dato del sistema, usá '0^^^análisis basado en estructura'.
 
-        4. Relación entre posts (cercanía geográfica y subcategorías):
+        5. Relación entre posts (cercanía geográfica y subcategorías):
            - Si se pregunta por posts relacionados:
              - **Cercanía geográfica**: Usa la fórmula de Haversine para calcular la distancia entre posts (en metros). Umbral por defecto: 100 metros, ajustable si se especifica.
              - **Subcategorías relacionadas**: Evalúa si las subcategorías de los posts están vinculadas según estas reglas:
@@ -112,14 +157,15 @@ class OpenAIResponder extends Controller
              - - Si se pregunta por posts relacionados:
           - Usá la fórmula de Haversine para calcular distancia (en metros).
           - Incluí en el resultado: `p1.id` y `p2.id` como `post1_id` y `post2_id`.
+          - Ejemplo de campos esperados en la respuesta: `post1_id`, `post2_id`, `subcategory1`, `subcategory2`, `distance`, `created_at`, `location_long`.
           - Incluí también los **nombres de las subcategorías** de cada post como `subcategory1` y `subcategory2`, haciendo `JOIN` con la tabla `subcategory`.
           - Inclui el created_at que da una relación del tiempo para evaluar cuando sucedió cada cosa y ver si hay similitudes
           - Inclui 'location_long' (cuidado que a veces es null) para obtener información de altura y calle de la ciudad.
-          - Ejemplo de campos esperados en la respuesta: `post1_id`, `post2_id`, `subcategory1`, `subcategory2`, `distance`.
           - No uses `subcategory_id` sin nombre, ya que el análisis posterior requiere subcategorías legibles.
 
         Notas:
-        - 'Evento' puede interpretarse como un post o incidente. Si no se especifica, asumí que se refiere a un post.
+        - 'Evento' puede interpretarse como un post o incidente o reporte o suceso. Si no se especifica, asumí que se refiere a un post.
+        - 'Tipo de reporte' puede intepretarse como subcategoría. Si no se especifica, asumí que se refiere a una subcategoría.
         - Si se pregunta por eventos relacionados, interpretá que busca pares de posts que estén cercanos y compartan subcategoría o categoría relacionada.
         - Consultas SQL deben ser válidas y ejecutables.
         - No incluir campos temporales en listas de registros.
@@ -127,17 +173,20 @@ class OpenAIResponder extends Controller
         - Si se pregunta por posts relacionados, devolvé una consulta que retorne una lista de pares de posts (p1.id, p2.id) junto con sus subcategorías y distancia entre sí.
         - Asegurate de incluir el cálculo de distancia (Haversine) y un filtro de subcategorías compatibles (ya sea por nombre, category_id o regla manual).
         - La consulta debe estar optimizada para mostrar relaciones útiles y concretas, y evitar repeticiones.
-
+        - Cuando generes la consulta SQL, incluye no solo los datos necesarios para responder la pregunta del usuario, sino también toda la información contextual posible (como calle y altura -se encuentra en location_long-, ciudad, fecha, hora y subcategoría) para que otro proceso pueda construir una respuesta más detallada.
+        
         Datos adicionales: Estas son las subcategorías disponibles en el sistema:
-
-
+        
+        
         " . json_encode($subcategorias) . ".
-
-
+        
+        
         Ejemplo de relaciones inferidas automáticamente:
-        - 'Robo' y 'Violencia' → Relacionadas por contexto de seguridad.
-        - 'Basura' y 'Contaminación' → Relacionadas por contexto ecológico.
+        - 'Robo', 'Delitos', 'Denuncias', 'Violencia' → Relacionadas por contexto de seguridad.
+        - 'Basura', 'Contaminación', 'mugre', 'suciedad', 'residuos' → Relacionadas por contexto ecológico.
         - 'Luminarias' y 'Calles rotas' → Potencialmente relacionadas por contexto urbano.
+
+        Conociendo las subcategorías y algunas relaciones entre ellas, se podría inferir conexiones relevantes. Si se pregunta por algun resumen de eventos, intentá hacer relaciones entre subcategorías para enriquecer la respuesta.
         ";
     }
     

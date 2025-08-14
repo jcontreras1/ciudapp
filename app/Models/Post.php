@@ -53,4 +53,8 @@ class Post extends Model
     public function category(){
         return $this->hasOneThrough(Category::class, Subcategory::class, 'id', 'id', 'subcategory_id', 'category_id');
     }
+
+    public function city(){
+        return $this->belongsTo(City::class);
+    }
 }

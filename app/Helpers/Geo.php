@@ -6,6 +6,17 @@ use App\Models\Region;
 use App\Models\User;
 use App\Models\UserRegionSubcategory;
 function pointInPolygon($point, $vertices, $pointOnVertex = false) {
+
+    //Ejemplo de input
+    /*
+        punto: ['lat' => 12.34, 'lng' => 56.78]
+        vertices: [
+            ['lat' => 12.34, 'lng' => 56.78],
+            ['lat' => 12.35, 'lng' => 56.79],
+            ['lat' => 12.36, 'lng' => 56.80],
+            ['lat' => 12.37, 'lng' => 56.81]
+        ]
+    */
     
     // Check if the point is inside the polygon or on the boundary
     $intersections = 0;

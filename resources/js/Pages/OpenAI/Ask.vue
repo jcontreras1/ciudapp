@@ -4,6 +4,8 @@ import AppLayoutHome from '@/Layouts/AppLayoutHome.vue';
 import { onMounted, ref, watch } from 'vue';
 import OpenAIService from '@/Services/OpenAIService';
 import { marked } from "marked"
+import AppLayoutFluid from '@/Layouts/AppLayoutFluid.vue';
+import ShowPolygonWithMarkers from '../Mapa/ShowPolygonWithMarkers.vue';
 
 
 const props = defineProps({
@@ -14,6 +16,9 @@ const text = ref('');
 const consultando = ref(false);
 const messages = ref([]);
 const mostrarSql = ref(false);
+const bounds = ref([]);
+const markers = ref([]);
+const textoRapido = ref('Hechos en las calles Avenida Roca, Avenida Gales, Lewis Jones, MArcelo T de alvear');
 
 const submit = () => {
     consultando.value = true;
@@ -24,6 +29,12 @@ const submit = () => {
     .then(response => {
         messages.value.push({ text: marked(response.data.response), query: response.data.query, copied: false, sender: 'ai' });
         consultando.value = false;
+        mostrarMapa.value = false;
+        if(response.data.calles && response.data.calles.length) {
+            mostrarMapa.value = true;
+            bounds.value = response.data.bounds || [];
+            markers.value = response.data.posts || [];
+        }
     })
     .catch(error => {
         consultando.value = false;
@@ -53,16 +64,20 @@ const copyToClipboard = (text, index) => {
 
     const vaciarChat = () => {
         messages.value = [];
+        mostrarMapa.value = false;
     }
+
+    const mostrarMapa = ref(false)
 
 </script>
 
 <template>
-    <AppLayoutHome>
+    <AppLayoutFluid>
         <Head title="Inicio"></Head>
         
         <div class="chat-container">
-            <h2 class="">Preguntas a la IA
+            <h2 class="">Preguntas a la IA 
+                <button @click="text = textoRapido">dale</button>
                 <span class="float-end">
                     <button title="Mostrar u ocultar SQL" class="btn btn-sm btn-primary" @click="mostrarSql = !mostrarSql">
                         <i class="fas fa-eye" v-if="mostrarSql"></i>                        
@@ -72,7 +87,7 @@ const copyToClipboard = (text, index) => {
             </h2>
             
             <div class="row">
-                <div class="col-12 mb-3">                    
+                <div :class="{'col-12 col-md-8': !mostrarMapa, 'col-6': mostrarMapa}">                    
                     <form id="chat-form" @submit.prevent="submit" class="mb-3">
                         <div class="mb-3">
                             <textarea class="form-control" id="user-input" rows="3" v-model="text" placeholder="Escribe tu mensaje..." required @keypress.enter.prevent="submit"></textarea>
@@ -86,8 +101,7 @@ const copyToClipboard = (text, index) => {
                             <button @click="vaciarChat" title="Vaciar el chat" class="btn btn-danger" v-if="messages.length"><i class="fas fa-trash"></i></button>
                         </div>
                     </form>
-                </div>
-                <div class="col-12">
+                
                     
                     <div ref="chatbox" class="chat-box" id="chat-box">
                         <!-- Mostrar los mensajes -->
@@ -116,13 +130,23 @@ const copyToClipboard = (text, index) => {
                         </div>
                     </div>
                 </div>
+                <div :class="{'col-12 col-md-4': !mostrarMapa, 'col-6': mostrarMapa}" v-if="mostrarMapa">
+                    <div class="card">
+                        <div class="card-header">
+                            Mapa
+                        </div>
+                        <div class="card-body">
+                            <ShowPolygonWithMarkers :puntos="bounds" :markers="markers" :id="'mapa-ia'" v-if="mostrarMapa"></ShowPolygonWithMarkers>
+                        </div>
+                    </div>
+                    </div>
             </div>
             <!-- Mensajes de chat irán aquí -->
         </div>
         
         
         
-    </AppLayoutHome>
+    </AppLayoutFluid>
 </template>
 
 
